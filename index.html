@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Limits where this page can send data. If you add a provider host in ALLOWED_HOSTS, add it here too. -->
-<meta http-equiv="Content-Security-Policy" content="connect-src https://api.anthropic.com https://generativelanguage.googleapis.com https://api.x.ai https://openrouter.ai; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="connect-src https://api.anthropic.com https://generativelanguage.googleapis.com https://api.x.ai https://api.groq.com https://openrouter.ai; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Studio Board</title>
 <meta name="description" content="Console for a one-person 3D studio run with an AI team.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -618,11 +618,12 @@ document.addEventListener('error', e => {
 /* ---------- ai connections ---------- */
 const AI_KEY = 'studioBoard.ai.v1';
 /* Hosts this page may call. To use another one, add it here AND to the connect-src part of the Content-Security-Policy tag at the top. */
-const ALLOWED_HOSTS = ['api.anthropic.com', 'generativelanguage.googleapis.com', 'api.x.ai', 'openrouter.ai'];
+const ALLOWED_HOSTS = ['api.anthropic.com', 'generativelanguage.googleapis.com', 'api.x.ai', 'api.groq.com', 'openrouter.ai'];
 const PROVS = {
   claude: { name: 'Claude', full: 'Claude (Anthropic)', get: 'https://platform.claude.com/settings/keys', model: 'claude-sonnet-5-5', base: 'https://api.anthropic.com' },
   gemini: { name: 'Gemini', full: 'Gemini (Google)', get: 'https://aistudio.google.com/apikey', model: 'gemini-3.6-flash', base: 'https://generativelanguage.googleapis.com' },
   grok:   { name: 'Grok', full: 'Grok (xAI)', get: 'https://console.x.ai', model: '', base: 'https://api.x.ai/v1' },
+  groq:   { name: 'Groq', full: 'Groq (GroqCloud)', get: 'https://console.groq.com/keys', model: 'llama-3.3-70b-versatile', base: 'https://api.groq.com/openai/v1' },
   custom: { name: 'Other', full: 'Other (OpenAI-compatible)', get: 'https://openrouter.ai/keys', model: '', base: 'https://openrouter.ai/api/v1' }
 };
 const ROLE_PROV = { Claude: 'claude', Gemini: 'gemini', Grok: 'grok' };
@@ -754,6 +755,11 @@ function pickDefault(provider, ids) {
   if (provider === 'claude') pool = ids.filter(i => /sonnet/.test(i));
   else if (provider === 'gemini') pool = ids.filter(i => /^gemini-[\d.]+-flash$/.test(i));
   else if (provider === 'grok') pool = ids.filter(i => /^grok-[\d.]+$/.test(i));
+  else if (provider === 'groq') {
+    const pref = ids.find(i => i === 'llama-3.3-70b-versatile');
+    if (pref) return pref;
+    pool = ids.filter(i => /llama|gpt-oss|qwen|mixtral/i.test(i) && !/whisper|guard|tts|orpheus|playai/i.test(i));
+  }
   return newest(pool && pool.length ? pool : ids);
 }
 function bumpSent(k) {
@@ -1504,7 +1510,7 @@ const ACT_V3 = {
   'ai-open'() { openAI(); },
   'ai-close'() { closeAI(); },
   'ai-add'() {
-    const used = ai.keys.map(k => k.provider), next = ['claude', 'gemini', 'grok', 'custom'].find(p => !used.includes(p)) || 'gemini';
+    const used = ai.keys.map(k => k.provider), next = ['claude', 'gemini', 'grok', 'groq', 'custom'].find(p => !used.includes(p)) || 'gemini';
     const k = { id: uid(), provider: next, label: '', key: '', model: PROVS[next].model, base: '', status: 'idle', msg: '', models: [] };
     ai.keys.push(k); saveAI();
     $('#aiKeys').insertAdjacentHTML('beforeend', keyCardHtml(k));
