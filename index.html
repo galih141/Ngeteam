@@ -484,7 +484,7 @@ function blank() {
     brain: { goals: '', brand: '', open: '' },
     tasks: [], money: [], decisions: [],
     steps: defaultSteps(), threads: {},
-    chat: { div: 'agency', sel: '', to: 'all', skill: '', n: 10, incBrain: true, incDec: true, incTasks: false, editing: false },
+    chat: { div: 'agency', sel: '', to: '', skill: '', n: 4, incBrain: false, incDec: false, incTasks: false, editing: false, len: 'short' },
     limits: {
       claude: { name: 'Claude', hours: 5,  cap: 30,   count: 0, start: null },
       gemini: { name: 'Gemini', hours: 24, cap: null, count: 0, start: null },
@@ -540,6 +540,9 @@ function load() {
 }
 let state = load();
 const save = () => { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { if (!save.w) { save.w = 1; setTimeout(() => toast('Browser storage is full. Export a backup and remove old attachments.'), 0); } } };
+
+/* one-time switch to the cheapest defaults for existing saved data */
+if (!state.mig3) { state.mig3 = 1; Object.assign(state.chat, { n: 4, incBrain: false, incDec: false, incTasks: false, len: 'short', to: '' }); save(); }
 
 /* ---------- derived ---------- */
 const inScope = x => state.division === 'all' || x.division === state.division;
@@ -627,7 +630,7 @@ const PROVS = {
   custom: { name: 'Other', full: 'Other (OpenAI-compatible)', get: 'https://openrouter.ai/keys', model: '', base: 'https://openrouter.ai/api/v1' }
 };
 const ROLE_PROV = { Claude: 'claude', Gemini: 'gemini', Grok: 'grok' };
-const blankAI = () => ({ keys: [], assign: {}, auto: true, fallback: false, actions: true });
+const blankAI = () => ({ keys: [], assign: {}, auto: true, fallback: false, actions: false, mig3: 1 });
 function loadAI() {
   try {
     const r = localStorage.getItem(AI_KEY);
@@ -642,6 +645,7 @@ function loadAI() {
 let ai = loadAI();
 const saveAI = () => { try { localStorage.setItem(AI_KEY, JSON.stringify(ai)); } catch (e) { /* ignore */ } };
 if (!ai.mig2) { ai.mig2 = 1; ai.fallback = true; saveAI(); }
+if (!ai.mig3) { ai.mig3 = 1; ai.fallback = false; ai.actions = false; saveAI(); }
 const findKey = id => ai.keys.find(k => k.id === id);
 const cleanKey = s => String(s == null ? '' : s).trim().replace(/^["']+|["']+$/g, '');
 const hasKey = k => !!k && cleanKey(k.key) !== '';
@@ -732,6 +736,7 @@ async function generate(k, prompt, o) {
   } else {
     const body = { model, messages: [{ role: 'user', content: oaiC(prompt, o.atts) }] };
     if (o.max) body.max_tokens = o.max;
+    if (k.provider === 'groq' && /gpt-oss/i.test(model)) body.reasoning_effort = 'low';
     const { data } = await apiFetch(k, b + '/chat/completions', { method: 'POST', headers: authHeaders(k), body: JSON.stringify(body) }, opt);
     const c = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
     text = Array.isArray(c) ? c.map(x => x.text || '').join('') : (c || '');
@@ -756,7 +761,7 @@ function pickDefault(provider, ids) {
   else if (provider === 'gemini') pool = ids.filter(i => /^gemini-[\d.]+-flash$/.test(i));
   else if (provider === 'grok') pool = ids.filter(i => /^grok-[\d.]+$/.test(i));
   else if (provider === 'groq') {
-    const pref = ['llama-3.3-70b-versatile', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'llama-3.1-8b-instant'].find(p => ids.includes(p));
+    const pref = ['llama-3.1-8b-instant', 'llama-3.3-70b-versatile', 'openai/gpt-oss-20b', 'openai/gpt-oss-120b'].find(p => ids.includes(p));
     if (pref) return pref;
     pool = ids.filter(i => /llama|gpt-oss|qwen|mixtral/i.test(i) && !/whisper|guard|tts|orpheus|playai/i.test(i));
   }
@@ -1091,8 +1096,8 @@ const stepName = () => stepNameOf(chatDiv(), curSel());
 function curTo() {
   const ms = chatMembers(), to = state.chat.to;
   if (isDM()) return to === 'note' ? 'note' : ms[0].id;
-  if (to === 'all' || to === 'note' || ms.some(m => m.id === to)) return to;
-  return 'all';
+  if (to === 'note' || ms.some(m => m.id === to)) return to;
+  return ms.length ? ms[0].id : 'note';
 }
 function curSkill() {
   const to = curTo();
@@ -1102,6 +1107,7 @@ function curSkill() {
 }
 
 const LENS = { short: 'Short', normal: 'Normal', detailed: 'Detailed' };
+const LENMAX = { short: 600, normal: 900, detailed: 1800 };
 const lenOf = () => (LENS[state.chat.len] ? state.chat.len : 'short');
 function lenRule() {
   const l = lenOf();
@@ -1246,7 +1252,7 @@ async function callKey(kk, prompt, ctl, a) {
     const w = (lastSend[kk.id] || 0) + (kk.provider === 'gemini' ? (/lite/i.test(kk.model || '') ? 4200 : 12500) : 1500) - Date.now(); if (w > 0) await wait(w);
     if (ctl.cancelled) throw new ApiError('Stopped.', 'cancelled');
     lastSend[kk.id] = Date.now();
-    try { return await generate(kk, prompt, { ctl, atts: a }); }
+    try { return await generate(kk, prompt, { ctl, atts: a, max: LENMAX[lenOf()] }); }
     catch (e) {
       if (e.kind === 'limit') kk.cool = Date.now() + 90000;
       if (e.kind === 'server' && n < 2 && !ctl.cancelled) { await wait(3000 * (n + 1)); continue; }
@@ -1458,8 +1464,7 @@ function threadHtml() {
   const sub = dm ? `Private chat with ${esc(ms[0].name)}, ${esc(ms[0].title)}. ${esc(DIVS[d].label)}.`
                  : `Step ${idx + 1} of ${steps.length}: ${esc(stepName())}. ${esc(DIVS[d].label)}.`;
   const faces = ms.map(m => `${avatarHtml(m, 'avatar sm', true)}`).join('');
-  const toOpts = (dm ? [] : [`<option value="all" ${to === 'all' ? 'selected' : ''}>Everyone in this step</option>`])
-    .concat(ms.map(m => `<option value="${m.id}" ${to === m.id ? 'selected' : ''}>${esc(m.name)}</option>`))
+  const toOpts = ms.map(m => `<option value="${m.id}" ${to === m.id ? 'selected' : ''}>${esc(m.name)}</option>`)
     .concat([`<option value="note" ${to === 'note' ? 'selected' : ''}>No one (just a note)</option>`]).join('');
   const single = to !== 'all' && to !== 'note', rr = single ? roleById(to) : null;
   const skillOpts = rr ? `<option value="">No specific skill</option>` + rr.skills.filter(x => x.div === 'both' || x.div === d)
