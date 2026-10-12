@@ -473,7 +473,23 @@ const ROLES = [
       { name: 'Invoice Tracker', div: 'agency', io: 'payments in and out -> who owes what, due dates' },
       { name: 'Project Profit', div: 'agency', io: 'one project -> real profit after expenses' },
       { name: 'Payout Forecast', div: 'creative', io: 'marketplace sales -> expected payout dates and amounts' },
-      { name: 'Monthly Report', div: 'both', io: 'all records -> Agency and Creative reported separately' } ] }
+      { name: 'Monthly Report', div: 'both', io: 'all records -> Agency and Creative reported separately' } ] },
+  { id: 'joy', name: 'Joy', title: 'Tracker, no AI', color: '#2a8f83', model: 'None', backup: 'None', local: true,
+    character: 'Cheerful, quick and always there. Answers only from your own board, money, decisions and notes. Never guesses.',
+    owns: 'Deadlines, task status, money snapshot, calculators, checklists, guides and message templates.',
+    agency: 'Shows what is overdue, who owes you, and checks a job before you take it or deliver it.',
+    creative: 'Tracks pack tasks and payouts, runs the launch checklist and the margin and fee calculators.',
+    pushback: 'Says "that is not in your data" instead of making something up.',
+    skills: [
+      { name: 'Deadlines', div: 'both', io: 'nothing -> overdue, due today and next 7 days' },
+      { name: 'Task Status', div: 'both', io: 'optionally a role or a status -> tasks grouped by status' },
+      { name: 'Money Snapshot', div: 'both', io: 'nothing -> received, due, expected, expenses and what you kept' },
+      { name: 'Calculator', div: 'both', io: 'price, cost, hours, fee, deposit -> margin, hourly rate, payout, minimum quote' },
+      { name: 'Workload Check', div: 'both', io: 'hours and days -> hours per day and whether it fits' },
+      { name: 'Checklist', div: 'both', io: 'go/no-go, delivery, intake, launch or scope -> questions and a score' },
+      { name: 'Guide', div: 'both', io: 'a topic -> step by step (revisions, late payment, pricing...)' },
+      { name: 'Message Template', div: 'both', io: 'a situation -> message with brackets to fill' },
+      { name: 'Find', div: 'both', io: 'a word -> matches in tasks, money, decisions, brain and chats' } ] }
 ];
 const roleById = id => ROLES.find(r => r.id === id);
 
@@ -484,7 +500,7 @@ function blank() {
     brain: { goals: '', brand: '', open: '' },
     tasks: [], money: [], decisions: [],
     steps: defaultSteps(), threads: {},
-    chat: { div: 'agency', sel: '', to: '', skill: '', n: 4, incBrain: false, incDec: false, incTasks: false, editing: false, len: 'short' },
+    chat: { div: 'agency', sel: '', to: '', skill: '', n: 4, incBrain: false, incDec: false, incTasks: false, incJoy: false, editing: false, len: 'short' },
     limits: {
       claude: { name: 'Claude', hours: 5,  cap: 30,   count: 0, start: null },
       gemini: { name: 'Gemini', hours: 24, cap: null, count: 0, start: null },
@@ -580,7 +596,7 @@ const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
 
 /* ---------- avatars ---------- */
 /* Put one image per role in the folder below, next to index.html. Name each file after the role in lowercase:
-   mira, rico, dewi, sasha, bima, nadia, arga. The page tries .png, .webp, .jpg and .jpeg, and falls back to the colored initial. */
+   mira, rico, dewi, sasha, bima, nadia, arga, joy. The page tries .png, .webp, .jpg and .jpeg, and falls back to the colored initial. */
 const AV_DIR = 'assets';
 const AV_EXT = ['png', 'webp', 'jpg', 'jpeg'];
 const AV = {};
@@ -821,7 +837,7 @@ function keyCardHtml(k) {
   </div>`;
 }
 function assignHtml() {
-  return ROLES.map(r => {
+  return ROLES.filter(r => !r.local).map(r => {
     const cur = ai.assign[r.id] || '';
     return `<div class="arow">${avatarHtml(r, 'avatar sm')}
       <div class="grow"><b>${esc(r.name)}</b> <span class="small muted">${esc(r.title)}</span></div>
@@ -1039,6 +1055,386 @@ function actionRules(r, D) {
   L.push(`Today is ${todayISO()}. The division (${DIVS[D].short}) is set automatically. Nothing is saved until I approve it, so never say that it is saved.`);
   return L;
 }
+
+/* ---------- Joy: the role that never calls an AI ---------- */
+/* Everything below runs in this page. It reads the board, money, decisions and brain you already keep, and answers from them. */
+const JOY = (() => {
+  const L = a => a.filter(x => x !== null && x !== undefined).join('\n');
+  const STOP = new Set('a an and are as at be but by for from has have how i in is it me my of on or our so that the their them then there these this to us was we what when where which who why will with you your about any can do does did get give just list make show tell want need should would could please joy hey hi hello'.split(' '));
+
+  /* ---- reading numbers: 6jt, 7.5M, 500k, 1.500.000, 15% ---- */
+  const MULT = { jt: 1e6, juta: 1e6, m: 1e6, million: 1e6, mil: 1e6, k: 1e3, rb: 1e3, ribu: 1e3 };
+  function num(raw) {
+    let s = String(raw).trim();
+    if (/^\d{1,3}([.,]\d{3})+$/.test(s)) return Number(s.replace(/[.,]/g, ''));
+    if (/^\d+[.,]\d{1,2}$/.test(s)) return Number(s.replace(',', '.'));
+    return Number(s.replace(/[.,]/g, '')) || 0;
+  }
+  function money(str) {
+    const m = String(str || '').match(/(?:rp\.?\s*)?(\d[\d.,]*)\s*(jt|juta|million|mil|rb|ribu|k|m)?(?![a-z])/i);
+    if (!m) return null;
+    const v = num(m[1]) * (m[2] ? MULT[m[2].toLowerCase()] : 1);
+    return v > 0 ? v : null;
+  }
+  const NUMRE = '((?:rp\\.?\\s*)?\\d[\\d.,]*\\s*(?:jt|juta|million|mil|rb|ribu|k|m)?(?![a-z])(?![\\d.,]*\\s*%))';
+  function pick(text, labels) {
+    const a = new RegExp('(?:' + labels + ')\\s*(?:of|is|was|at|=|:|rp\\.?)?\\s*' + NUMRE, 'i').exec(text);
+    if (a) return money(a[1]);
+    const b = new RegExp(NUMRE + '\\s*(?:for\\s+)?(?:' + labels + ')\\b', 'i').exec(text);
+    return b ? money(b[1]) : null;
+  }
+  function pct(text, labels) {
+    const a = new RegExp('(?:' + labels + ')\\s*(?:of|is|at|=|:)?\\s*(\\d+(?:[.,]\\d+)?)\\s*%', 'i').exec(text);
+    if (a) return Number(a[1].replace(',', '.'));
+    const b = new RegExp('(\\d+(?:[.,]\\d+)?)\\s*%\\s*(?:' + labels + ')', 'i').exec(text);
+    return b ? Number(b[1].replace(',', '.')) : null;
+  }
+  function hours(text) {
+    const m = /(\d+(?:[.,]\d+)?)\s*(?:hours?|hrs?|jam|h)\b/i.exec(text) || /(?:hours?|jam)\s*(?:of|is|=|:)?\s*(\d+(?:[.,]\d+)?)/i.exec(text);
+    return m ? Number(m[1].replace(',', '.')) : null;
+  }
+  function days(text) {
+    const m = /(\d+)\s*(?:calendar\s*)?(?:days?|hari|d)\b/i.exec(text) || /(?:days?|hari)\s*(?:of|is|=|:)?\s*(\d+)/i.exec(text);
+    return m ? Number(m[1]) : null;
+  }
+  const rpf = n => 'Rp ' + Math.round(n).toLocaleString('id-ID');
+  const r1 = n => (Math.round(n * 10) / 10).toString();
+
+  /* ---- scope: which division(s) to look at ---- */
+  function divsFor(st, text) {
+    const a = /\bagency\b|client work/i.test(text), c = /\bcreative\b|\bproducts?\b/i.test(text);
+    if (/\b(both|everything|whole studio)\b/i.test(text) || (a && c)) return ['agency', 'creative'];
+    if (a) return ['agency'];
+    if (c) return ['creative'];
+    return st.division === 'agency' || st.division === 'creative' ? [st.division] : ['agency', 'creative'];
+  }
+  const DN = { agency: 'Agency', creative: 'Creative' };
+  const diff = s => Math.round((new Date(s + 'T00:00:00') - new Date(todayISO() + 'T00:00:00')) / 864e5);
+  const when = due => {
+    if (!due) return 'no date';
+    const d = diff(due);
+    return d < 0 ? `overdue by ${-d} day${d === -1 ? '' : 's'}` : d === 0 ? 'due today' : d === 1 ? 'due tomorrow' : `due in ${d} days`;
+  };
+  const who = id => { const r = (typeof roleById === 'function') ? roleById(id) : null; return r ? r.name : (id || 'nobody'); };
+  const mine = (st, divs) => st.tasks.filter(t => divs.includes(t.division));
+
+  /* ---- 1. deadlines ---- */
+  function deadlines(st, text, divs) {
+    const open = mine(st, divs).filter(t => t.status !== 'Completed' && t.due);
+    const none = mine(st, divs).filter(t => t.status !== 'Completed' && !t.due);
+    const late = open.filter(t => diff(t.due) < 0).sort((a, b) => a.due.localeCompare(b.due));
+    const today = open.filter(t => diff(t.due) === 0);
+    const week = open.filter(t => diff(t.due) > 0 && diff(t.due) <= 7).sort((a, b) => a.due.localeCompare(b.due));
+    const later = open.filter(t => diff(t.due) > 7).sort((a, b) => a.due.localeCompare(b.due)).slice(0, 4);
+    const line = t => `- ${t.title} (${DN[t.division]}, ${t.status}, ${who(t.owner)}, ${when(t.due)})`;
+    const out = [`DEADLINES, ${divs.map(d => DN[d]).join(' + ')}:`];
+    if (!open.length && !none.length) return 'No open tasks with dates on the board. Add some in the Board tab and ask me again.';
+    out.push(late.length ? `\nOVERDUE (${late.length}):\n${late.map(line).join('\n')}` : '\nOverdue: nothing. Good.');
+    if (today.length) out.push(`\nDUE TODAY (${today.length}):\n${today.map(line).join('\n')}`);
+    out.push(week.length ? `\nNEXT 7 DAYS (${week.length}):\n${week.map(line).join('\n')}` : '\nNext 7 days: nothing due.');
+    if (later.length) out.push(`\nLATER:\n${later.map(line).join('\n')}`);
+    if (none.length) out.push(`\nNo date set (${none.length}): ${none.slice(0, 4).map(t => t.title).join('; ')}${none.length > 4 ? '...' : ''}`);
+    if (late.length) out.push('\nMove or finish the overdue ones first. If one is stuck, say what blocks it and decide: drop, shrink or reschedule.');
+    return out.join('\n');
+  }
+
+  /* ---- 2. task status ---- */
+  function tasks(st, text, divs) {
+    let ts = mine(st, divs);
+    const roles = (typeof ROLES !== 'undefined' ? ROLES : []).filter(r => new RegExp('\\b' + r.name + '\\b', 'i').test(text));
+    if (roles.length) ts = ts.filter(t => roles.some(r => r.id === t.owner));
+    const stat = ['Proposed', 'Approved', 'In Progress', 'Review', 'Completed'].find(s => new RegExp('\\b' + s.replace(' ', '[ -]?') + '\\b', 'i').test(text));
+    if (stat) ts = ts.filter(t => t.status === stat);
+    else if (/\b(open|left|remaining|todo|to do|pending)\b/i.test(text)) ts = ts.filter(t => t.status !== 'Completed');
+    if (!ts.length) return 'No tasks match that.' + (roles.length || stat ? ' Try asking without the filter.' : ' The board is empty. Add tasks in the Board tab.');
+    const order = ['Review', 'In Progress', 'Approved', 'Proposed', 'Completed'];
+    const out = [`TASKS${roles.length ? ' for ' + roles.map(r => r.name).join(', ') : ''}${stat ? ', ' + stat : ''} (${ts.length}), ${divs.map(d => DN[d]).join(' + ')}:`];
+    order.forEach(s => {
+      const g = ts.filter(t => t.status === s).sort((a, b) => (a.due || '9').localeCompare(b.due || '9'));
+      if (g.length) out.push(`\n${s.toUpperCase()} (${g.length}):\n` + g.map(t => `- ${t.title} (${who(t.owner)}, ${t.status === 'Completed' ? 'done' : when(t.due)})`).join('\n'));
+    });
+    const all = mine(st, divs), done = all.filter(t => t.status === 'Completed').length;
+    out.push(`\nProgress: ${done} of ${all.length} tasks completed (${all.length ? Math.round(done / all.length * 100) : 0}%).`);
+    return out.join('\n');
+  }
+
+  /* ---- 3. money snapshot ---- */
+  function moneyView(st, text, divs) {
+    const out = [`MONEY, ${divs.map(d => DN[d]).join(' + ')} (from your Money tab only):`];
+    let T = { received: 0, due: 0, expected: 0, paid: 0, unpaid: 0, kept: 0 };
+    divs.forEach(d => {
+      const m = mstats(d);
+      out.push(`\n${DN[d]}: received ${rpf(m.received)}, due ${rpf(m.due)}, expected ${rpf(m.expected)}. Expenses paid ${rpf(m.paid)}${m.unpaid ? ', unpaid ' + rpf(m.unpaid) : ''}${m.cuts ? ', shared cuts ' + rpf(m.cuts) : ''}. Kept so far: ${rpf(m.kept)}.`);
+      Object.keys(T).forEach(k => { T[k] += m[k] || 0; });
+    });
+    if (divs.length > 1) out.push(`\nTotal kept so far: ${rpf(T.kept)}. Still coming in: ${rpf(T.due + T.expected)}.`);
+    const owed = st.money.filter(m => divs.includes(m.division) && m.type === 'income' && m.status !== 'Received').sort((a, b) => (a.date || '9').localeCompare(b.date || '9'));
+    if (owed.length) out.push('\nWHO OWES YOU / WHAT IS COMING:\n' + owed.map(m => `- ${m.desc}: ${rpf(m.amount)} (${m.status}${m.date ? ', ' + when(m.date) : ''})`).join('\n'));
+    const bills = st.money.filter(m => divs.includes(m.division) && m.type === 'expense' && m.status !== 'Received');
+    if (bills.length) out.push('\nUNPAID EXPENSES:\n' + bills.map(m => `- ${m.desc}: ${rpf(m.amount)}${m.date ? ' (' + when(m.date) + ')' : ''}`).join('\n'));
+    out.push('\nRevenue is not profit. "Kept" is received income minus paid expenses and shared cuts.');
+    return out.join('\n');
+  }
+
+  /* ---- 4. decisions and brain ---- */
+  function decisions(st, text, divs) {
+    let ds = st.decisions.filter(d => divs.includes(d.division));
+    const words = kw(text).filter(w => !/^decision|decisions|decided|revisit|log$/.test(w));
+    if (words.length) { const f = ds.filter(d => words.some(w => (d.topic + ' ' + d.decision + ' ' + d.why + ' ' + d.dissent).toLowerCase().includes(w))); if (f.length) ds = f; }
+    if (/revisit/i.test(text)) ds = ds.filter(d => d.revisit);
+    if (!ds.length) return 'No decisions logged yet. When a role writes a DECISION line, press "Log this decision" under the message.';
+    ds = ds.sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
+    return `DECISIONS (${ds.length}):\n` + ds.map(d => L([`\n- ${d.date}, ${DN[d.division]}, ${d.topic || 'General'}${d.role ? ' (raised by ' + who(d.role) + ')' : ''}`, `  ${d.decision}`, d.why ? `  Why: ${d.why}` : null, d.dissent ? `  Disagreed: ${d.dissent}` : null, d.revisit ? `  Revisit: ${d.revisit}` : null])).join('');
+  }
+  function brain(st) {
+    const b = st.brain || {}, out = ['STUDIO BRAIN:'];
+    if (b.goals && b.goals.trim()) out.push(`\nGoals and limits:\n${b.goals.trim()}`);
+    if (b.brand && b.brand.trim()) out.push(`\nBrand:\n${b.brand.trim()}`);
+    if (b.open && b.open.trim()) out.push(`\nOpen questions:\n${b.open.trim()}`);
+    return out.length > 1 ? out.join('\n') : 'The Studio brain is empty. Fill it in on the Studio brain tab and I can read it back to you.';
+  }
+
+  /* ---- 5. calculators ---- */
+  function calc(st, text) {
+    const price = pick(text, 'price|quote|quoted|charge|harga|budget|offer|revenue|income|sell(?:ing)?(?: at| for)?');
+    const cost = pick(text, 'costs?|expenses?|biaya|modal|spend|spent|tools?');
+    const rate = pick(text, 'rate|per hour|hourly|target');
+    const feeP = pct(text, 'fees?|commission|platform|marketplace|cut');
+    const depP = pct(text, 'deposit|down ?payment|dp|upfront');
+    const h = hours(text);
+    let p = price, c = cost;
+    if (p === null && !(rate && h)) { const all = (text.match(new RegExp(NUMRE, 'gi')) || []).map(money).filter(Boolean).filter(v => v >= 1000); if (all.length) p = all[0]; if (all.length > 1 && c === null) c = all[1]; }
+    const out = ['CALCULATOR:'];
+    let any = false;
+    if (p) {
+      any = true;
+      let net = p, line = [`Price: ${rpf(p)}`];
+      if (feeP !== null) { const fee = p * feeP / 100; net = p - fee; line.push(`platform fee ${r1(feeP)}% = ${rpf(fee)}`, `you receive ${rpf(net)}`); }
+      out.push(line.join(', ') + '.');
+      if (c) { const prof = net - c, mg = net ? prof / net * 100 : 0; out.push(`Cost: ${rpf(c)}. Profit: ${rpf(prof)}. Margin: ${r1(mg)}%.${mg < 30 ? ' That is thin. Aim for 30% or more.' : mg >= 50 ? ' Healthy.' : ' Acceptable.'}`); net = prof; }
+      if (h) { out.push(`Hours: ${r1(h)}. You keep ${rpf(net / h)} per hour (${rpf(p / h)} per hour before cost${feeP !== null ? ' and fees' : ''}).`); }
+      if (depP !== null) out.push(`Deposit ${r1(depP)}%: ${rpf(p * depP / 100)} now, ${rpf(p - p * depP / 100)} on delivery.`);
+      else if (/deposit|dp\b|upfront/i.test(text)) out.push(`Deposit at 50%: ${rpf(p / 2)} now, ${rpf(p / 2)} on delivery. Add "deposit 30%" to change it.`);
+    }
+    if (rate && h) {
+      any = true;
+      const base = rate * h + (c || 0);
+      out.push(`\nMinimum quote for ${r1(h)} hours at ${rpf(rate)} per hour${c ? ' plus ' + rpf(c) + ' cost' : ''}: ${rpf(base)}.`);
+      out.push(`With a revision buffer (+20% hours): ${rpf(rate * h * 1.2 + (c || 0))}.`);
+      out.push(`If the client pushes back, cut scope before you cut the rate.`);
+    }
+    if (!p && h && !rate) { any = true; out.push(`${r1(h)} hours noted. Add a price to get your hourly rate, or a rate to get the minimum quote.`); }
+    if (!any) {
+      return L(['CALCULATOR. Send numbers in one line and I work out what I can. Examples:', '- price 6jt cost 1.5jt hours 30   (profit, margin, real hourly rate)', '- price 6jt fee 15%   (what a marketplace pays out)', '- rate 200k hours 30 cost 500k   (minimum quote)', '- price 6jt deposit 30%   (deposit split)', 'I read 6jt, 6.000.000, 500k, 7.5M and Rp 1,500,000.']);
+    }
+    out.push('\nOnly your numbers are used. I do not guess prices.');
+    return out.join('\n');
+  }
+
+  function workload(st, text, divs) {
+    const h = hours(text), d = days(text);
+    const cap = (() => { const m = /(\d+)\s*(?:focused\s*)?hours?\s*(?:per|a|\/|each)\s*week/i.exec((st.brain && st.brain.goals) || ''); return m ? Number(m[1]) : null; })();
+    const open = mine(st, divs).filter(t => t.status !== 'Completed');
+    const week = open.filter(t => t.due && diff(t.due) >= 0 && diff(t.due) <= 7);
+    const out = ['WORKLOAD CHECK:'];
+    if (h && d) {
+      let biz = 0; const t0 = new Date(); for (let i = 1; i <= d; i++) { const x = new Date(t0); x.setDate(t0.getDate() + i); const w = x.getDay(); if (w !== 0 && w !== 6) biz++; }
+      biz = Math.max(biz, 1);
+      const per = h / biz;
+      out.push(`${r1(h)} hours in ${d} calendar days leaves about ${biz} working days (weekends skipped).`, `That is ${r1(per)} hours a day.${per > 6 ? ' Too tight. Ask for more time or cut the scope.' : per > 4 ? ' Doable, but nothing else fits beside it.' : ' Comfortable.'}`);
+      out.push(`That is about ${r1(per * 5)} hours of your week.${cap ? ` For comparison, your Studio brain notes ${cap} focused hours a week for your own work.` : ''}`);
+    } else {
+      out.push(h || d ? 'Send both hours and days, for example "30 hours in 10 days".' : 'Send the hours and the days you have, for example "30 hours in 10 days", and I check if it fits.');
+    }
+    out.push(`\nOn the board now: ${open.length} open tasks, ${week.length} due in the next 7 days.`);
+    if (week.length > 4) out.push('That is a lot for one week. Pick the two that matter and move the rest.');
+    return out.join('\n');
+  }
+
+  /* ---- 6. checklists with a score ---- */
+  const CHECKS = {
+    go: { title: 'Go / No-Go: should I take this job?', qs: [
+      'Is the brief clear enough that I know what "done" looks like?',
+      'Does the price cover my hours at my normal rate?',
+      'Is the deadline realistic with my other work?',
+      'Are the revision rounds limited and written down?',
+      'Will the client pay a deposit before I start?',
+      'Is there one person who approves the work?',
+      'Do I want this in my portfolio or want this client again?',
+      'Do I have every tool, asset and file I need?'] },
+    deliver: { title: 'Delivery check: before sending the final files', qs: [
+      'Does every item match the approved brief?',
+      'Did I fix every point from the last feedback?',
+      'Are file names, formats and sizes what was agreed?',
+      'Did I check the files open on a clean device?',
+      'Is the deposit paid and the final invoice ready?',
+      'Do I have a backup of the source files?',
+      'Does my message say what is included and what a new change costs?'] },
+    intake: { title: 'Client intake: new inquiry', qs: [
+      'Do I know what the final output is (images, video, models)?',
+      'Do I have references or a style direction?',
+      'Do I know the deadline and what is fixed about it?',
+      'Do I know the budget range?',
+      'Do I know who decides and approves?',
+      'Do I know where the work will be used (so rights are clear)?',
+      'Did I say how many revision rounds are included?'] },
+    launch: { title: 'Product launch: before publishing a pack', qs: [
+      'Is every asset tested and named properly?',
+      'Is the price decided, with a reason?',
+      'Are the title, description and tags written?',
+      'Do I have at least 5 good preview images?',
+      'Is the license written clearly?',
+      'Do I know where and when to announce it?',
+      'Is the payout date and platform fee noted in Money?'] },
+    scope: { title: 'Scope change: client asks for more', qs: [
+      'Is this outside what the quote lists?',
+      'Did I tell the client it is extra before doing it?',
+      'Do I know the hours it adds?',
+      'Do I have a price for it?',
+      'Does the deadline move because of it?',
+      "Is the client's yes written down (chat or email)?"] }
+  };
+  const CK_NAMES = { go: /go.?\/?.?no.?go|take (this|the)|accept|worth|should i/i, deliver: /deliver|final files|before (i )?send|handoff|hand.?off/i, intake: /intake|inquiry|new client|onboard/i, launch: /launch|publish|pack|listing/i, scope: /scope|extra|more work|add(itional)? (work|request)/i };
+  function checkKind(text) { for (const k of ['deliver', 'intake', 'launch', 'scope', 'go']) if (CK_NAMES[k].test(text)) return k; return 'go'; }
+  function checklist(st, text) {
+    const k = checkKind(text), c = CHECKS[k];
+    return { kind: 'chk:' + k, text: L([c.title.toUpperCase(), 'Answer each with y or n. Reply with the letters in one line, like: y n y y n y y y', '', ...c.qs.map((q, i) => `${i + 1}. ${q}`), '', `Other lists: say "delivery checklist", "intake checklist", "launch checklist" or "scope checklist".`]) };
+  }
+  function score(kind, text) {
+    const k = kind.slice(4), c = CHECKS[k]; if (!c) return null;
+    const a = (text.toLowerCase().match(/\b[yn]\b|\b(?:yes|no|ya|tidak)\b/g) || []).map(x => (x[0] === 'y' || x === 'ya') ? 'y' : 'n');
+    if (a.length < c.qs.length) return `I counted ${a.length} answers but this list has ${c.qs.length}. Send them again in one line, like: ${c.qs.map((_, i) => i % 3 === 1 ? 'n' : 'y').join(' ')}`;
+    const yes = a.slice(0, c.qs.length).filter(x => x === 'y').length, pctv = Math.round(yes / c.qs.length * 100);
+    const gaps = c.qs.filter((q, i) => a[i] === 'n');
+    const verdict = k === 'go' ? (pctv >= 80 ? 'GO. Take it.' : pctv >= 55 ? 'NEGOTIATE. Fix the gaps below first, then decide.' : 'NO-GO. Decline or re-scope.') : (pctv === 100 ? 'READY.' : 'NOT YET. Close the gaps below.');
+    return L([`${c.title.toUpperCase()}`, `Score: ${yes} of ${c.qs.length} (${pctv}%). ${verdict}`, gaps.length ? '\nFix these:' : '\nNothing missing.', ...gaps.map(q => `- ${q}`), gaps.length && k === 'go' ? '\nDo not start until the price, deposit and revision limit are settled.' : null]);
+  }
+
+  /* ---- 7. guides ---- */
+  const GUIDES = [
+    { k: /onboard|new client|first contact|intake/i, t: 'Onboarding a new client', s: ['Reply within a day and say thanks.', 'Ask: output, references, deadline, budget, who approves.', 'Repeat their answers back in 3 lines and ask them to confirm.', 'Send the quote with price, revisions, timeline and what is not included.', 'Start only after the deposit lands.'] },
+    { k: /revision|feedback|changes/i, t: 'Handling revisions', s: ['Collect all feedback in one message. Ask for it as one list.', 'Check each point against the brief. In scope: do it. Out of scope: say so politely.', 'Tell them which round this is ("round 2 of 2").', 'Send the update with a short list of what changed.', 'If they want round 3, quote it as extra before you start.'] },
+    { k: /scope|creep|extra/i, t: 'Stopping scope creep', s: ['Point back to the quote: "That was not in the original list."', 'Offer two options: add it for a price, or swap it for something already in scope.', 'Get the answer in writing before you work on it.', 'Log the change in Decisions so you remember why.'] },
+    { k: /pay|invoice|late|overdue|deposit/i, t: 'Late payment', s: ['Day 1 late: friendly reminder with the invoice attached.', 'Day 7: reminder that says what is held back (files, source).', 'Day 14: call or voice note, then a written deadline.', 'Never send the final files before payment clears.', 'Record it in Money so Arga can track it.'] },
+    { k: /pric|quote|rate|cost/i, t: 'Pricing a job', s: ['Estimate hours for each deliverable, then add 20% for revisions.', 'Multiply by your rate. Use the calculator: "rate 200k hours 30".', 'Add costs: render credits, assets, tools, platform fees.', 'Quote one number, with what is included and the revision count.', 'If they say it is too high, cut scope, not the rate.'] },
+    { k: /deliver|handoff|hand.?off|final/i, t: 'Delivering the work', s: ['Run the delivery checklist: "delivery checklist".', 'Confirm the final invoice is paid or due on delivery.', 'Send files with a short note: what is in each folder.', 'Ask for a quick yes that they received everything.', 'Mark the task Completed and log income in Money.'] },
+    { k: /launch|product|pack|marketplace|listing/i, t: 'Launching a product pack', s: ['Finish and test every asset.', 'Run the launch checklist: "launch checklist".', 'Write title, description, tags and license.', 'Prepare 5 preview images and one short video.', 'Pick the day and platform, then announce.', 'Track payout date and fee in Money.'] },
+    { k: /week|plan|routine|focus/i, t: 'Weekly plan', s: ['Monday: ask me "deadlines" and "tasks".', 'Pick no more than 3 outcomes for the week.', 'Block your hours for client work first, your own products second.', 'Friday: update the Board, log decisions, send invoices.'] }
+  ];
+  function guide(st, text) {
+    const g = GUIDES.find(x => x.k.test(text));
+    if (!g) return L(['GUIDES. Ask "guide" plus a topic:', ...GUIDES.map(x => `- ${x.t}`)]);
+    return L([g.t.toUpperCase(), ...g.s.map((x, i) => `${i + 1}. ${x}`), '', 'Say "template" plus the situation if you want a message to send.']);
+  }
+
+  /* ---- 8. message templates ---- */
+  const TEMPLATES = [
+    { k: /raise|increase|higher price|more expensive|price up/i, t: 'Raising a price', b: 'Hi [Name], thank you for the details. For this scope the price is [amount]. That covers [what is included] and [revision count] rounds of revisions. If the budget is tight, I can adjust the scope to fit. Which do you prefer?' },
+    { k: /decline|turn down|say no|reject|cannot take|can.?t take/i, t: 'Declining politely', b: 'Hi [Name], thank you for thinking of me. I looked at the brief and I cannot take it on right now because [reason: schedule / scope]. I do not want to give you rushed work. If the timeline moves, I would be glad to hear from you again.' },
+    { k: /scope|extra|more work|creep/i, t: 'Scope change', b: 'Hi [Name], happy to add that. It is outside the original quote, so it comes to [amount] and adds [days] days. I can also swap it for something already in the list. Let me know which you prefer and I will start once you confirm.' },
+    { k: /late|overdue|payment|invoice|remind(?:er)? (?:to )?pay|unpaid/i, t: 'Payment reminder', b: 'Hi [Name], a quick reminder that invoice [number] for [amount] was due on [date]. I have attached it again. Could you let me know when I can expect it? I will send the final files as soon as it is settled.' },
+    { k: /deposit|down ?payment|dp\b/i, t: 'Asking for a deposit', b: 'Hi [Name], to book your slot I need a [percent]% deposit of [amount]. The rest, [amount], is due on delivery. Once the deposit is in, I start on [date].' },
+    { k: /follow.?up|no reply|ghost|silent|waiting/i, t: 'Follow-up', b: 'Hi [Name], I am checking in on [project]. I am waiting for [feedback / files / approval] so I can keep to the [date] deadline. Could you send it by [date]? If it moves, I will update the schedule and let you know.' },
+    { k: /revision limit|too many revision|extra revision|round/i, t: 'Revision limit', b: 'Hi [Name], thanks for the notes. That was round [number] of [number] included in the quote. A further round is [amount]. If you can send everything in one list, I will make it count.' },
+    { k: /deliver|final files|handoff|hand.?off|done|finished/i, t: 'Delivery message', b: 'Hi [Name], the final files for [project] are ready: [link]. They include [list]. Please check that everything opens and let me know within [days] days. Thank you, it was a pleasure working with you. If you like the result, a short testimonial would mean a lot.' },
+    { k: /testimonial|review/i, t: 'Asking for a testimonial', b: 'Hi [Name], I am glad [project] turned out well. Could you write two or three sentences about working with me? It helps new clients trust me. Here are two questions to answer: what was the problem, and how did the result help?' }
+  ];
+  function template(st, text) {
+    const g = TEMPLATES.find(x => x.k.test(text));
+    if (!g) return L(['TEMPLATES. Say "template" plus the situation:', ...TEMPLATES.map(x => `- ${x.t}`)]);
+    const m = money(text.replace(/\d+\s*%/g, ''));
+    return L([g.t.toUpperCase(), '', m ? g.b.replace(/\[amount\]/, rpf(m)) : g.b, '', 'Fill the [brackets], then copy. For a tone check, ask Nadia.']);
+  }
+
+  /* ---- 9. find anything ---- */
+  const kw = t => (t.toLowerCase().match(/[a-z0-9]+/g) || []).filter(w => w.length > 2 && !STOP.has(w));
+  function find(st, text, divs) {
+    const ws = kw(text); if (!ws.length) return help();
+    const hits = [];
+    const sc = s => ws.reduce((a, w) => a + (s.toLowerCase().includes(w) ? 1 : 0), 0);
+    mine(st, divs).forEach(t => { const s = sc(t.title + ' ' + t.status + ' ' + who(t.owner)); if (s) hits.push({ s, l: `Task: ${t.title} (${t.status}, ${who(t.owner)}${t.status === 'Completed' ? '' : ', ' + when(t.due)})` }); });
+    st.money.filter(m => divs.includes(m.division)).forEach(m => { const s = sc(m.desc); if (s) hits.push({ s, l: `Money: ${m.desc}, ${rpf(m.amount)} (${m.type}, ${m.status})` }); });
+    st.decisions.filter(d => divs.includes(d.division)).forEach(d => { const s = sc(d.topic + ' ' + d.decision + ' ' + d.why); if (s) hits.push({ s, l: `Decision (${d.date}): ${d.decision}` }); });
+    ['goals', 'brand', 'open'].forEach(k => ((st.brain || {})[k] || '').split('\n').forEach(x => { const s = sc(x); if (s) hits.push({ s, l: `Brain, ${k}: ${x.trim()}` }); }));
+    Object.values(st.threads || {}).forEach(th => (th.msgs || []).forEach(m => { if (m.from === 'joy' || m.from === 'me') return; const s = sc(m.text || ''); if (s > 1) hits.push({ s: s - 0.5, l: `${who(m.from)} said: ${(m.text || '').replace(/\s+/g, ' ').slice(0, 140)}` }); }));
+    if (!hits.length) return L([`Nothing in your tasks, money, decisions, brain or chats matches "${ws.join(' ')}".`, 'Try one word, or ask for: deadlines, tasks, money, decisions, brain, calculator, checklist, guide, template.']);
+    hits.sort((a, b) => b.s - a.s);
+    return L([`FOUND (${Math.min(hits.length, 8)} of ${hits.length}):`, ...hits.slice(0, 8).map(h => '- ' + h.l)]);
+  }
+
+  /* ---- help and routing ---- */
+  function help() {
+    return L(['I am Joy. I never use an AI, so I cost no quota and always answer. I read your Board, Money, Decisions and Studio brain. Ask me:',
+      '- "deadlines" or "what is overdue"',
+      '- "tasks", "tasks for Mira", "what is in review"',
+      '- "money", "who owes me", "profit"',
+      '- "decisions", "decisions about pricing"',
+      '- "brain" or "goals"',
+      '- "price 6jt cost 1.5jt hours 30" (calculator)',
+      '- "30 hours in 10 days" (does it fit?)',
+      '- "checklist", "delivery checklist", "intake checklist"',
+      '- "guide revisions", "guide late payment"',
+      '- "template decline", "template payment reminder"',
+      '- any word, and I search everything: "halloween", "client a"',
+      'Add "agency", "creative" or "both" to choose a division.']);
+  }
+  const MONEYW = /\b(money|invoice|income|expenses?|payment|paid|owe|owes|owed|profit|revenue|payout|cash|earn(?:ed|ings)?|received|balance|cuts?)\b/i;
+  const hasNum = t => /\d/.test(t);
+  function route(text, skill) {
+    const s = skill ? skill.toLowerCase() : '';
+    if (s === 'deadlines') return 'deadlines';
+    if (s === 'task status') return 'tasks';
+    if (s === 'money snapshot') return 'money';
+    if (s === 'calculator') return 'calc';
+    if (s === 'workload check') return 'workload';
+    if (s === 'checklist') return 'check';
+    if (s === 'guide') return 'guide';
+    if (s === 'message template') return 'template';
+    if (s === 'find') return 'find';
+    const t = text.toLowerCase().trim();
+    if (!t || /^(help|menu|what can you do|\?|hi|hello|hey|halo)\b/.test(t)) return 'help';
+    if (/\b(template|draft (?:a |the )?(?:message|reply)|write (?:a |the )?message|how (?:do|to|should) i (?:say|tell|ask)|wording)\b/.test(t) || /\b(decline|turn down|polite)/.test(t) && /\b(client|job|message|reply)\b/.test(t)) return 'template';
+    if (/\b(checklist|check ?list|go.?\/?.?no.?go|should i (?:take|accept)|worth (?:it|taking))\b/.test(t)) return 'check';
+    if (/\b(guide|how (?:do|to|should) i|steps? (?:to|for)|process for|playbook)\b/.test(t)) return 'guide';
+    if (/\b(workload|overbooked|capacity|enough time|fit (?:in|my)|per day)\b/.test(t) || (hours(t) && days(t) && !/\b(price|rate|cost)/.test(t))) return 'workload';
+    if (/\b(calc|calculate|calculator|margin|hourly|per hour|hitung|payout after|take home|net)\b/.test(t) || (hasNum(t) && /\b(price|quote|cost|rate|fee|deposit|harga|biaya|hours?|jam|dp)\b/.test(t))) return 'calc';
+    if (MONEYW.test(t)) return 'money';
+    if (/\b(deadlines?|due|overdue|late|today|tomorrow|this week|next week|upcoming|behind|urgent|terlambat|jatuh tempo)\b/.test(t)) return 'deadlines';
+    if (/\b(tasks?|board|status|progress|review|in progress|todo|to do|backlog|approved|proposed|completed|who has|owns)\b/.test(t)) return 'tasks';
+    if (/\b(decisions?|decided|revisit|why did we)\b/.test(t)) return 'decisions';
+    if (typeof ROLES !== 'undefined' && ROLES.some(r => new RegExp('\\b' + r.name + '\\b', 'i').test(text))) return 'tasks';
+    if (/\b(brain|goals?|brand|open questions?|budget|studio style)\b/.test(t)) return 'brain';
+    return 'find';
+  }
+
+  /* ctx: { division, lastKind }. Returns { text, kind }. */
+  function reply(st, text, skill, ctx) {
+    text = String(text || ''); ctx = ctx || {};
+    try {
+      if (ctx.lastKind && /^chk:/.test(ctx.lastKind) && !skill && /^[\s,;.ynyesotidakya]+$/i.test(text) && (text.toLowerCase().match(/\b(?:y|n|yes|no|ya|tidak)\b/g) || []).length >= 3) {
+        const r = score(ctx.lastKind, text); if (r) return { text: r, kind: '' };
+      }
+      const divs = divsFor(st, text), r = route(text, skill);
+      switch (r) {
+        case 'help': return { text: help(), kind: '' };
+        case 'deadlines': return { text: deadlines(st, text, divs), kind: '' };
+        case 'tasks': return { text: tasks(st, text, divs), kind: '' };
+        case 'money': return { text: moneyView(st, text, divs), kind: '' };
+        case 'decisions': return { text: decisions(st, text, divs), kind: '' };
+        case 'brain': return { text: brain(st), kind: '' };
+        case 'calc': return { text: calc(st, text), kind: '' };
+        case 'workload': return { text: workload(st, text, divs), kind: '' };
+        case 'check': { const c = checklist(st, text); return { text: c.text, kind: c.kind }; }
+        case 'guide': return { text: guide(st, text), kind: '' };
+        case 'template': return { text: template(st, text), kind: '' };
+        default: return { text: find(st, text, divs), kind: '' };
+      }
+    } catch (e) {
+      return { text: 'I hit a problem reading your data (' + (e && e.message ? e.message : 'unknown') + '). Try a simpler question, or ask "help".', kind: '' };
+    }
+  }
+  return { reply, route, score, CHECKS };
+})();
 
 /* ---------- chat ---------- */
 const drafts = {};
@@ -1269,7 +1665,7 @@ function histLines(th, msgId, label) {
   const c = state.chat, L = [], target = th.msgs.find(m => m.id === msgId) || { text: '' };
   const pm = new Set(); th.msgs.slice(-(c.n + 1)).forEach(m => (m.mentions || []).forEach(i => pm.add(i)));
   if (pm.size) { L.push(''); L.push('OTHER PEOPLE I WORK WITH (not on your team, they do not reply here; I may be sharing this project with them):'); [...pm].forEach(i => { const x = (state.people || []).find(q => q.id === i); if (x) L.push(`- ${x.name}${x.note ? ': ' + x.note : ''}`); }); }
-  const prior = th.msgs.filter(m => m.id !== msgId).slice(-c.n);
+  const prior = th.msgs.filter(m => m.id !== msgId && (c.incJoy || (m.from !== 'joy' && !(m.from === 'me' && m.to === 'joy')))).slice(-c.n);
   if (prior.length) {
     L.push(''); L.push('CONVERSATION SO FAR (most recent messages):');
     prior.forEach(m => {
@@ -1374,12 +1770,20 @@ async function runQueue(key, msgId) {
     }
   } finally { running[key] = false; queued[key].clear(); }
 }
+/* Joy answers instantly from the page itself: no key, no request, no quota */
+function joyAnswer(th, msg) {
+  const before = th.msgs[th.msgs.length - 2];
+  const r = JOY.reply(state, msg.text, msg.skill, { lastKind: before && before.from === 'joy' ? before.joyKind : '' });
+  th.msgs.push({ id: uid(), from: 'joy', to: 'me', t: Date.now(), text: r.text, via: 'Joy, no AI', joyKind: r.kind || '' });
+}
 function sendMessage(text) {
   text = (text || '').trim(); if (!text && !atts.length) { toast('Write a message first.'); return; } if (!text) text = 'See the attached file.';
   const th = getThread(), to = curTo(), single = to !== 'all' && to !== 'note', key = threadKey();
   const msg = { id: uid(), from: 'me', to, text, skill: single ? curSkill() : '', t: Date.now(), atts: atts.splice(0), mentions: (state.people || []).filter(x => new RegExp('@' + x.name + '\\b', 'i').test(text)).map(x => x.id) };
   th.msgs.push(msg);
-  if (to === 'all') chatMembers().forEach(m => th.pending.push({ id: uid(), role: m.id, msgId: msg.id }));
+  const jr = single ? roleById(to) : null;
+  if (to === 'all') chatMembers().filter(m => !m.local).forEach(m => th.pending.push({ id: uid(), role: m.id, msgId: msg.id }));
+  else if (jr && jr.local) joyAnswer(th, msg);
   else if (single) th.pending.push({ id: uid(), role: to, msgId: msg.id });
   state.chat.skill = '';
   delete drafts['c:' + key];
@@ -1390,6 +1794,7 @@ function sendMessage(text) {
 /* ---- chat views ---- */
 function hintHtml() {
   const dm = isDM(), ms = chatMembers(), any = ai.keys.some(hasKey) && ai.auto;
+  if (curTo() && roleById(curTo()) && roleById(curTo()).local) return `<div class="empty-chat">Joy never uses an AI, so she costs no quota and always answers. She reads your Board, Money, Decisions and Studio brain. Tap a button below, or write a question like "what is overdue", "price 6jt cost 1.5jt hours 30" or "delivery checklist".</div>`;
   return `<div class="empty-chat">${dm ? `This is your private chat with ${esc(ms[0].name)}.` : `This chat is for ${esc(ms.map(m => m.name).join(', '))}.`}
     ${any ? 'Write a message and they reply here.' : 'Write a message and the app builds a prompt for each person you address. Paste it into Claude, Gemini or Grok, then paste the answer back. To get replies automatically, connect an AI with the AI button at the top right.'}</div>`;
 }
@@ -1458,6 +1863,7 @@ function viewRefresh(key) {
   else { const cl = $('.clist'); if (cl) cl.innerHTML = clistInner(); }
   renderTree();
 }
+const JOY_ASKS = [['Deadlines', 'deadlines'], ['Tasks', 'tasks'], ['Money', 'money'], ['Decisions', 'decisions'], ['Calculator', 'calculator'], ['Go / No-Go', 'go no-go checklist'], ['Delivery check', 'delivery checklist'], ['Guides', 'guide'], ['Templates', 'template'], ['Help', 'help']];
 function threadHtml() {
   const d = chatDiv(), th = getThread(), ms = chatMembers(), dm = isDM(), to = curTo(), skill = curSkill(), c = state.chat;
   const steps = stepsFor(d), idx = dm ? -1 : steps.findIndex(x => 'step:' + x.id === curSel());
@@ -1476,6 +1882,7 @@ function threadHtml() {
     <div class="msgs" id="msgs" aria-live="polite">${msgsInner()}</div>
     <div class="tray" id="tray">${trayInner()}</div>
     <form class="composer" data-form="chat" autocomplete="off">
+      ${rr && rr.local ? `<div class="people small"><span class="muted">Ask Joy:</span>${JOY_ASKS.map(([l, q]) => `<button type="button" class="chipbtn" data-act="joy-ask" data-q="${esc(q)}">${esc(l)}</button>`).join('')}</div>` : ''}
       <div class="comp-row">
         <label class="field"><span>To</span><select id="cTo">${toOpts}</select></label>
         <label class="field"><span>Skill</span><select id="cSkill" ${single ? '' : 'disabled'}>${skillOpts}</select></label>
@@ -1487,7 +1894,8 @@ function threadHtml() {
         <details class="pset"><summary>What goes into each prompt</summary>
           <div class="checks"><label><input type="checkbox" id="cBrain" ${c.incBrain ? 'checked' : ''}> Studio brain</label>
             <label><input type="checkbox" id="cDec" ${c.incDec ? 'checked' : ''}> Last 5 decisions</label>
-            <label><input type="checkbox" id="cTasks" ${c.incTasks ? 'checked' : ''}> Open tasks</label></div>
+            <label><input type="checkbox" id="cTasks" ${c.incTasks ? 'checked' : ''}> Open tasks</label>
+            <label><input type="checkbox" id="cJoy" ${c.incJoy ? 'checked' : ''}> Joy's offline replies</label></div>
           <label class="field"><span>Reply length</span><select id="cLen">${Object.entries(LENS).map(([k, v]) => `<option value="${k}" ${lenOf() === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
           <label class="field"><span>Earlier messages included</span><select id="cN">${[4, 8, 10, 16, 24].map(n => `<option value="${n}" ${c.n === n ? 'selected' : ''}>Last ${n}</option>`).join('')}</select></label>
           <p style="margin-top:6px">Fewer messages and a shorter brain use fewer tokens, which matters on free plans.</p></details>
@@ -1688,13 +2096,13 @@ function limitsHtml() {
 function vTeam() {
   const showA = state.division !== 'creative', showC = state.division !== 'agency';
   return `
-  <header class="vh"><h1>Your team</h1><p>Seven roles that work for both businesses. Open a private chat, or pick a skill to start one with that skill ready.</p></header>
+  <header class="vh"><h1>Your team</h1><p>Eight roles that work for both businesses. Joy needs no AI and never uses quota. Open a private chat, or pick a skill to start one with that skill ready.</p></header>
   <div class="cards">${ROLES.map(r => `
     <article class="role">
       <div class="role-head">
         ${avatarHtml(r, 'avatar lg')}
         <div><h2>${esc(r.name)}</h2><div class="small muted">${esc(r.title)}</div></div>
-        <div class="models">Best on ${esc(r.model)}<br>Backup: ${esc(r.backup)}</div>
+        <div class="models">${r.local ? 'No AI needed<br>Always available' : `Best on ${esc(r.model)}<br>Backup: ${esc(r.backup)}`}</div>
       </div>
       <p class="quote">${esc(r.character)}</p>
       <dl class="kv">
@@ -1945,6 +2353,7 @@ const act = {
 Object.assign(act, ACT_V3);
 Object.assign(act, {
   'att-pick'() { $('#cFile').click(); },
+  'joy-ask'(el) { sendMessage(el.dataset.q); },
   'att-del'(el) { atts.splice(Number(el.dataset.i), 1); const s = $('#cAtt'); if (s) s.innerHTML = attHtml(); },
   mention(el) {
     const t = $('#cText'); if (!t) return; const a = t.selectionStart || t.value.length, add = '@' + el.dataset.name + ' ';
@@ -2037,6 +2446,7 @@ document.addEventListener('change', e => {
   if (t.id === 'cBrain') { c.incBrain = t.checked; save(); render(); return; }
   if (t.id === 'cDec') { c.incDec = t.checked; save(); render(); return; }
   if (t.id === 'cTasks') { c.incTasks = t.checked; save(); render(); return; }
+  if (t.id === 'cJoy') { c.incJoy = t.checked; save(); render(); return; }
   if (t.dataset && t.dataset.stepName) {
     const st = stepsFor(chatDiv()).find(x => x.id === t.dataset.stepName);
     if (st) { st.name = t.value.trim() || st.name; save(); }
