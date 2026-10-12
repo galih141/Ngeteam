@@ -294,15 +294,6 @@ td.num,th.num{text-align:right}
 .out-foot{display:flex;gap:12px;align-items:center;margin-top:10px;flex-wrap:wrap}
 .warn{color:var(--danger)}
 
-
-/* avatars */
-.avatar{position:relative;overflow:hidden}
-.avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block}
-.avatar.has-img .ini{visibility:hidden}
-.avatar.lg{width:56px;height:56px;border-radius:16px;font-size:24px}
-.avatar.xs{width:22px;height:22px;border-radius:7px;font-size:11px}
-.avatar.sm{width:32px;height:32px}
-.avatar .ini{line-height:1}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:9px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:.2s;z-index:40;font-size:14px}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
@@ -321,6 +312,19 @@ td.num,th.num{text-align:right}
   .scope{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.avatar{overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar.sm{width:44px;height:44px;border-radius:12px;font-size:19px}
+.avatar.lg{width:76px;height:76px;border-radius:18px;font-size:32px}
+.msg .avatar.sm{width:52px;height:52px}.pend-h .avatar.sm{width:60px;height:60px;border-radius:14px}
+.faces .avatar.sm{width:44px;height:44px}.faces .avatar+.avatar{margin-left:-8px}
+.avbtn{background:none;border:0;padding:0;border-radius:18px}.avbtn:hover{outline:2px solid var(--ink)}
+.attrow,.people{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chipbtn,.chip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:2px 10px;font-size:13px;display:inline-flex;gap:6px;align-items:center}
+.chip.paid{background:#e6f3ec;border-color:var(--ok)}.chip .link{font-size:13px}
+.aimg{display:block;max-width:220px;max-height:160px;border-radius:8px;margin-top:6px}
+.cutrow td{padding:2px 8px 10px;border-top:0}.cutrow .addcut{display:inline-flex;gap:6px;margin-left:8px}.cutrow .addcut input{width:240px;padding:3px 8px}
+.left{margin-left:8px;font-size:13px}.at{font-weight:700;color:var(--creative-text)}
 </style>
 </head>
 <body>
@@ -464,11 +468,12 @@ const ROLES = [
       { name: 'Monthly Report', div: 'both', io: 'all records -> Agency and Creative reported separately' } ] }
 ];
 const roleById = id => ROLES.find(r => r.id === id);
+const av = (r, c = 'sm') => { const ph = state.photos && state.photos[r.id]; return `<span class="avatar ${c}" style="background:${r.color}" aria-hidden="true">${ph ? `<img src="${ph}" alt="">` : esc(r.name[0])}</span>`; };
 
 /* ---------- state ---------- */
 function blank() {
   return {
-    division: 'all', view: 'overview', sample: false,
+    division: 'all', view: 'overview', sample: false, people: [{ id: 'p_dim', name: 'Dim', note: '' }, { id: 'p_ken', name: 'Ken', note: '' }], photos: {},
     brain: { goals: '', brand: '', open: '' },
     tasks: [], money: [], decisions: [],
     steps: defaultSteps(), threads: {},
@@ -527,7 +532,7 @@ function load() {
   return sample();
 }
 let state = load();
-const save = () => { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ } };
+const save = () => { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { if (!save.w) { save.w = 1; setTimeout(() => toast('Browser storage is full. Export a backup and remove old attachments.'), 0); } } };
 
 /* ---------- derived ---------- */
 const inScope = x => state.division === 'all' || x.division === state.division;
@@ -547,7 +552,10 @@ function mstats(div) {
     paid: sum(m => exp(m) && m.status === 'Received'),
     unpaid: sum(m => exp(m) && m.status !== 'Received')
   };
-  r.kept = r.received - r.paid;
+  const cuts = rows.filter(m => inc(m) && m.status === 'Received').flatMap(m => m.cuts || []);
+  r.cuts = cuts.reduce((a, c) => a + (Number(c.amount) || 0), 0);
+  r.cutsOwed = cuts.filter(c => !c.paid).reduce((a, c) => a + (Number(c.amount) || 0), 0);
+  r.kept = r.received - r.paid - r.cuts;
   return r;
 }
 function whenText(due) {
@@ -559,46 +567,6 @@ function whenText(due) {
   return { t: `due in ${d} days`, late: false };
 }
 const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
-
-/* ---------- avatars ---------- */
-/* Put one image per role in the folder below, next to index.html. Name each file after the role in lowercase:
-   mira, rico, dewi, sasha, bima, nadia, arga. The page tries .png, .webp, .jpg and .jpeg, and falls back to the colored initial. */
-const AV_DIR = 'assets';
-const AV_EXT = ['png', 'webp', 'jpg', 'jpeg'];
-const AV = {};
-const avUrls = r => [r.id, r.name].filter((n, i, a) => a.indexOf(n) === i).flatMap(n => AV_EXT.map(x => `${AV_DIR}/${n}.${x}`));
-function avatarHtml(r, cls, titled) {
-  const u = AV[r.id] || '';
-  const t = titled ? ` title="${esc(r.name)}, ${esc(r.title)}" aria-label="${esc(r.name)}"` : ' aria-hidden="true"';
-  return `<span class="${cls}${u ? ' has-img' : ''}" data-av="${r.id}" style="background:${r.color}"${t}><span class="ini">${esc(r.name[0])}</span>${u ? `<img src="${esc(u)}" alt="" decoding="async" draggable="false">` : ''}</span>`;
-}
-function applyAvatars() {
-  document.querySelectorAll('.avatar[data-av]').forEach(el => {
-    const u = AV[el.dataset.av]; if (!u || el.querySelector('img')) return;
-    const im = document.createElement('img'); im.src = u; im.alt = ''; im.decoding = 'async'; im.draggable = false;
-    el.appendChild(im); el.classList.add('has-img');
-  });
-}
-function probeAvatar(r) {
-  return new Promise(res => {
-    const list = avUrls(r); let i = 0;
-    const next = () => {
-      if (i >= list.length) { AV[r.id] = ''; res(); return; }
-      const im = new Image(), url = list[i];
-      im.onload = () => { AV[r.id] = url; res(); };
-      im.onerror = () => { i++; next(); };
-      im.src = url;
-    };
-    next();
-  });
-}
-async function probeAvatars() { await Promise.all(ROLES.map(probeAvatar)); applyAvatars(); }
-/* an image that later breaks drops back to the initial */
-document.addEventListener('error', e => {
-  const t = e.target; if (!t || t.tagName !== 'IMG') return;
-  const a = t.closest && t.closest('.avatar'); if (!a) return;
-  AV[a.dataset.av] = ''; document.querySelectorAll(`.avatar[data-av="${a.dataset.av}"]`).forEach(x => { x.classList.remove('has-img'); const im = x.querySelector('img'); if (im) im.remove(); });
-}, true);
 
 /* ---------- ai connections ---------- */
 const AI_KEY = 'studioBoard.ai.v1';
@@ -625,6 +593,7 @@ function loadAI() {
 }
 let ai = loadAI();
 const saveAI = () => { try { localStorage.setItem(AI_KEY, JSON.stringify(ai)); } catch (e) { /* ignore */ } };
+if (!ai.mig2) { ai.mig2 = 1; ai.fallback = true; saveAI(); }
 const findKey = id => ai.keys.find(k => k.id === id);
 const cleanKey = s => String(s == null ? '' : s).trim().replace(/^["']+|["']+$/g, '');
 const hasKey = k => !!k && cleanKey(k.key) !== '';
@@ -702,18 +671,18 @@ async function generate(k, prompt, o) {
   if (!model) throw new ApiError('Pick a model first. Use Test connection to load the list.', 'bad');
   let text = '';
   if (k.provider === 'claude') {
-    const body = { model, max_tokens: o.max || 2048, messages: [{ role: 'user', content: prompt }] };
+    const body = { model, max_tokens: o.max || 2048, messages: [{ role: 'user', content: claudeC(prompt, o.atts) }] };
     const { data } = await apiFetch(k, b + '/v1/messages', { method: 'POST', headers: authHeaders(k), body: JSON.stringify(body) }, opt);
     text = ((data && data.content) || []).filter(x => x.type === 'text').map(x => x.text).join('\n');
   } else if (k.provider === 'gemini') {
-    const body = { contents: [{ role: 'user', parts: [{ text: prompt }] }] };
+    const body = { contents: [{ role: 'user', parts: [{ text: prompt }].concat((o.atts || []).map(a => ({ inlineData: { mimeType: a.mime, data: a.data } }))) }] };
     if (o.max) body.generationConfig = { maxOutputTokens: o.max };
     const { data } = await apiFetch(k, `${b}/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: authHeaders(k), body: JSON.stringify(body) }, opt);
     const cand = data && data.candidates && data.candidates[0];
     text = cand && cand.content && cand.content.parts ? cand.content.parts.map(p => p.text || '').join('') : '';
     if (!text && !o.test && data && data.promptFeedback && data.promptFeedback.blockReason) throw new ApiError(`Gemini blocked this prompt (${data.promptFeedback.blockReason}).`, 'bad');
   } else {
-    const body = { model, messages: [{ role: 'user', content: prompt }] };
+    const body = { model, messages: [{ role: 'user', content: oaiC(prompt, o.atts) }] };
     if (o.max) body.max_tokens = o.max;
     const { data } = await apiFetch(k, b + '/chat/completions', { method: 'POST', headers: authHeaders(k), body: JSON.stringify(body) }, opt);
     const c = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
@@ -796,7 +765,7 @@ function keyCardHtml(k) {
 function assignHtml() {
   return ROLES.map(r => {
     const cur = ai.assign[r.id] || '';
-    return `<div class="arow">${avatarHtml(r, 'avatar sm')}
+    return `<div class="arow">${av(r)}
       <div class="grow"><b>${esc(r.name)}</b> <span class="small muted">${esc(r.title)}</span></div>
       <select data-ai-assign="${r.id}" aria-label="AI for ${esc(r.name)}"><option value="" ${cur === '' ? 'selected' : ''}>Automatic (best match)</option>${ai.keys.map(k => `<option value="${k.id}" ${cur === k.id ? 'selected' : ''}>${esc(keyName(k))}</option>`).join('')}<option value="manual" ${cur === 'manual' ? 'selected' : ''}>Copy and paste (no AI)</option></select>
       <span class="small muted uses" id="uses-${r.id}">${esc(usesText(r.id))}</span></div>`;
@@ -903,7 +872,6 @@ document.addEventListener('input', e => { const t = e.target; if (t.dataset && t
 document.addEventListener('change', e => {
   const t = e.target, d = t.dataset; if (!d) return;
   if (d.ai || d.aiAssign !== undefined || d.aiOpt || d.pendKey || d.actSel) onAIChange(t);
-  else if (t.id === 'cLen') { state.chat.len = LENS[t.value] ? t.value : 'short'; save(); render(); }
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && aiOpen) closeAI(); });
 document.addEventListener('mousedown', e => { if (aiOpen && e.target === $('#overlay')) closeAI(); });
@@ -1079,15 +1047,6 @@ function curSkill() {
   return sk && (sk.div === 'both' || sk.div === chatDiv()) ? sk.name : '';
 }
 
-const LENS = { short: 'Short', normal: 'Normal', detailed: 'Detailed' };
-const lenOf = () => (LENS[state.chat.len] ? state.chat.len : 'short');
-function lenRule() {
-  const l = lenOf();
-  if (l === 'detailed') return 'Give a fuller answer with your reasons, but stay organised and skip filler. The DECISION line and any board-actions block are extra.';
-  if (l === 'normal') return 'Be direct and concise: one short paragraph at most, no filler. The DECISION line and any board-actions block are extra.';
-  return 'Be direct. Reply in at most 5 short lines (under 80 words), starting with the answer. No greeting, no filler, and do not repeat my message. The DECISION line and any board-actions block do not count. Give more only if I ask.';
-}
-
 function contextLines(D) {
   const c = state.chat, L = [], short = DIVS[D].short;
   if (c.incBrain) {
@@ -1142,7 +1101,7 @@ function chatPrompt(p, ctx) {
     'Recommend and argue, then follow my decision.',
     'You have no tools here. Never claim you sent, saved or checked anything.',
     'Never invent figures. Ask me when a number is missing.',
-    lenRule(),
+    'Be direct and short: a few sentences unless I ask for more.',
     'When a decision is reached, write it on its own line starting with "DECISION:".'
   ];
   if (r.extra) rules.push(r.extra);
@@ -1151,18 +1110,7 @@ function chatPrompt(p, ctx) {
   if (skill) { L.push(''); L.push(`SKILL TO RUN: ${skill.name}. Input and output: ${skill.io}.`); }
   contextLines(D).forEach(x => L.push(x));
   actionRules(r, D).forEach(x => L.push(x));
-  const prior = th.msgs.filter(m => m.id !== p.msgId).slice(-c.n);
-  if (prior.length) {
-    L.push(''); L.push('CONVERSATION SO FAR (most recent messages):');
-    prior.forEach(m => {
-      const who = m.from === 'me' ? 'Me' : (roleById(m.from) ? roleById(m.from).name : 'Team');
-      const toR = m.from === 'me' && m.to !== 'all' && m.to !== 'note' ? roleById(m.to) : null;
-      L.push(`${who}${toR ? ' (to ' + toR.name + ')' : ''}: ${m.text}`);
-    });
-  }
-  L.push('');
-  L.push('MY MESSAGE TO YOU:');
-  L.push(target.text);
+  histLines(th, p.msgId, 'MY MESSAGE TO YOU:').forEach(x => L.push(x));
   L.push('');
   L.push(`Reply now as ${r.name}.`);
   return L.join('\n');
@@ -1177,6 +1125,142 @@ function addReply(th, roleId, raw, via, stepLabel) {
   th.msgs.push(m); return m;
 }
 
+/* ---- attachments, people, money cuts ---- */
+let atts = [];
+const lastSend = {};
+const fmtMe = t => fmt(t).replace(/@(\w+)/g, '<span class="at">@$1</span>');
+const attShow = m => (m.atts || []).map(a => a.kind === 'image' ? `<img class="aimg" src="data:${a.mime};base64,${a.data}" alt="${esc(a.name)}">` : `<div class="small">[file] ${esc(a.name)}</div>`).join('');
+const attHtml = () => atts.map((a, i) => `<span class="chip">${esc(a.name)}<button type="button" class="link" data-act="att-del" data-i="${i}" aria-label="Remove">×</button></span>`).join('');
+const readURL = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
+async function resizeImg(file, max, q, sq) {
+  const src = await readURL(file);
+  return new Promise((res, rej) => {
+    const im = new Image();
+    im.onload = () => {
+      let w = im.width, h = im.height, sx = 0, sy = 0, sw = w, sh = h;
+      if (sq) { const m = Math.min(w, h); sx = (w - m) / 2; sy = (h - m) / 2; sw = sh = w = h = m; }
+      const k = Math.min(1, max / Math.max(w, h)), c = document.createElement('canvas');
+      c.width = Math.round(w * k); c.height = Math.round(h * k);
+      c.getContext('2d').drawImage(im, sx, sy, sw, sh, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', q));
+    };
+    im.onerror = () => rej(new Error('bad image')); im.src = src;
+  });
+}
+async function addFiles(fs) {
+  for (const f of fs) {
+    if (atts.length >= 4) { toast('Up to 4 files per message.'); break; }
+    try {
+      if (/^image\//.test(f.type)) atts.push({ name: f.name && f.name !== 'image.png' ? f.name : 'pasted-image-' + (atts.length + 1), kind: 'image', mime: 'image/jpeg', data: (await resizeImg(f, 1280, .8)).split(',')[1] });
+      else if (f.type === 'application/pdf') { if (f.size > 4e6) { toast(f.name + ' is over 4 MB.'); continue; } atts.push({ name: f.name, kind: 'pdf', mime: f.type, data: (await readURL(f)).split(',')[1] }); }
+      else if (/\.(txt|md|csv|json|html?|css|js|srt|log)$/i.test(f.name) || /^text\//.test(f.type)) { if (f.size > 2e5) { toast(f.name + ' is too big. Paste the part you need.'); continue; } atts.push({ name: f.name, kind: 'text', text: (await f.text()).slice(0, 20000) }); }
+      else toast(f.name + ': use images, PDF or text files. For Word files, paste the text.');
+    } catch (e) { toast('Could not read ' + f.name); }
+  }
+  const s = $('#cAtt'); if (s) s.innerHTML = attHtml();
+}
+const claudeC = (t, a) => { a = (a || []).filter(x => x.data); return a.length ? [{ type: 'text', text: t }].concat(a.map(x => x.kind === 'pdf' ? { type: 'document', source: { type: 'base64', media_type: x.mime, data: x.data } } : { type: 'image', source: { type: 'base64', media_type: x.mime, data: x.data } })) : t; };
+const oaiC = (t, a) => { a = (a || []).filter(x => x.kind === 'image'); return a.length ? [{ type: 'text', text: t }].concat(a.map(x => ({ type: 'image_url', image_url: { url: `data:${x.mime};base64,${x.data}` } }))) : t; };
+const attsOf = (ctx, p) => { const m = ctx.th.msgs.find(x => x.id === p.msgId); return ((m && m.atts) || []).filter(a => a.data); };
+function parseCuts(s, total) {
+  return String(s || '').split(/[,;\n]+/).map(x => x.trim()).filter(Boolean).map(x => {
+    const m = x.match(/^(.*?)[\s:=-]*(\d[\d.,]*)\s*(%|k|rb|jt)?\s*$/i); if (!m || !m[1].trim()) return null;
+    let n = Number(m[2].replace(/[.,](?=\d{3}\b)/g, '').replace(',', '.')) || 0; const u = (m[3] || '').toLowerCase();
+    if (u === '%') n = Math.round(total * n / 100); else if (u === 'k' || u === 'rb') n *= 1e3; else if (u === 'jt') n *= 1e6;
+    const lab = m[1].trim().replace(/^@/, ''), pr = (state.people || []).find(q => q.name.toLowerCase() === lab.toLowerCase());
+    return { id: uid(), label: pr ? pr.name : lab, to: pr ? pr.id : '', amount: n, paid: false };
+  }).filter(Boolean);
+}
+function cutRow(m) {
+  if (m.type !== 'income') return '';
+  const cs = m.cuts || [], sum = cs.reduce((a, c) => a + (Number(c.amount) || 0), 0);
+  return `<tr class="cutrow"><td colspan="6">${cs.map(c => `<span class="chip ${c.paid ? 'paid' : ''}"><button class="link" data-act="cut-paid" data-id="${m.id}" data-cid="${c.id}" title="Click: mark paid or not paid">${c.paid ? '&#10003; ' : ''}${esc(c.label)} ${rp(c.amount)}</button><button class="link" data-act="cut-del" data-id="${m.id}" data-cid="${c.id}" aria-label="Remove">&times;</button></span>`).join('')}${cs.length ? `<b class="left">Left for you: ${rp((Number(m.amount) || 0) - sum)}</b>` : ''}<span class="addcut"><input data-cutin="${m.id}" placeholder="+ cuts: license 450000, Dim 25%"><button class="btn sm" data-act="cut-add" data-id="${m.id}">Add</button></span></td></tr>`;
+}
+
+/* ---- fewer requests: one call per group message, spacing, retry, cooldown ---- */
+const wait = ms => new Promise(r => setTimeout(r, ms));
+async function callKey(kk, prompt, ctl, a) {
+  for (let n = 0; ; n++) {
+    const w = (lastSend[kk.id] || 0) + 4200 - Date.now(); if (w > 0) await wait(w);
+    if (ctl.cancelled) throw new ApiError('Stopped.', 'cancelled');
+    lastSend[kk.id] = Date.now();
+    try { return await generate(kk, prompt, { ctl, atts: a }); }
+    catch (e) {
+      if (e.kind === 'limit') kk.cool = Date.now() + 90000;
+      if (e.kind === 'server' && n < 2 && !ctl.cancelled) { await wait(3000 * (n + 1)); continue; }
+      throw e;
+    }
+  }
+}
+function keysFor(role, k) {
+  const t = [k]; if (ai.fallback) fallbackKeys(role, k).forEach(x => t.push(x));
+  const hot = x => (x.cool || 0) > Date.now() ? 1 : 0;
+  return t.sort((a, b) => hot(a) - hot(b));
+}
+function histLines(th, msgId, label) {
+  const c = state.chat, L = [], target = th.msgs.find(m => m.id === msgId) || { text: '' };
+  const pm = new Set(); th.msgs.slice(-(c.n + 1)).forEach(m => (m.mentions || []).forEach(i => pm.add(i)));
+  if (pm.size) { L.push(''); L.push('OTHER PEOPLE I WORK WITH (not on your team, they do not reply here; I may be sharing this project with them):'); [...pm].forEach(i => { const x = (state.people || []).find(q => q.id === i); if (x) L.push(`- ${x.name}${x.note ? ': ' + x.note : ''}`); }); }
+  const prior = th.msgs.filter(m => m.id !== msgId).slice(-c.n);
+  if (prior.length) {
+    L.push(''); L.push('CONVERSATION SO FAR (most recent messages):');
+    prior.forEach(m => {
+      const who = m.from === 'me' ? 'Me' : (roleById(m.from) ? roleById(m.from).name : 'Team');
+      const toR = m.from === 'me' && m.to !== 'all' && m.to !== 'note' ? roleById(m.to) : null;
+      L.push(`${who}${toR ? ' (to ' + toR.name + ')' : ''}: ${m.text}${(m.atts || []).length ? ' [attached: ' + m.atts.map(a => a.name).join(', ') + ']' : ''}`);
+    });
+  }
+  L.push(''); L.push(label); L.push(target.text);
+  (target.atts || []).forEach(a => { if (a.kind === 'text') { L.push(''); L.push(`[Attached file ${a.name}]`); L.push(a.text); } else if (!a.data) L.push(`[Attached ${a.name}, not available]`); });
+  return L;
+}
+function groupPrompt(ps, ctx) {
+  const th = ctx.th, D = ctx.d, roles = ps.map(x => roleById(x.role)), L = [];
+  L.push(`You play ${roles.length} members of my one-person 3D studio team in a group chat, answering my message in ONE reply. The studio has two divisions: 3D Agency (client work) and 3D Creative (my own products and content). I am the founder and lead 3D artist, and I make every final decision.`);
+  L.push(''); L.push(`GROUP CHAT STEP: "${stepNameOf(D, ctx.sel)}". Division: ${DIVS[D].label}.`);
+  if (th.title.trim()) L.push(`TOPIC OF THIS CHAT: ${th.title.trim()}`);
+  L.push(''); L.push('TEAM MEMBERS TO ANSWER, in this order:');
+  roles.forEach(r => L.push(`- ${r.name} (${r.title}). Character: ${r.character} Owns: ${r.owns} Here: ${r[D]} Pushes back: ${r.pushback}${r.extra ? ' ' + r.extra : ''}`));
+  L.push(''); L.push('FORMAT: one section per member, each starting with a line "### Name", then that person\'s reply as themselves. Later members may react to earlier ones and disagree with a reason. Nobody writes for another member. A member with nothing to add still writes one short line.');
+  L.push(''); L.push('RULES:');
+  ['Work only on the ' + DIVS[D].short + ' division.', 'Recommend and argue, then follow my decision.', 'You have no tools here. Never claim you sent, saved or checked anything.', 'Never invent figures. Ask me when a number is missing.', 'Be direct and short: 1 to 4 sentences each unless I ask for more.', 'When a decision is reached, write it on its own line starting with "DECISION:".'].forEach((x, i) => L.push(`${i + 1}. ${x}`));
+  contextLines(D).forEach(x => L.push(x));
+  roles.forEach(r => actionRules(r, D).forEach(x => L.push(x)));
+  histLines(th, ps[0].msgId, 'MY MESSAGE TO THE GROUP:').forEach(x => L.push(x));
+  L.push(''); L.push('Reply now, one "### Name" section per member.');
+  return L.join('\n');
+}
+function parseGroup(text, ps) {
+  const out = {}, re = /^#{2,4}\s*\**\s*([^\n*#:(]+?)\s*\**\s*(?:\([^\n)]*\))?\s*:?\s*$/gm, marks = []; let m;
+  while ((m = re.exec(text || ''))) marks.push({ name: m[1].trim().toLowerCase(), e: re.lastIndex, s: m.index });
+  marks.forEach((mk, i) => {
+    const r = ps.map(x => roleById(x.role)).find(x => mk.name.indexOf(x.name.toLowerCase()) === 0);
+    if (r && !out[r.id]) { const b = text.slice(mk.e, i + 1 < marks.length ? marks[i + 1].s : text.length).trim(); if (b) out[r.id] = b; }
+  });
+  return out;
+}
+async function runGroup(key, ps) {
+  const ctx = ctxOf(key); if (!ctx.th) return;
+  const k = primaryKey(ps[0].role); if (!k) return;
+  ps.forEach(x => { x.state = 'loading'; x.keyId = k.id; x.err = ''; }); paintAIButton(); viewRefresh(key);
+  let text = '', error = null, used = null, cancelled = false;
+  for (const kk of keysFor(ps[0].role, k)) {
+    const ctl = new AbortController(); ps.forEach(x => inflight.set(x.id, ctl));
+    try { text = await callKey(kk, groupPrompt(ps, ctx), ctl, attsOf(ctx, ps[0])); used = kk; error = null; break; }
+    catch (e) { error = e; if (ctl.cancelled) { cancelled = true; break; } }
+  }
+  ps.forEach(x => inflight.delete(x.id)); paintAIButton();
+  const th = state.threads[key]; if (!th) return;
+  const parts = error ? {} : parseGroup(text, ps);
+  ps.forEach(x => {
+    const i = th.pending.findIndex(y => y.id === x.id); if (i < 0) return; const pp = th.pending[i];
+    if (parts[x.role]) { th.pending.splice(i, 1); addReply(th, x.role, parts[x.role], used, stepNameOf(ctx.d, ctx.sel)); }
+    else if (cancelled) { delete pp.state; pp.manual = true; pp.err = ''; }
+    else { pp.state = 'error'; pp.err = error ? error.message : 'This reply was missing from the group answer. Press Try again.'; }
+  });
+  if (used) bumpSent(used);
+  save(); viewRefresh(key);
+}
+
 /* ---- live replies ---- */
 function stopPending(id) { const c = inflight.get(id); if (c) { c.cancelled = true; c.abort(); } }
 async function runOne(key, p, override) {
@@ -1185,11 +1269,11 @@ async function runOne(key, p, override) {
   if (!k) return;
   inflight.set(p.id, new AbortController());
   p.state = 'loading'; p.keyId = k.id; p.err = ''; paintAIButton(); viewRefresh(key);
-  const tryKeys = [k]; if (ai.fallback) fallbackKeys(p.role, k).forEach(x => tryKeys.push(x));
+  const tryKeys = keysFor(p.role, k);
   let reply = '', error = null, used = null, cancelled = false;
   for (const kk of tryKeys) {
     const ctl = new AbortController(); inflight.set(p.id, ctl);
-    try { reply = await generate(kk, chatPrompt(p, ctx), { ctl }); used = kk; error = null; break; }
+    try { reply = await callKey(kk, chatPrompt(p, ctx), ctl, attsOf(ctx, p)); used = kk; error = null; break; }
     catch (e) { error = e; if (ctl.cancelled) { cancelled = true; break; } }
   }
   inflight.delete(p.id); paintAIButton();
@@ -1216,14 +1300,15 @@ async function runQueue(key, msgId) {
       /* only replies to messages sent in this session of the thread run by themselves; older waiting cards stay until you press Ask now */
       const p = th.pending.find(x => queued[key].has(x.msgId) && !x.state && !x.manual && primaryKey(x.role));
       if (!p) break;
-      await runOne(key, p);
+      const grp = ai.batch !== false ? th.pending.filter(x => x.msgId === p.msgId && !x.state && !x.manual && primaryKey(x.role) === primaryKey(p.role)) : [];
+      if (grp.length > 1) await runGroup(key, grp); else await runOne(key, p);
     }
   } finally { running[key] = false; queued[key].clear(); }
 }
 function sendMessage(text) {
-  text = (text || '').trim(); if (!text) { toast('Write a message first.'); return; }
+  text = (text || '').trim(); if (!text && !atts.length) { toast('Write a message first.'); return; } if (!text) text = 'See the attached file.';
   const th = getThread(), to = curTo(), single = to !== 'all' && to !== 'note', key = threadKey();
-  const msg = { id: uid(), from: 'me', to, text, skill: single ? curSkill() : '', t: Date.now() };
+  const msg = { id: uid(), from: 'me', to, text, skill: single ? curSkill() : '', t: Date.now(), atts: atts.splice(0), mentions: (state.people || []).filter(x => new RegExp('@' + x.name + '\\b', 'i').test(text)).map(x => x.id) };
   th.msgs.push(msg);
   if (to === 'all') chatMembers().forEach(m => th.pending.push({ id: uid(), role: m.id, msgId: msg.id }));
   else if (single) th.pending.push({ id: uid(), role: to, msgId: msg.id });
@@ -1246,10 +1331,10 @@ function msgHtml(m) {
   if (mine) {
     const toR = m.to !== 'all' && m.to !== 'note' ? roleById(m.to) : null;
     const lab = m.to === 'note' ? 'Note to self' : m.to === 'all' ? 'To everyone' : 'To ' + esc(toR ? toR.name : '');
-    return `<div class="msg me"><div class="bub"><div class="mm">${lab}${m.skill ? ', skill: ' + esc(m.skill) : ''}</div>${fmt(m.text)}</div><div class="macts">${logBtn}${del}</div></div>`;
+    return `<div class="msg me"><div class="bub"><div class="mm">${lab}${m.skill ? ', skill: ' + esc(m.skill) : ''}</div>${fmtMe(m.text)}${attShow(m)}</div><div class="macts">${logBtn}${del}</div></div>`;
   }
   const r = roleById(m.from) || { name: 'Team', title: '', color: '#586070' };
-  return `<div class="msg">${avatarHtml(r, 'avatar sm')}
+  return `<div class="msg">${av(r)}
     <div class="body"><div class="mm"><b>${esc(r.name)}</b>${esc(r.title)}${m.via ? `<span class="via">via ${esc(m.via)}</span>` : ''}</div><div class="bub">${fmtRole(m.text)}</div>${actionsHtml(m)}<div class="macts">${logBtn}${del}</div></div></div>`;
 }
 function pendHtml(p, ctx) {
@@ -1264,7 +1349,7 @@ function pendHtml(p, ctx) {
   const btns = loading ? `<span class="push"><button class="btn sm" data-act="reply-stop" data-id="${p.id}">Stop</button></span>`
     : `<span class="push">${ask}<button class="btn sm ${usable.length ? '' : 'primary'}" data-act="prompt-copy" data-id="${p.id}">Copy prompt for ${esc(where)}</button><button class="btn sm" data-act="reply-skip" data-id="${p.id}">Skip</button></span>`;
   return `<div class="pend ${p.state || ''}" data-pend="${p.id}" style="--c:${r.color}">
-    <div class="pend-h">${avatarHtml(r, 'avatar sm')}${head}${btns}</div>
+    <div class="pend-h">${av(r)}${head}${btns}</div>
     ${p.state === 'error' ? `<p class="warn small">${esc(p.err)}</p>` : ''}
     ${loading ? '' : `<details><summary>Or copy the prompt by hand (about ${n} tokens)</summary><pre>${esc(prompt)}</pre></details>
     <label class="field"><span>Paste ${esc(r.name)}'s reply here</span><textarea data-draft="${p.id}" rows="3" placeholder="Paste the AI's answer">${esc(drafts[p.id] || '')}</textarea></label>
@@ -1287,7 +1372,7 @@ function clistInner() {
     ${steps.map((x, i) => `<button class="citem ${sel === 'step:' + x.id ? 'on' : ''}" data-act="chat-sel" data-sel="step:${x.id}"><span class="n">${i + 1}</span>${esc(x.name)}${badge(waiting(d + ':step:' + x.id))}</button>`).join('')}
     <button class="link small" style="text-align:left;padding:4px 8px" data-act="chat-edit">Edit steps and members</button>
     <div class="group-title" style="margin-top:8px">Private chats</div>
-    ${ROLES.map(r => `<button class="citem ${sel === 'dm:' + r.id ? 'on' : ''}" data-act="chat-sel" data-sel="dm:${r.id}">${avatarHtml(r, 'avatar xs')}${esc(r.name)}${badge(waiting(d + ':dm:' + r.id))}</button>`).join('')}`;
+    ${ROLES.map(r => `<button class="citem ${sel === 'dm:' + r.id ? 'on' : ''}" data-act="chat-sel" data-sel="dm:${r.id}"><i class="dot" style="background:${r.color}"></i>${esc(r.name)}${badge(waiting(d + ':dm:' + r.id))}</button>`).join('')}`;
 }
 function refreshThread() {
   const m = $('#msgs'); if (!m) return;
@@ -1309,7 +1394,7 @@ function threadHtml() {
   const steps = stepsFor(d), idx = dm ? -1 : steps.findIndex(x => 'step:' + x.id === curSel());
   const sub = dm ? `Private chat with ${esc(ms[0].name)}, ${esc(ms[0].title)}. ${esc(DIVS[d].label)}.`
                  : `Step ${idx + 1} of ${steps.length}: ${esc(stepName())}. ${esc(DIVS[d].label)}.`;
-  const faces = ms.map(m => `${avatarHtml(m, 'avatar sm', true)}`).join('');
+  const faces = ms.map(m => `${av(m)}`).join('');
   const toOpts = (dm ? [] : [`<option value="all" ${to === 'all' ? 'selected' : ''}>Everyone in this step</option>`])
     .concat(ms.map(m => `<option value="${m.id}" ${to === m.id ? 'selected' : ''}>${esc(m.name)}</option>`))
     .concat([`<option value="note" ${to === 'note' ? 'selected' : ''}>No one (just a note)</option>`]).join('');
@@ -1327,13 +1412,14 @@ function threadHtml() {
         <label class="field"><span>To</span><select id="cTo">${toOpts}</select></label>
         <label class="field"><span>Skill</span><select id="cSkill" ${single ? '' : 'disabled'}>${skillOpts}</select></label>
       </div>
-      <label class="field"><span>Your message</span><textarea id="cText" rows="3" placeholder="Say what you want to discuss. Ctrl+Enter sends.">${esc(drafts['c:' + threadKey()] || '')}</textarea></label>
+      <label class="field"><span>Your message</span><textarea id="cText" rows="3" placeholder="Say what you want to discuss. Ctrl+Enter sends. Paste an image with Ctrl+V.">${esc(drafts['c:' + threadKey()] || '')}</textarea></label>
+      <div class="attrow"><button type="button" class="btn sm" data-act="att-pick">Attach file</button><input type="file" id="cFile" hidden multiple accept="image/*,.pdf,.txt,.md,.csv,.json"><span id="cAtt" class="attrow">${attHtml()}</span></div>
+      <div class="people small"><span class="muted">Mention:</span>${state.people.map(x => `<button type="button" class="chipbtn" data-act="mention" data-name="${esc(x.name)}">@${esc(x.name)}</button>`).join('')}<button type="button" class="link small" data-act="people-edit">Edit people</button></div>
       <div class="out-foot" style="margin:0">
         <details class="pset"><summary>What goes into each prompt</summary>
           <div class="checks"><label><input type="checkbox" id="cBrain" ${c.incBrain ? 'checked' : ''}> Studio brain</label>
             <label><input type="checkbox" id="cDec" ${c.incDec ? 'checked' : ''}> Last 5 decisions</label>
             <label><input type="checkbox" id="cTasks" ${c.incTasks ? 'checked' : ''}> Open tasks</label></div>
-          <label class="field"><span>Reply length</span><select id="cLen">${Object.entries(LENS).map(([k, v]) => `<option value="${k}" ${lenOf() === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
           <label class="field"><span>Earlier messages included</span><select id="cN">${[4, 8, 10, 16, 24].map(n => `<option value="${n}" ${c.n === n ? 'selected' : ''}>Last ${n}</option>`).join('')}</select></label>
           <p style="margin-top:6px">Fewer messages and a shorter brain use fewer tokens, which matters on free plans.</p></details>
         <button class="btn primary push" type="submit">Send</button>
@@ -1453,7 +1539,7 @@ function renderTree() {
       <button class="node creative${sel('creative')}" data-act="div" data-div="creative" aria-pressed="${state.division === 'creative'}"><i class="dot creative"></i>3D Creative<small>${plural(c('creative'), 'open task', 'open tasks')}</small></button>
     </div>`;
   $('#teamList').innerHTML = ROLES.map(r => `
-    <li><button class="node" data-act="dm" data-role="${r.id}" title="Chat with ${esc(r.name)}">${avatarHtml(r, 'avatar xs')}${esc(r.name)}<span class="t">${esc(r.title)}</span></button></li>`).join('');
+    <li><button class="node" data-act="dm" data-role="${r.id}" title="Chat with ${esc(r.name)}"><i class="dot" style="background:${r.color}"></i>${esc(r.name)}<span class="t">${esc(r.title)}</span></button></li>`).join('');
 }
 function renderTabs() {
   const scope = state.division === 'all' ? 'Showing both divisions' : `Showing ${DIVS[state.division].label}`;
@@ -1537,7 +1623,7 @@ function vTeam() {
   <div class="cards">${ROLES.map(r => `
     <article class="role">
       <div class="role-head">
-        ${avatarHtml(r, 'avatar lg')}
+        <button class="avbtn" data-act="photo-pick" data-role="${r.id}" title="Click to set a picture">${av(r, 'lg')}</button>
         <div><h2>${esc(r.name)}</h2><div class="small muted">${esc(r.title)}</div></div>
         <div class="models">Best on ${esc(r.model)}<br>Backup: ${esc(r.backup)}</div>
       </div>
@@ -1589,17 +1675,20 @@ function vMoney() {
     <section class="panel sum"><h2>${divTag(d)} ${esc(DIVS[d].label)}</h2><dl>
       <dt>Received</dt><dd>${rp(m.received)}</dd>
       <dt>Expenses paid</dt><dd>${rp(m.paid)}</dd>
+      <dt>Cuts (license, friends...)</dt><dd>${rp(m.cuts)}</dd>
+      <dt>Cuts not handed over yet</dt><dd>${rp(m.cutsOwed)}</dd>
       <dt class="keep">Kept so far</dt><dd class="keep">${rp(m.kept)}</dd>
       <dt>Due to you</dt><dd>${rp(m.due)}</dd>
       <dt>Expected</dt><dd>${rp(m.expected)}</dd>
       <dt>Expenses still unpaid</dt><dd>${rp(m.unpaid)}</dd>
     </dl></section>`; }).join('');
   return `
-  <header class="vh"><h1>Money</h1><p>Each record moves from Expected to Due to Received. Revenue is not profit: "Kept so far" is what you received minus what you paid out.</p></header>
+  <header class="vh"><h1>Money</h1><p>Each record moves from Expected to Due to Received. Revenue is not profit: "Kept so far" is what you received minus expenses and the cuts you paid out of it (license, friends).</p></header>
   <div class="sumgrid">${sums}</div>
   <form class="panel form-row" data-form="money" autocomplete="off">
     <label class="field wide"><span>What is it for?</span><input name="desc" required maxlength="120" placeholder="Client A final invoice"></label>
     <label class="field"><span>Amount (Rp)</span><input type="number" name="amount" required min="0" step="1000" placeholder="1000000"></label>
+    <label class="field wide"><span>Cuts from it (optional)</span><input name="cuts" placeholder="license 450000, Dim 25%, Ken 300000"></label>
     <label class="field"><span>Type</span><select name="type"><option value="income">Income</option><option value="expense">Expense</option></select></label>
     <label class="field"><span>Division</span><select name="division">${Object.entries(DIVS).map(([k, v]) => `<option value="${k}" ${k === defDiv ? 'selected' : ''}>${v.label}</option>`).join('')}</select></label>
     <label class="field"><span>Status</span><select name="status">${PAY.map(p => `<option>${p}</option>`).join('')}</select></label>
@@ -1612,7 +1701,7 @@ function vMoney() {
       <td>${esc(m.date)}</td><td>${divTag(m.division)}</td><td>${esc(m.desc)}</td>
       <td class="num ${m.type === 'income' ? 'in' : 'out'}">${m.type === 'income' ? '+' : '-'}${rp(m.amount)}</td>
       <td><button class="stat ${m.status}" data-act="money-cycle" data-id="${m.id}" title="Click to move to the next status">${payLabel(m)}</button></td>
-      <td class="num"><button class="btn sm danger" data-act="money-del" data-id="${m.id}">Delete</button></td></tr>`).join('') || '<tr><td colspan="6" class="empty">No records yet.</td></tr>'}</tbody>
+      <td class="num"><button class="btn sm danger" data-act="money-del" data-id="${m.id}">Delete</button></td></tr>${cutRow(m)}`).join('') || '<tr><td colspan="6" class="empty">No records yet.</td></tr>'}</tbody>
   </table></div>`;
 }
 
@@ -1785,6 +1874,31 @@ const act = {
   }
 };
 Object.assign(act, ACT_V3);
+Object.assign(act, {
+  'photo-pick'(el) {
+    const id = el.dataset.role, inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+    inp.onchange = async () => { const f = inp.files[0]; if (!f) return; try { state.photos = state.photos || {}; state.photos[id] = await resizeImg(f, 220, .85, true); save(); render(); } catch (e) { toast('Could not read that image.'); } };
+    inp.click();
+  },
+  'att-pick'() { $('#cFile').click(); },
+  'att-del'(el) { atts.splice(Number(el.dataset.i), 1); const s = $('#cAtt'); if (s) s.innerHTML = attHtml(); },
+  mention(el) {
+    const t = $('#cText'); if (!t) return; const a = t.selectionStart || t.value.length, add = '@' + el.dataset.name + ' ';
+    t.value = t.value.slice(0, a) + add + t.value.slice(t.selectionEnd || a); t.focus(); t.setSelectionRange(a + add.length, a + add.length); drafts['c:' + threadKey()] = t.value;
+  },
+  'people-edit'() {
+    const v = prompt('People you work with (not on the team), separated by commas. You can @mention them in chat.', state.people.map(x => x.name).join(', ')); if (v === null) return;
+    const old = state.people; state.people = v.split(',').map(x => x.trim().replace(/^@/, '').replace(/\s+/g, '')).filter(Boolean).slice(0, 12).map(n => old.find(x => x.name.toLowerCase() === n.toLowerCase()) || { id: 'p_' + uid(), name: n, note: '' });
+    save(); render();
+  },
+  'cut-add'(el) {
+    const m = state.money.find(x => x.id === el.dataset.id), inp = document.querySelector(`[data-cutin="${el.dataset.id}"]`); if (!m || !inp) return;
+    const c = parseCuts(inp.value, Number(m.amount) || 0); if (!c.length) { toast('Write it like: license 450000, Dim 25%'); return; }
+    m.cuts = (m.cuts || []).concat(c); save(); render();
+  },
+  'cut-paid'(el) { const m = state.money.find(x => x.id === el.dataset.id), c = m && (m.cuts || []).find(x => x.id === el.dataset.cid); if (c) { c.paid = !c.paid; save(); render(); } },
+  'cut-del'(el) { const m = state.money.find(x => x.id === el.dataset.id); if (m) { m.cuts = (m.cuts || []).filter(x => x.id !== el.dataset.cid); save(); render(); } }
+});
 function refreshLimits() {
   const box = $('#limits');
   if (box && !box.contains(document.activeElement)) box.innerHTML = limitsHtml();
@@ -1799,7 +1913,7 @@ const forms = {
   },
   money(f) {
     const d = new FormData(f), desc = (d.get('desc') || '').trim(); if (!desc) return;
-    state.money.push({ id: uid(), division: d.get('division'), type: d.get('type'), desc, amount: Number(d.get('amount')) || 0, status: d.get('status'), date: d.get('date') || todayISO() });
+    state.money.push({ id: uid(), division: d.get('division'), type: d.get('type'), desc, amount: Number(d.get('amount')) || 0, status: d.get('status'), date: d.get('date') || todayISO(), cuts: d.get('type') === 'income' ? parseCuts(d.get('cuts'), Number(d.get('amount')) || 0) : [] });
     save(); render();
   },
   decision(f) {
@@ -1851,6 +1965,7 @@ document.addEventListener('change', e => {
     };
     rd.readAsText(file); return;
   }
+  if (t.id === 'cFile') { addFiles([...t.files]); t.value = ''; return; }
   const c = state.chat;
   if (t.id === 'cTo') { c.to = t.value; c.skill = ''; save(); render(); return; }
   if (t.id === 'cSkill') { c.skill = t.value; save(); render(); return; }
@@ -1871,7 +1986,13 @@ document.addEventListener('change', e => {
     save();
   }
 });
+document.addEventListener('paste', e => {
+  if (e.target.id !== 'cText') return;
+  const fs = [...((e.clipboardData && e.clipboardData.items) || [])].filter(i => i.kind === 'file').map(i => i.getAsFile()).filter(Boolean);
+  if (fs.length) { e.preventDefault(); addFiles(fs); }
+});
 document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.dataset && e.target.dataset.cutin) { e.preventDefault(); act['cut-add']({ dataset: { id: e.target.dataset.cutin } }); return; }
   if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && e.target.id === 'cText') { e.preventDefault(); sendMessage(e.target.value); }
 });
 window.addEventListener('hashchange', () => {
@@ -1883,7 +2004,6 @@ setInterval(() => { if (state.view === 'overview') refreshLimits(); }, 30000);
 /* ---------- start ---------- */
 (() => { const v = location.hash.replace('#', ''); if (RENDER[v]) state.view = v; })();
 render();
-probeAvatars();
 })();
 </script>
 </body>
