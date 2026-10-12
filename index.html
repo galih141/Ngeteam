@@ -1237,7 +1237,7 @@ function cutRow(m) {
 const wait = ms => new Promise(r => setTimeout(r, ms));
 async function callKey(kk, prompt, ctl, a) {
   for (let n = 0; ; n++) {
-    const w = (lastSend[kk.id] || 0) + 4200 - Date.now(); if (w > 0) await wait(w);
+    const w = (lastSend[kk.id] || 0) + (kk.provider === 'gemini' ? (/lite/i.test(kk.model || '') ? 4200 : 12500) : 1500) - Date.now(); if (w > 0) await wait(w);
     if (ctl.cancelled) throw new ApiError('Stopped.', 'cancelled');
     lastSend[kk.id] = Date.now();
     try { return await generate(kk, prompt, { ctl, atts: a }); }
