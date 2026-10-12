@@ -294,6 +294,15 @@ td.num,th.num{text-align:right}
 .out-foot{display:flex;gap:12px;align-items:center;margin-top:10px;flex-wrap:wrap}
 .warn{color:var(--danger)}
 
+
+/* avatars */
+.avatar{position:relative;overflow:hidden}
+.avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block}
+.avatar.has-img .ini{visibility:hidden}
+.avatar.lg{width:56px;height:56px;border-radius:16px;font-size:24px}
+.avatar.xs{width:22px;height:22px;border-radius:7px;font-size:11px}
+.avatar.sm{width:32px;height:32px}
+.avatar .ini{line-height:1}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:9px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:.2s;z-index:40;font-size:14px}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
@@ -551,6 +560,46 @@ function whenText(due) {
 }
 const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
 
+/* ---------- avatars ---------- */
+/* Put one image per role in the folder below, next to index.html. Name each file after the role in lowercase:
+   mira, rico, dewi, sasha, bima, nadia, arga. The page tries .png, .webp, .jpg and .jpeg, and falls back to the colored initial. */
+const AV_DIR = 'assets';
+const AV_EXT = ['png', 'webp', 'jpg', 'jpeg'];
+const AV = {};
+const avUrls = r => [r.id, r.name].filter((n, i, a) => a.indexOf(n) === i).flatMap(n => AV_EXT.map(x => `${AV_DIR}/${n}.${x}`));
+function avatarHtml(r, cls, titled) {
+  const u = AV[r.id] || '';
+  const t = titled ? ` title="${esc(r.name)}, ${esc(r.title)}" aria-label="${esc(r.name)}"` : ' aria-hidden="true"';
+  return `<span class="${cls}${u ? ' has-img' : ''}" data-av="${r.id}" style="background:${r.color}"${t}><span class="ini">${esc(r.name[0])}</span>${u ? `<img src="${esc(u)}" alt="" decoding="async" draggable="false">` : ''}</span>`;
+}
+function applyAvatars() {
+  document.querySelectorAll('.avatar[data-av]').forEach(el => {
+    const u = AV[el.dataset.av]; if (!u || el.querySelector('img')) return;
+    const im = document.createElement('img'); im.src = u; im.alt = ''; im.decoding = 'async'; im.draggable = false;
+    el.appendChild(im); el.classList.add('has-img');
+  });
+}
+function probeAvatar(r) {
+  return new Promise(res => {
+    const list = avUrls(r); let i = 0;
+    const next = () => {
+      if (i >= list.length) { AV[r.id] = ''; res(); return; }
+      const im = new Image(), url = list[i];
+      im.onload = () => { AV[r.id] = url; res(); };
+      im.onerror = () => { i++; next(); };
+      im.src = url;
+    };
+    next();
+  });
+}
+async function probeAvatars() { await Promise.all(ROLES.map(probeAvatar)); applyAvatars(); }
+/* an image that later breaks drops back to the initial */
+document.addEventListener('error', e => {
+  const t = e.target; if (!t || t.tagName !== 'IMG') return;
+  const a = t.closest && t.closest('.avatar'); if (!a) return;
+  AV[a.dataset.av] = ''; document.querySelectorAll(`.avatar[data-av="${a.dataset.av}"]`).forEach(x => { x.classList.remove('has-img'); const im = x.querySelector('img'); if (im) im.remove(); });
+}, true);
+
 /* ---------- ai connections ---------- */
 const AI_KEY = 'studioBoard.ai.v1';
 /* Hosts this page may call. To use another one, add it here AND to the connect-src part of the Content-Security-Policy tag at the top. */
@@ -747,7 +796,7 @@ function keyCardHtml(k) {
 function assignHtml() {
   return ROLES.map(r => {
     const cur = ai.assign[r.id] || '';
-    return `<div class="arow"><span class="avatar sm" style="background:${r.color}" aria-hidden="true">${esc(r.name[0])}</span>
+    return `<div class="arow">${avatarHtml(r, 'avatar sm')}
       <div class="grow"><b>${esc(r.name)}</b> <span class="small muted">${esc(r.title)}</span></div>
       <select data-ai-assign="${r.id}" aria-label="AI for ${esc(r.name)}"><option value="" ${cur === '' ? 'selected' : ''}>Automatic (best match)</option>${ai.keys.map(k => `<option value="${k.id}" ${cur === k.id ? 'selected' : ''}>${esc(keyName(k))}</option>`).join('')}<option value="manual" ${cur === 'manual' ? 'selected' : ''}>Copy and paste (no AI)</option></select>
       <span class="small muted uses" id="uses-${r.id}">${esc(usesText(r.id))}</span></div>`;
@@ -854,6 +903,7 @@ document.addEventListener('input', e => { const t = e.target; if (t.dataset && t
 document.addEventListener('change', e => {
   const t = e.target, d = t.dataset; if (!d) return;
   if (d.ai || d.aiAssign !== undefined || d.aiOpt || d.pendKey || d.actSel) onAIChange(t);
+  else if (t.id === 'cLen') { state.chat.len = LENS[t.value] ? t.value : 'short'; save(); render(); }
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && aiOpen) closeAI(); });
 document.addEventListener('mousedown', e => { if (aiOpen && e.target === $('#overlay')) closeAI(); });
@@ -1029,6 +1079,15 @@ function curSkill() {
   return sk && (sk.div === 'both' || sk.div === chatDiv()) ? sk.name : '';
 }
 
+const LENS = { short: 'Short', normal: 'Normal', detailed: 'Detailed' };
+const lenOf = () => (LENS[state.chat.len] ? state.chat.len : 'short');
+function lenRule() {
+  const l = lenOf();
+  if (l === 'detailed') return 'Give a fuller answer with your reasons, but stay organised and skip filler. The DECISION line and any board-actions block are extra.';
+  if (l === 'normal') return 'Be direct and concise: one short paragraph at most, no filler. The DECISION line and any board-actions block are extra.';
+  return 'Be direct. Reply in at most 5 short lines (under 80 words), starting with the answer. No greeting, no filler, and do not repeat my message. The DECISION line and any board-actions block do not count. Give more only if I ask.';
+}
+
 function contextLines(D) {
   const c = state.chat, L = [], short = DIVS[D].short;
   if (c.incBrain) {
@@ -1083,7 +1142,7 @@ function chatPrompt(p, ctx) {
     'Recommend and argue, then follow my decision.',
     'You have no tools here. Never claim you sent, saved or checked anything.',
     'Never invent figures. Ask me when a number is missing.',
-    'Be direct and short: a few sentences unless I ask for more.',
+    lenRule(),
     'When a decision is reached, write it on its own line starting with "DECISION:".'
   ];
   if (r.extra) rules.push(r.extra);
@@ -1190,7 +1249,7 @@ function msgHtml(m) {
     return `<div class="msg me"><div class="bub"><div class="mm">${lab}${m.skill ? ', skill: ' + esc(m.skill) : ''}</div>${fmt(m.text)}</div><div class="macts">${logBtn}${del}</div></div>`;
   }
   const r = roleById(m.from) || { name: 'Team', title: '', color: '#586070' };
-  return `<div class="msg"><span class="avatar sm" style="background:${r.color}" aria-hidden="true">${esc(r.name[0])}</span>
+  return `<div class="msg">${avatarHtml(r, 'avatar sm')}
     <div class="body"><div class="mm"><b>${esc(r.name)}</b>${esc(r.title)}${m.via ? `<span class="via">via ${esc(m.via)}</span>` : ''}</div><div class="bub">${fmtRole(m.text)}</div>${actionsHtml(m)}<div class="macts">${logBtn}${del}</div></div></div>`;
 }
 function pendHtml(p, ctx) {
@@ -1205,7 +1264,7 @@ function pendHtml(p, ctx) {
   const btns = loading ? `<span class="push"><button class="btn sm" data-act="reply-stop" data-id="${p.id}">Stop</button></span>`
     : `<span class="push">${ask}<button class="btn sm ${usable.length ? '' : 'primary'}" data-act="prompt-copy" data-id="${p.id}">Copy prompt for ${esc(where)}</button><button class="btn sm" data-act="reply-skip" data-id="${p.id}">Skip</button></span>`;
   return `<div class="pend ${p.state || ''}" data-pend="${p.id}" style="--c:${r.color}">
-    <div class="pend-h"><span class="avatar sm" style="background:${r.color}" aria-hidden="true">${esc(r.name[0])}</span>${head}${btns}</div>
+    <div class="pend-h">${avatarHtml(r, 'avatar sm')}${head}${btns}</div>
     ${p.state === 'error' ? `<p class="warn small">${esc(p.err)}</p>` : ''}
     ${loading ? '' : `<details><summary>Or copy the prompt by hand (about ${n} tokens)</summary><pre>${esc(prompt)}</pre></details>
     <label class="field"><span>Paste ${esc(r.name)}'s reply here</span><textarea data-draft="${p.id}" rows="3" placeholder="Paste the AI's answer">${esc(drafts[p.id] || '')}</textarea></label>
@@ -1228,7 +1287,7 @@ function clistInner() {
     ${steps.map((x, i) => `<button class="citem ${sel === 'step:' + x.id ? 'on' : ''}" data-act="chat-sel" data-sel="step:${x.id}"><span class="n">${i + 1}</span>${esc(x.name)}${badge(waiting(d + ':step:' + x.id))}</button>`).join('')}
     <button class="link small" style="text-align:left;padding:4px 8px" data-act="chat-edit">Edit steps and members</button>
     <div class="group-title" style="margin-top:8px">Private chats</div>
-    ${ROLES.map(r => `<button class="citem ${sel === 'dm:' + r.id ? 'on' : ''}" data-act="chat-sel" data-sel="dm:${r.id}"><i class="dot" style="background:${r.color}"></i>${esc(r.name)}${badge(waiting(d + ':dm:' + r.id))}</button>`).join('')}`;
+    ${ROLES.map(r => `<button class="citem ${sel === 'dm:' + r.id ? 'on' : ''}" data-act="chat-sel" data-sel="dm:${r.id}">${avatarHtml(r, 'avatar xs')}${esc(r.name)}${badge(waiting(d + ':dm:' + r.id))}</button>`).join('')}`;
 }
 function refreshThread() {
   const m = $('#msgs'); if (!m) return;
@@ -1250,7 +1309,7 @@ function threadHtml() {
   const steps = stepsFor(d), idx = dm ? -1 : steps.findIndex(x => 'step:' + x.id === curSel());
   const sub = dm ? `Private chat with ${esc(ms[0].name)}, ${esc(ms[0].title)}. ${esc(DIVS[d].label)}.`
                  : `Step ${idx + 1} of ${steps.length}: ${esc(stepName())}. ${esc(DIVS[d].label)}.`;
-  const faces = ms.map(m => `<span class="avatar sm" style="background:${m.color}" title="${esc(m.name)}, ${esc(m.title)}" aria-label="${esc(m.name)}">${esc(m.name[0])}</span>`).join('');
+  const faces = ms.map(m => `${avatarHtml(m, 'avatar sm', true)}`).join('');
   const toOpts = (dm ? [] : [`<option value="all" ${to === 'all' ? 'selected' : ''}>Everyone in this step</option>`])
     .concat(ms.map(m => `<option value="${m.id}" ${to === m.id ? 'selected' : ''}>${esc(m.name)}</option>`))
     .concat([`<option value="note" ${to === 'note' ? 'selected' : ''}>No one (just a note)</option>`]).join('');
@@ -1274,6 +1333,7 @@ function threadHtml() {
           <div class="checks"><label><input type="checkbox" id="cBrain" ${c.incBrain ? 'checked' : ''}> Studio brain</label>
             <label><input type="checkbox" id="cDec" ${c.incDec ? 'checked' : ''}> Last 5 decisions</label>
             <label><input type="checkbox" id="cTasks" ${c.incTasks ? 'checked' : ''}> Open tasks</label></div>
+          <label class="field"><span>Reply length</span><select id="cLen">${Object.entries(LENS).map(([k, v]) => `<option value="${k}" ${lenOf() === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
           <label class="field"><span>Earlier messages included</span><select id="cN">${[4, 8, 10, 16, 24].map(n => `<option value="${n}" ${c.n === n ? 'selected' : ''}>Last ${n}</option>`).join('')}</select></label>
           <p style="margin-top:6px">Fewer messages and a shorter brain use fewer tokens, which matters on free plans.</p></details>
         <button class="btn primary push" type="submit">Send</button>
@@ -1393,7 +1453,7 @@ function renderTree() {
       <button class="node creative${sel('creative')}" data-act="div" data-div="creative" aria-pressed="${state.division === 'creative'}"><i class="dot creative"></i>3D Creative<small>${plural(c('creative'), 'open task', 'open tasks')}</small></button>
     </div>`;
   $('#teamList').innerHTML = ROLES.map(r => `
-    <li><button class="node" data-act="dm" data-role="${r.id}" title="Chat with ${esc(r.name)}"><i class="dot" style="background:${r.color}"></i>${esc(r.name)}<span class="t">${esc(r.title)}</span></button></li>`).join('');
+    <li><button class="node" data-act="dm" data-role="${r.id}" title="Chat with ${esc(r.name)}">${avatarHtml(r, 'avatar xs')}${esc(r.name)}<span class="t">${esc(r.title)}</span></button></li>`).join('');
 }
 function renderTabs() {
   const scope = state.division === 'all' ? 'Showing both divisions' : `Showing ${DIVS[state.division].label}`;
@@ -1477,7 +1537,7 @@ function vTeam() {
   <div class="cards">${ROLES.map(r => `
     <article class="role">
       <div class="role-head">
-        <div class="avatar" style="background:${r.color}" aria-hidden="true">${esc(r.name[0])}</div>
+        ${avatarHtml(r, 'avatar lg')}
         <div><h2>${esc(r.name)}</h2><div class="small muted">${esc(r.title)}</div></div>
         <div class="models">Best on ${esc(r.model)}<br>Backup: ${esc(r.backup)}</div>
       </div>
@@ -1823,6 +1883,7 @@ setInterval(() => { if (state.view === 'overview') refreshLimits(); }, 30000);
 /* ---------- start ---------- */
 (() => { const v = location.hash.replace('#', ''); if (RENDER[v]) state.view = v; })();
 render();
+probeAvatars();
 })();
 </script>
 </body>
