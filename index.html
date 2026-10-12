@@ -1,0 +1,1829 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Limits where this page can send data. If you add a provider host in ALLOWED_HOSTS, add it here too. -->
+<meta http-equiv="Content-Security-Policy" content="connect-src https://api.anthropic.com https://generativelanguage.googleapis.com https://api.x.ai https://openrouter.ai; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Studio Board</title>
+<meta name="description" content="Console for a one-person 3D studio run with an AI team.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --clay:#e3e5e8;          /* page background, unlit clay render */
+  --plaster:#f4f5f6;       /* panels */
+  --ink:#1d2026;
+  --graphite:#586070;
+  --line:#cdd1d7;
+  --agency:#f26a1b;        /* selection orange */
+  --agency-text:#b8480a;
+  --creative:#2386d6;      /* viewport blue */
+  --creative-text:#17639f;
+  --danger:#b3261e;
+  --ok:#1f7a4d;
+  --f-display:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;
+  --f-body:'Instrument Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--clay);color:var(--ink);font:15px/1.5 var(--f-body);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);margin:0;letter-spacing:-.01em;line-height:1.15}
+h1{font-size:28px;font-weight:700}
+h2{font-size:18px;font-weight:700}
+h3{font-size:15px;font-weight:700}
+p{margin:0}
+.muted{color:var(--graphite)}
+.small{font-size:13px}
+
+/* layout */
+.app{display:grid;grid-template-columns:268px minmax(0,1fr);min-height:100vh}
+.outliner{background:var(--plaster);border-right:1px solid var(--line);padding:18px 12px 20px;position:sticky;top:0;height:100vh;overflow:auto;display:flex;flex-direction:column;gap:18px}
+.main{padding:0 32px 64px;min-width:0}
+
+/* outliner */
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px;font:700 17px var(--f-display)}
+.brand svg{flex:none}
+.tree{display:flex;flex-direction:column;gap:2px}
+.node{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:none;border:2px solid transparent;border-radius:6px;padding:6px 8px;line-height:1.25}
+.node:hover{background:#e9ebee}
+.node small{margin-left:auto;color:var(--graphite);font-size:12px}
+.node.sel{background:#fff;border-color:var(--ink)}
+.node.sel.agency{border-color:var(--agency)}
+.node.sel.creative{border-color:var(--creative)}
+.children{margin-left:15px;padding-left:10px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--ink)}
+.dot.agency{background:var(--agency)}
+.dot.creative{background:var(--creative)}
+.cube{width:14px;height:14px;flex:none;border:2px solid var(--ink);border-radius:3px;transform:rotate(45deg) scale(.8)}
+.group-title{padding:0 8px;font:700 13px var(--f-display);color:var(--graphite)}
+.team-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.team-list .node span.t{color:var(--graphite);font-size:12px;margin-left:auto}
+.data-links{margin-top:auto;display:flex;gap:12px;flex-wrap:wrap;padding:0 8px;font-size:13px}
+.link{background:none;border:0;padding:0;color:var(--graphite);text-decoration:underline;text-underline-offset:3px}
+.link:hover{color:var(--ink)}
+
+/* tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:0 -32px 28px;padding:0 32px;position:sticky;top:0;background:var(--clay);z-index:5;overflow-x:auto}
+.tab{background:none;border:0;border-bottom:3px solid transparent;padding:16px 12px 11px;font-weight:500;color:var(--graphite);white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab[aria-current="page"]{color:var(--ink);border-bottom-color:var(--ink);font-weight:600}
+.scope{margin-left:auto;align-self:center;font-size:13px;color:var(--graphite);white-space:nowrap;padding-left:16px}
+
+/* generic */
+.vh{margin-bottom:22px;max-width:720px}
+.vh p{margin-top:8px;color:var(--graphite)}
+.panel{background:var(--plaster);border:1px solid var(--line);border-radius:10px;padding:18px}
+.panel+.panel{margin-top:16px}
+.panel>h2{margin-bottom:12px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+.stack{display:flex;flex-direction:column;gap:16px}
+.stack .panel+.panel{margin-top:0}
+.banner{background:#fff;border:1px dashed var(--graphite);border-radius:10px;padding:12px 14px;margin-bottom:22px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.banner p{flex:1;min-width:220px}
+
+.btn{border:1px solid var(--ink);background:transparent;border-radius:6px;padding:7px 12px;font-weight:500}
+.btn:hover{background:#fff}
+.btn.primary{background:var(--ink);color:#fff}
+.btn.primary:hover{background:#000}
+.btn.sm{padding:3px 8px;font-size:13px}
+.btn:disabled{opacity:.35;cursor:default}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field>span{font-size:13px;font-weight:500;color:var(--graphite)}
+input,select,textarea{background:#fff;border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:84px;line-height:1.45}
+input:focus,select:focus,textarea:focus{border-color:var(--ink);outline:none;box-shadow:0 0 0 2px rgba(29,32,38,.15)}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end;margin-bottom:20px}
+.form-row .wide{grid-column:span 2}
+.form-row.stackform{grid-template-columns:1fr 1fr}
+.form-row.stackform .full{grid-column:1/-1}
+
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:1px 9px 1px 7px;border-radius:99px;border:1px solid var(--line);background:#fff;white-space:nowrap}
+.tag.agency{color:var(--agency-text);border-color:rgba(242,106,27,.45)}
+.tag.creative{color:var(--creative-text);border-color:rgba(35,134,214,.45)}
+.tag .dot{width:8px;height:8px}
+
+/* lists */
+.rows{list-style:none;margin:0;padding:0}
+.rows li{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.rows li:first-child{border-top:0;padding-top:0}
+.rows .grow{flex:1;min-width:0}
+.rows .when{font-size:13px;color:var(--graphite);white-space:nowrap}
+.rows .when.late{color:var(--danger);font-weight:600}
+.empty{color:var(--graphite);padding:6px 0}
+
+/* limit watch */
+.lim{padding:12px 0;border-top:1px solid var(--line)}
+.lim:first-of-type{border-top:0;padding-top:4px}
+.lim-top{display:flex;align-items:center;gap:10px}
+.lim-top b{font-family:var(--f-display)}
+.lim-top .push{margin-left:auto;display:flex;gap:6px}
+.meter{height:8px;border-radius:99px;background:#dfe2e6;margin:9px 0 6px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--ink);border-radius:99px;transition:width .25s}
+.meter i.hot{background:var(--danger)}
+.lim-set{display:flex;gap:10px;margin-top:8px}
+.lim-set label{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--graphite)}
+.lim-set input{width:64px;padding:3px 6px}
+
+/* team */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
+.role{background:var(--plaster);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.role-head{display:flex;gap:12px;align-items:center}
+.avatar{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font:700 18px var(--f-display);color:#fff;flex:none}
+.role-head .models{margin-left:auto;text-align:right;font-size:12.5px;color:var(--graphite);line-height:1.35}
+.quote{font-style:italic;color:var(--graphite)}
+.kv{display:grid;grid-template-columns:86px 1fr;gap:4px 10px;font-size:14px}
+.kv dt{color:var(--graphite)}
+.kv dd{margin:0}
+.skills{display:flex;flex-wrap:wrap;gap:6px}
+.skill{border:1px solid var(--line);background:#fff;border-radius:6px;padding:4px 9px;font-size:13px}
+.skill:hover{border-color:var(--ink)}
+.role-foot{margin-top:auto;display:flex;gap:8px}
+
+/* board */
+.kanban{display:grid;grid-template-columns:repeat(5,minmax(210px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
+.col{background:#d9dce0;border-radius:10px;padding:10px;min-height:160px}
+.col>h3{display:flex;justify-content:space-between;padding:2px 4px 10px;font-size:14px}
+.col>h3 span{color:var(--graphite);font-weight:500}
+.task{background:var(--plaster);border:1px solid var(--line);border-left-width:4px;border-radius:8px;padding:10px;margin-bottom:8px;display:flex;flex-direction:column;gap:8px}
+.task.agency{border-left-color:var(--agency)}
+.task.creative{border-left-color:var(--creative)}
+.task .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--graphite)}
+.task .meta .late{color:var(--danger);font-weight:600}
+.task .ctl{display:flex;gap:6px}
+.task .ctl .spacer{margin-left:auto}
+
+/* money */
+.sumgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:20px}
+.sum h2{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.sum dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:5px 12px}
+.sum dt{color:var(--graphite)}
+.sum dd{margin:0;text-align:right;font-weight:500}
+.sum .keep{border-top:1px solid var(--line);padding-top:7px;margin-top:4px;color:var(--ink);font-weight:700}
+.sum dd.keep{font-family:var(--f-display);font-size:17px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--plaster)}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:middle}
+thead th{border-top:0;font-weight:600;color:var(--graphite);font-size:13px;background:#eceef0}
+td.num,th.num{text-align:right}
+.in{color:var(--ok)}
+.out{color:var(--ink)}
+.stat{border:1px solid var(--line);background:#fff;border-radius:99px;padding:2px 10px;font-size:13px}
+.stat.Due{border-color:var(--agency);color:var(--agency-text)}
+.stat.Received{border-color:var(--ok);color:var(--ok)}
+
+/* decisions */
+.dec{background:var(--plaster);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.dec+.dec{margin-top:12px}
+.dec-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dec-head .date{color:var(--graphite);font-size:13px}
+.dec-head .push{margin-left:auto}
+.dec dl{margin:0;display:grid;grid-template-columns:78px 1fr;gap:3px 10px;font-size:14px}
+.dec dt{color:var(--graphite)}
+.dec dd{margin:0}
+
+/* ai button, status dots, modal */
+.tabs-right{margin-left:auto;display:flex;align-items:center;gap:14px;padding-left:12px;position:sticky;right:0;background:var(--clay)}
+.tabs-right .scope{margin-left:0;padding-left:0}
+.ai-btn{display:flex;align-items:center;gap:8px;background:var(--plaster);border:1px solid var(--ink);border-radius:99px;padding:5px 14px 5px 11px;margin:7px 0;white-space:nowrap}
+.ai-btn:hover{background:#fff}
+.ai-btn b{font-family:var(--f-display)}
+.sdot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block;background:#a2a8b3;border:1px solid rgba(0,0,0,.18)}
+.sdot.ok{background:#1fa463;border-color:#1a8a53}
+.sdot.fail{background:var(--danger);border-color:var(--danger)}
+.sdot.warn{background:#e0a11b;border-color:#b98211}
+.sdot.testing,.sdot.busy{background:var(--creative);border-color:var(--creative);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+.overlay{position:fixed;inset:0;background:rgba(20,22,26,.55);display:none;align-items:flex-start;justify-content:center;padding:4vh 16px;overflow:auto;z-index:20}
+.overlay.open{display:flex}
+.sheet{background:var(--plaster);border-radius:12px;width:min(820px,100%);padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.sheet-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px}
+.sheet-head .push{margin-left:auto}
+.sheet-head p{margin-top:4px}
+.kcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.krow{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.keyin{display:flex;gap:8px}
+.keyin input{flex:1}
+.kfoot{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.kfoot .push,.out-foot .push{margin-left:auto}
+.kstat{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--graphite);min-width:0;flex:1 1 220px}
+.kstat .sdot{margin-top:5px}
+.kstat span{overflow-wrap:anywhere}
+.assign{display:flex;flex-direction:column}
+.arow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.arow:first-child{border-top:0}
+.arow .grow{flex:1 1 150px;min-width:0}
+.arow select{width:auto;max-width:270px;flex:0 1 270px}
+.arow .uses{flex:1 1 100%;margin-left:40px}
+.opts{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.notes{margin:16px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+
+/* chat */
+.chat{display:grid;grid-template-columns:236px minmax(0,1fr);gap:18px;align-items:start}
+.clist{display:flex;flex-direction:column;gap:2px;position:sticky;top:72px}
+.clist .group-title{padding:8px 8px 4px}
+.seg{display:flex;border:1px solid var(--ink);border-radius:6px;overflow:hidden;margin:0 0 8px}
+.seg button{flex:1;border:0;background:transparent;padding:6px 8px;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.citem{display:flex;align-items:center;gap:8px;text-align:left;width:100%;border:2px solid transparent;background:none;border-radius:6px;padding:6px 8px;line-height:1.25}
+.citem:hover{background:#e9ebee}
+.citem.on{background:#fff;border-color:var(--ink)}
+.citem .n{width:20px;height:20px;flex:none;border-radius:50%;border:1.5px solid var(--graphite);display:grid;place-items:center;font-size:12px;color:var(--graphite)}
+.citem.on .n{border-color:var(--ink);color:var(--ink)}
+.wait{margin-left:auto;font-size:12px;background:var(--ink);color:#fff;border-radius:99px;padding:0 8px;white-space:nowrap}
+.thread{background:var(--plaster);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;min-width:0}
+.th-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line)}
+.th-head .titles{flex:1;min-width:200px}
+.th-head input{border-color:transparent;background:transparent;font:700 18px var(--f-display);padding:3px 6px;margin-left:-6px}
+.th-head input:hover{border-color:var(--line)}
+.faces{display:flex}
+.faces .avatar+.avatar{margin-left:-6px}
+.avatar.sm{width:30px;height:30px;border-radius:9px;font-size:14px;border:2px solid var(--plaster)}
+.msgs{display:flex;flex-direction:column;gap:14px;padding:16px;overflow-y:auto;min-height:240px;max-height:52vh}
+.msg{display:flex;gap:10px;align-items:flex-start;max-width:88%}
+.msg.me{align-self:flex-end;flex-direction:column;align-items:flex-end}
+.msg .body{min-width:0}
+.bub{background:#fff;border:1px solid var(--line);border-radius:4px 14px 14px 14px;padding:9px 12px;line-height:1.5;overflow-wrap:anywhere}
+.msg.me .bub{background:var(--ink);color:#fff;border-color:var(--ink);border-radius:14px 4px 14px 14px;text-align:left}
+.mm{font-size:12.5px;color:var(--graphite);margin-bottom:3px}
+.mm b{color:var(--ink);margin-right:6px}
+.mm .via{margin-left:8px;font-size:12px}
+.msg.me .mm{text-align:right}
+.macts{display:flex;gap:12px;margin-top:3px}
+.empty-chat{color:var(--graphite);max-width:520px;margin:auto;text-align:center;padding:20px 0}
+.tray{border-top:1px solid var(--line);padding:12px 0 2px;background:#eceef0}
+.tray:empty{display:none}
+.tray>p{padding:0 16px 8px}
+.pend{border:1px dashed var(--c,var(--graphite));border-radius:10px;background:#fff;padding:12px;margin:0 16px 12px;display:flex;flex-direction:column;gap:8px}
+.pend.loading{border-style:solid}
+.pend.error{border-color:var(--danger)}
+.pend-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pend-h .push{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.askrow{display:flex;gap:6px;align-items:center}
+.askrow select{width:auto;max-width:210px;padding:3px 6px;font-size:13px}
+.pend details summary{cursor:pointer;font-size:13px;color:var(--graphite)}
+.pend pre{white-space:pre-wrap;font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--plaster);border:1px solid var(--line);border-radius:6px;padding:10px;max-height:240px;overflow:auto;margin:8px 0 0}
+.acts{margin-top:6px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--ink);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.acts-h{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.acts ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.acts li{font-size:14px;overflow-wrap:anywhere}
+.acts-f{display:flex;gap:8px;flex-wrap:wrap}
+.acts-f:empty{display:none}
+.tag.okay{color:var(--ok);border-color:rgba(31,122,77,.5)}
+.composer{border-top:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.comp-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:12px}
+.composer textarea{min-height:76px}
+.pset{font-size:13px;color:var(--graphite)}
+.pset summary{cursor:pointer}
+.pset .checks{margin:8px 0 0}
+.pset .field{max-width:220px;margin-top:8px}
+.stepedit{margin:12px 16px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px}
+.stepedit fieldset{border:1px solid var(--line);border-radius:8px;padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px 16px;margin:10px 0}
+.stepedit legend{font-size:13px;color:var(--graphite);padding:0 4px}
+.chk{display:flex;align-items:flex-start;gap:6px;font-size:14px}
+.chk input{width:auto;margin-top:3px}
+.checks{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 14px;font-size:14px}
+.checks label{display:flex;gap:6px;align-items:center}
+.checks input{width:auto}
+.out-foot{display:flex;gap:12px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.warn{color:var(--danger)}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:9px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:.2s;z-index:40;font-size:14px}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:980px){
+  .app{grid-template-columns:1fr}
+  .outliner{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .team-list{flex-direction:row;flex-wrap:wrap}
+  .team-list .node{width:auto}
+  .team-list .node span.t{display:none}
+  .main{padding:0 16px 56px}
+  .tabs{margin:0 -16px 22px;padding:0 16px}
+  .grid2{grid-template-columns:1fr}
+  .chat{grid-template-columns:1fr}
+  .clist{position:static}
+  .comp-row{grid-template-columns:1fr}
+  .scope{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="outliner" aria-label="Studio scope and team">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M13 2 23 7.5v11L13 24 3 18.5v-11L13 2Z" stroke="#1d2026" stroke-width="2" stroke-linejoin="round"/><path d="M3 7.5 13 13l10-5.5M13 13v11" stroke="#1d2026" stroke-width="2" stroke-linejoin="round"/><path d="M13 13 3 7.5v11L13 24V13Z" fill="#f26a1b"/></svg>
+      Studio Board
+    </div>
+    <div>
+      <div class="group-title" style="margin-bottom:6px">Scope</div>
+      <div class="tree" id="tree"></div>
+    </div>
+    <div>
+      <div class="group-title" style="margin-bottom:6px">Team</div>
+      <ul class="team-list" id="teamList"></ul>
+    </div>
+    <div class="data-links">
+      <button class="link" data-act="data-export">Back up</button>
+      <button class="link" data-act="data-import">Restore</button>
+      <button class="link" data-act="data-clear">Clear data</button>
+      <input type="file" id="fileIn" accept="application/json" hidden>
+    </div>
+  </aside>
+
+  <main class="main">
+    <nav class="tabs" id="tabs" aria-label="Views"></nav>
+    <div id="view"></div>
+  </main>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- helpers ---------- */
+const LS_KEY = 'studioBoard.v1';
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const iso = d => { const z = new Date(d.getTime() - d.getTimezoneOffset() * 60000); return z.toISOString().slice(0, 10); };
+const todayISO = () => iso(new Date());
+const addDays = n => { const d = new Date(); d.setDate(d.getDate() + n); return iso(d); };
+const dayDiff = s => Math.round((new Date(s + 'T00:00:00') - new Date(todayISO() + 'T00:00:00')) / 864e5);
+const rp = n => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(n) || 0);
+const tokens = s => Math.ceil(s.length / 4);
+
+/* ---------- reference data ---------- */
+const DIVS = {
+  agency:   { label: '3D Agency',   short: 'Agency' },
+  creative: { label: '3D Creative', short: 'Creative' }
+};
+const STATUSES = ['Proposed', 'Approved', 'In Progress', 'Review', 'Completed'];
+const PAY = ['Expected', 'Due', 'Received'];
+const VIEWS = [
+  ['overview', 'Overview'], ['chat', 'Chat'], ['team', 'Team'], ['board', 'Board'],
+  ['money', 'Money'], ['decisions', 'Decisions'], ['brain', 'Studio brain']
+];
+
+const ROLES = [
+  { id: 'mira', name: 'Mira', title: 'Art Director', color: '#d9573f', model: 'Gemini', backup: 'Claude',
+    character: 'Calm, opinionated, hates generic work. Asks "why this style?" before anything else.',
+    owns: 'Visual direction and quality.',
+    agency: 'Reviews client briefs and references, proposes styles, flags weak briefs before I start.',
+    creative: 'Product concepts, style consistency across packs, packaging, content visuals.',
+    pushback: 'Rejects ideas that look like everyone else\'s.',
+    skills: [
+      { name: 'Brief Review', div: 'agency', io: 'client brief and references -> missing info, risks, 3 style directions' },
+      { name: 'Concept Pitch', div: 'both', io: 'my idea -> 3 variations with pros and cons' },
+      { name: 'Style Guide Check', div: 'both', io: 'my description of a work in progress -> consistency notes against my style' },
+      { name: 'Pack Planner', div: 'creative', io: 'a theme -> list of assets that make a cohesive product pack' } ] },
+  { id: 'rico', name: 'Rico', title: 'Producer', color: '#2f6fb0', model: 'Claude', backup: 'Gemini',
+    character: 'Blunt, numbers-first, protects my time.',
+    owns: 'Scope, hours, pricing, feasibility.',
+    agency: 'Estimates hours, revision risk and price, and tells me when to decline a job.',
+    creative: 'Estimates production cost per product and tells me if it is worth making.',
+    pushback: 'Says things like "This takes 40 hours and pays for 15. No."',
+    skills: [
+      { name: 'Quote Builder', div: 'agency', io: 'brief -> hours, revision risk, price range' },
+      { name: 'Go / No-Go', div: 'both', io: 'a job or product idea -> verdict with reasons' },
+      { name: 'Rate Check', div: 'agency', io: 'past projects -> my real hourly rate' },
+      { name: 'Product ROI', div: 'creative', io: 'product idea -> production cost vs expected earnings' } ] },
+  { id: 'dewi', name: 'Dewi', title: 'Coordinator / PM', color: '#7a5bb5', model: 'Claude', backup: 'Gemini',
+    character: 'Organized, a little strict, never lets things slip.',
+    owns: 'Tasks, milestones, deadlines, calendar.',
+    agency: 'Turns approved scope into tasks, tracks revisions, warns about blocked or overdue work.',
+    creative: 'Content calendar, product roadmap, release dates, quality checks.',
+    pushback: 'Tells me when I am overbooked and what must move.',
+    skills: [
+      { name: 'Scope to Tasks', div: 'agency', io: 'approved scope -> task list with milestones and dates' },
+      { name: 'Weekly Plan', div: 'both', io: 'all active work -> what to do this week and what to drop' },
+      { name: 'Content Calendar', div: 'creative', io: 'goals -> monthly publishing schedule' },
+      { name: 'Overdue Alert', div: 'both', io: 'the board -> blocked or late items and what they affect' } ] },
+  { id: 'sasha', name: 'Sasha', title: 'Marketing Strategist', color: '#c2417a', model: 'Grok', backup: 'Gemini',
+    character: 'Fast, trend-aware, a bit impatient. Always asks "who is this for?"',
+    owns: 'Audience, trends, timing, promotion.',
+    agency: 'Helps position my services and find clients (light role).',
+    creative: 'Seasonal opportunities, niches, competitors, launch and promotion plans.',
+    pushback: 'Shows demand data against my idea.',
+    skills: [
+      { name: 'Trend Scan', div: 'creative', io: 'a season or niche -> ranked product opportunities' },
+      { name: 'Competitor Check', div: 'creative', io: 'a product idea -> who sells similar, at what price' },
+      { name: 'Launch Plan', div: 'creative', io: 'finished product -> promotion steps by date' },
+      { name: 'Audience Profile', div: 'both', io: 'a product or service -> who buys it and where they spend time' } ] },
+  { id: 'bima', name: 'Bima', title: 'Copywriter / SEO', color: '#5f7d1c', model: 'Claude', backup: 'Gemini',
+    character: 'Witty, concise, hates filler.',
+    owns: 'Every word that goes public.',
+    agency: 'Proposals, quotes, client emails, portfolio descriptions.',
+    creative: 'Product titles, descriptions, tags, keywords, scripts, captions, hooks.',
+    pushback: 'Cuts my copy in half.',
+    skills: [
+      { name: 'Listing Writer', div: 'creative', io: 'product details -> title, description, tags, keywords' },
+      { name: 'Script Writer', div: 'creative', io: 'content idea -> hook, script, caption' },
+      { name: 'Proposal Writer', div: 'agency', io: 'quote -> client-ready proposal' },
+      { name: 'Cut It', div: 'both', io: 'my draft -> a shorter version' } ] },
+  { id: 'nadia', name: 'Nadia', title: 'PR / Client Relations', color: '#b0702a', model: 'Claude', backup: 'Gemini',
+    character: 'Warm, diplomatic, remembers every client detail.',
+    owns: 'Client communication and records.',
+    agency: 'Onboarding, collecting briefs, spotting missing info, follow-ups, difficult-client messages.',
+    creative: 'Community, comments, collaborators, sponsor outreach (light role).',
+    pushback: 'Tells me when a message is too harsh or too vague before I send it.',
+    skills: [
+      { name: 'Client Onboarding', div: 'agency', io: 'new inquiry -> question list and client record' },
+      { name: 'Follow-up Writer', div: 'agency', io: 'project status -> polite reminder message' },
+      { name: 'Tough Message', div: 'agency', io: 'a difficult situation -> 2 versions, firm and soft' },
+      { name: 'Client Recap', div: 'agency', io: 'finished project -> summary and a request for a testimonial' } ] },
+  { id: 'arga', name: 'Arga', title: 'Finance', color: '#3f4a5a', model: 'Any', backup: 'Gemini',
+    character: 'Dry, precise, zero optimism about money.',
+    owns: 'Every number.',
+    agency: 'Invoices, deposits, expenses, profit per project, late payments.',
+    creative: 'Sales, platform fees, payout dates, content income.',
+    pushback: 'Says things like "Revenue is not profit. Here is what you actually kept."',
+    extra: 'Use only the money figures I paste in. If a figure is missing, ask for it. Never estimate from memory.',
+    skills: [
+      { name: 'Invoice Tracker', div: 'agency', io: 'payments in and out -> who owes what, due dates' },
+      { name: 'Project Profit', div: 'agency', io: 'one project -> real profit after expenses' },
+      { name: 'Payout Forecast', div: 'creative', io: 'marketplace sales -> expected payout dates and amounts' },
+      { name: 'Monthly Report', div: 'both', io: 'all records -> Agency and Creative reported separately' } ] }
+];
+const roleById = id => ROLES.find(r => r.id === id);
+
+/* ---------- state ---------- */
+function blank() {
+  return {
+    division: 'all', view: 'overview', sample: false,
+    brain: { goals: '', brand: '', open: '' },
+    tasks: [], money: [], decisions: [],
+    steps: defaultSteps(), threads: {},
+    chat: { div: 'agency', sel: '', to: 'all', skill: '', n: 10, incBrain: true, incDec: true, incTasks: false, editing: false },
+    limits: {
+      claude: { name: 'Claude', hours: 5,  cap: 30,   count: 0, start: null },
+      gemini: { name: 'Gemini', hours: 24, cap: null, count: 0, start: null },
+      grok:   { name: 'Grok',   hours: 2,  cap: 10,   count: 0, start: null }
+    }
+  };
+}
+function sample() {
+  const s = blank();
+  s.sample = true;
+  s.brain.goals = 'Build a steady 3D business: client work for cash flow, own products for long-term income.\nBudget for tools: Rp 500,000 per month.\nI can produce about 15 focused hours per week outside client work.';
+  s.brain.brand = 'Studio style: soft stylized props, clean topology, warm lighting.\nVoice: friendly, short sentences, no hype.';
+  s.brain.open = 'Which marketplace should the first pack go to?\nShould Halloween assets be bundled with a winter pack?';
+  s.tasks = [
+    { id: uid(), title: 'Review brief and references for Client A product render', division: 'agency', status: 'Proposed', owner: 'mira', due: addDays(2) },
+    { id: uid(), title: 'Quote for packaging visuals', division: 'agency', status: 'Approved', owner: 'rico', due: addDays(-1) },
+    { id: uid(), title: 'Client A: first revision round', division: 'agency', status: 'In Progress', owner: 'dewi', due: addDays(5) },
+    { id: uid(), title: 'Halloween asset pack: 12 props', division: 'creative', status: 'In Progress', owner: 'dewi', due: addDays(9) },
+    { id: uid(), title: 'Winter pack concept options', division: 'creative', status: 'Proposed', owner: 'mira', due: addDays(14) },
+    { id: uid(), title: 'Listing copy for Halloween pack', division: 'creative', status: 'Approved', owner: 'bima', due: addDays(8) },
+    { id: uid(), title: 'Tutorial script: lighting basics', division: 'creative', status: 'Review', owner: 'bima', due: addDays(3) },
+    { id: uid(), title: 'Client B: delivered and approved', division: 'agency', status: 'Completed', owner: 'nadia', due: addDays(-6) }
+  ];
+  s.money = [
+    { id: uid(), division: 'agency', type: 'income', desc: 'Client A deposit (50%)', amount: 3000000, status: 'Received', date: addDays(-12) },
+    { id: uid(), division: 'agency', type: 'income', desc: 'Client A final invoice', amount: 3000000, status: 'Due', date: addDays(4) },
+    { id: uid(), division: 'agency', type: 'expense', desc: 'Render credits', amount: 450000, status: 'Received', date: addDays(-8) },
+    { id: uid(), division: 'creative', type: 'income', desc: 'Marketplace payout, September', amount: 1250000, status: 'Expected', date: addDays(6) },
+    { id: uid(), division: 'creative', type: 'income', desc: 'Sponsored tutorial', amount: 800000, status: 'Due', date: addDays(10) },
+    { id: uid(), division: 'creative', type: 'expense', desc: 'Texture subscription', amount: 300000, status: 'Received', date: addDays(-15) }
+  ];
+  s.decisions = [
+    { id: uid(), date: todayISO(), division: 'creative', role: 'sasha', topic: 'Pricing',
+      decision: 'Launch the Halloween pack at Rp 149k, not Rp 99k.',
+      why: 'A low price signals low quality for this audience.',
+      dissent: 'Rico wanted to test Rp 99k first.', revisit: 'After the first 50 sales.' }
+  ];
+  const k = 'agency:step:a2', m1 = uid();
+  s.chat.sel = 'step:a2';
+  s.threads[k] = { title: 'Client A packaging renders', msgs: [
+    { id: m1, from: 'me', to: 'all', skill: '', t: Date.now() - 36e5, text: 'Client A wants 6 packaging renders in 2 weeks for Rp 6,000,000. Is this worth taking?' },
+    { id: uid(), from: 'rico', to: 'me', t: Date.now() - 35e5, text: 'About 30 hours with two revision rounds, which works out to Rp 200k an hour. Counter at Rp 7.5M, or cut the scope to 4 renders.\n\nDECISION: Counter at Rp 7.5M for 6 renders, two revision rounds included.' },
+    { id: uid(), from: 'bima', to: 'me', t: Date.now() - 34e5, text: 'Lead the proposal with the delivery date you can really meet, then the price. Keep it to one page.' }
+  ], pending: [ { id: uid(), role: 'nadia', msgId: m1 } ] };
+  return s;
+}
+function load() {
+  try {
+    const r = localStorage.getItem(LS_KEY);
+    if (r) return healPending(Object.assign(blank(), JSON.parse(r)));
+  } catch (e) { /* storage blocked: run in memory */ }
+  return sample();
+}
+let state = load();
+const save = () => { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ } };
+
+/* ---------- derived ---------- */
+const inScope = x => state.division === 'all' || x.division === state.division;
+const scopeDivs = () => state.division === 'all' ? ['agency', 'creative'] : [state.division];
+const tasksF = () => state.tasks.filter(inScope);
+const openTasks = () => tasksF().filter(t => t.status !== 'Completed');
+const divTag = d => `<span class="tag ${d}"><i class="dot ${d}"></i>${esc(DIVS[d].short)}</span>`;
+const payLabel = m => m.type === 'expense' && m.status === 'Received' ? 'Paid' : m.status;
+function mstats(div) {
+  const rows = state.money.filter(m => m.division === div);
+  const sum = f => rows.filter(f).reduce((a, m) => a + (Number(m.amount) || 0), 0);
+  const inc = m => m.type === 'income', exp = m => m.type === 'expense';
+  const r = {
+    received: sum(m => inc(m) && m.status === 'Received'),
+    due: sum(m => inc(m) && m.status === 'Due'),
+    expected: sum(m => inc(m) && m.status === 'Expected'),
+    paid: sum(m => exp(m) && m.status === 'Received'),
+    unpaid: sum(m => exp(m) && m.status !== 'Received')
+  };
+  r.kept = r.received - r.paid;
+  return r;
+}
+function whenText(due) {
+  if (!due) return { t: 'no date', late: false };
+  const d = dayDiff(due);
+  if (d < 0) return { t: d === -1 ? 'overdue by 1 day' : `overdue by ${-d} days`, late: true };
+  if (d === 0) return { t: 'due today', late: false };
+  if (d === 1) return { t: 'due tomorrow', late: false };
+  return { t: `due in ${d} days`, late: false };
+}
+const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
+
+/* ---------- ai connections ---------- */
+const AI_KEY = 'studioBoard.ai.v1';
+/* Hosts this page may call. To use another one, add it here AND to the connect-src part of the Content-Security-Policy tag at the top. */
+const ALLOWED_HOSTS = ['api.anthropic.com', 'generativelanguage.googleapis.com', 'api.x.ai', 'openrouter.ai'];
+const PROVS = {
+  claude: { name: 'Claude', full: 'Claude (Anthropic)', get: 'https://platform.claude.com/settings/keys', model: 'claude-sonnet-5-5', base: 'https://api.anthropic.com' },
+  gemini: { name: 'Gemini', full: 'Gemini (Google)', get: 'https://aistudio.google.com/apikey', model: 'gemini-3.6-flash', base: 'https://generativelanguage.googleapis.com' },
+  grok:   { name: 'Grok', full: 'Grok (xAI)', get: 'https://console.x.ai', model: '', base: 'https://api.x.ai/v1' },
+  custom: { name: 'Other', full: 'Other (OpenAI-compatible)', get: 'https://openrouter.ai/keys', model: '', base: 'https://openrouter.ai/api/v1' }
+};
+const ROLE_PROV = { Claude: 'claude', Gemini: 'gemini', Grok: 'grok' };
+const blankAI = () => ({ keys: [], assign: {}, auto: true, fallback: false, actions: true });
+function loadAI() {
+  try {
+    const r = localStorage.getItem(AI_KEY);
+    if (r) {
+      const o = Object.assign(blankAI(), JSON.parse(r));
+      o.keys = (Array.isArray(o.keys) ? o.keys : []).map(k => Object.assign({ status: 'idle', msg: '', models: [] }, k, { status: k.status === 'testing' ? 'idle' : (k.status || 'idle') }));
+      return o;
+    }
+  } catch (e) { /* storage blocked */ }
+  return blankAI();
+}
+let ai = loadAI();
+const saveAI = () => { try { localStorage.setItem(AI_KEY, JSON.stringify(ai)); } catch (e) { /* ignore */ } };
+const findKey = id => ai.keys.find(k => k.id === id);
+const cleanKey = s => String(s == null ? '' : s).trim().replace(/^["']+|["']+$/g, '');
+const hasKey = k => !!k && cleanKey(k.key) !== '';
+const baseOf = k => String(k.base || PROVS[k.provider].base).replace(/\/+$/, '');
+const keyName = k => `${k.label || PROVS[k.provider].name}, ${k.model || 'no model yet'}`;
+const inflight = new Map();
+const running = {};
+const queued = {};
+let aiOpen = false;
+
+class ApiError extends Error {
+  constructor(msg, kind, status) { super(msg); this.kind = kind; this.status = status; }
+}
+function authHeaders(k) {
+  const key = cleanKey(k.key);
+  if (k.provider === 'claude') return { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true', 'content-type': 'application/json' };
+  if (k.provider === 'gemini') return { 'x-goog-api-key': key, 'content-type': 'application/json' };
+  return { 'authorization': 'Bearer ' + key, 'content-type': 'application/json' };
+}
+async function apiFetch(k, url, init, o) {
+  o = o || {};
+  const name = PROVS[k.provider].name, ms = o.ms || 60000;
+  if (!/^[\x21-\x7E]+$/.test(cleanKey(k.key))) throw new ApiError('The key has spaces or hidden characters. Copy it again and paste it without anything around it.', 'auth');
+  let u;
+  try { u = new URL(url); } catch (e) { throw new ApiError('The address looks wrong: ' + url, 'bad'); }
+  if (u.protocol !== 'https:' || !ALLOWED_HOSTS.includes(u.hostname)) {
+    throw new ApiError(`${u.hostname} is not allowed by this page's security rules. To use it, add it to ALLOWED_HOSTS and to the Content-Security-Policy line in index.html.`, 'bad');
+  }
+  const ctl = o.ctl || new AbortController();
+  const timer = setTimeout(() => { ctl.timedOut = true; ctl.abort(); }, ms);
+  let res;
+  try { res = await fetch(url, Object.assign({}, init, { signal: ctl.signal })); }
+  catch (e) {
+    clearTimeout(timer);
+    if (ctl.cancelled) throw new ApiError('Stopped.', 'cancelled');
+    if (ctl.timedOut || (e && e.name === 'AbortError')) throw new ApiError(`${name} took too long to answer (over ${Math.round(ms / 1000)} seconds).`, 'timeout');
+    throw new ApiError(`Could not reach ${name}. Check your internet connection. If it keeps happening, this provider may block calls made straight from a browser.`, 'network');
+  }
+  clearTimeout(timer);
+  const text = await res.text();
+  let data = null;
+  try { data = JSON.parse(text); } catch (e) { /* not json */ }
+  if (!res.ok) {
+    let detail = data && ((data.error && (data.error.message || data.error)) || data.message) || '';
+    if (typeof detail !== 'string') { try { detail = JSON.stringify(detail); } catch (e) { detail = ''; } }
+    detail = detail.replace(/\s+/g, ' ').slice(0, 240);
+    const tail = detail ? ` Details: ${detail}` : '';
+    const s = res.status;
+    if (s === 401 || s === 403) throw new ApiError(`${name} did not accept the key (${s}). Check that it is pasted in full, and that it is a ${name} key.${tail}`, 'auth', s);
+    if (s === 429) throw new ApiError(`${name} says this key is over its limit or quota (429). Wait a while, or use another key.${tail}`, 'limit', s);
+    if (s === 408 || s >= 500) throw new ApiError(`${name} is having trouble right now (${s}). Try again in a moment.${tail}`, 'server', s);
+    throw new ApiError(`${name} rejected the request (${s}).${tail}`, 'bad', s);
+  }
+  return { data, text };
+}
+
+async function listModels(k, o) {
+  const b = baseOf(k), init = { method: 'GET', headers: authHeaders(k) }, opt = Object.assign({ ms: 20000 }, o);
+  if (k.provider === 'claude') {
+    const { data } = await apiFetch(k, b + '/v1/models?limit=100', init, opt);
+    return ((data && data.data) || []).map(m => m.id).filter(Boolean);
+  }
+  if (k.provider === 'gemini') {
+    const { data } = await apiFetch(k, b + '/v1beta/models?pageSize=200', init, opt);
+    return ((data && data.models) || []).filter(m => !m.supportedGenerationMethods || m.supportedGenerationMethods.includes('generateContent'))
+      .map(m => String(m.name || '').replace(/^models\//, '')).filter(Boolean);
+  }
+  const { data } = await apiFetch(k, b + '/models', init, opt);
+  return ((data && data.data) || []).map(m => m.id).filter(Boolean);
+}
+
+async function generate(k, prompt, o) {
+  o = o || {};
+  const b = baseOf(k), model = String(k.model || '').trim(), opt = { ctl: o.ctl, ms: o.ms || 90000 };
+  if (!model) throw new ApiError('Pick a model first. Use Test connection to load the list.', 'bad');
+  let text = '';
+  if (k.provider === 'claude') {
+    const body = { model, max_tokens: o.max || 2048, messages: [{ role: 'user', content: prompt }] };
+    const { data } = await apiFetch(k, b + '/v1/messages', { method: 'POST', headers: authHeaders(k), body: JSON.stringify(body) }, opt);
+    text = ((data && data.content) || []).filter(x => x.type === 'text').map(x => x.text).join('\n');
+  } else if (k.provider === 'gemini') {
+    const body = { contents: [{ role: 'user', parts: [{ text: prompt }] }] };
+    if (o.max) body.generationConfig = { maxOutputTokens: o.max };
+    const { data } = await apiFetch(k, `${b}/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: authHeaders(k), body: JSON.stringify(body) }, opt);
+    const cand = data && data.candidates && data.candidates[0];
+    text = cand && cand.content && cand.content.parts ? cand.content.parts.map(p => p.text || '').join('') : '';
+    if (!text && !o.test && data && data.promptFeedback && data.promptFeedback.blockReason) throw new ApiError(`Gemini blocked this prompt (${data.promptFeedback.blockReason}).`, 'bad');
+  } else {
+    const body = { model, messages: [{ role: 'user', content: prompt }] };
+    if (o.max) body.max_tokens = o.max;
+    const { data } = await apiFetch(k, b + '/chat/completions', { method: 'POST', headers: authHeaders(k), body: JSON.stringify(body) }, opt);
+    const c = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    text = Array.isArray(c) ? c.map(x => x.text || '').join('') : (c || '');
+  }
+  text = String(text || '').trim();
+  if (!text && !o.test) throw new ApiError(`${PROVS[k.provider].name} sent back an empty reply. Try again, or use another AI.`, 'server');
+  return text;
+}
+
+function verKey(id) { return (String(id).match(/\d+(?:\.\d+)?/g) || ['0']).map(Number); }
+function newest(ids) {
+  return ids.slice().sort((a, b) => {
+    const x = verKey(a), y = verKey(b);
+    for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (y[i] || 0) - (x[i] || 0); if (d) return d; }
+    return a.localeCompare(b);
+  })[0];
+}
+function pickDefault(provider, ids) {
+  if (!ids.length) return '';
+  let pool = null;
+  if (provider === 'claude') pool = ids.filter(i => /sonnet/.test(i));
+  else if (provider === 'gemini') pool = ids.filter(i => /^gemini-[\d.]+-flash$/.test(i));
+  else if (provider === 'grok') pool = ids.filter(i => /^grok-[\d.]+$/.test(i));
+  return newest(pool && pool.length ? pool : ids);
+}
+function bumpSent(k) {
+  const t = todayISO();
+  if (k.day !== t) { k.day = t; k.sent = 0; }
+  k.sent = (k.sent || 0) + 1; saveAI();
+}
+const kStatText = k => {
+  const base = k.status === 'idle' ? 'Not tested yet' : (k.status === 'testing' ? 'Testing...' : k.msg);
+  const at = (k.status === 'ok' || k.status === 'warn' || k.status === 'fail') && k.tested ? ` Tested ${new Date(k.tested).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.` : '';
+  return base + at;
+};
+
+function primaryKey(roleId) {
+  const a = ai.assign[roleId]; if (a === 'manual') return null;
+  if (a) { const k = findKey(a); if (hasKey(k)) return k; }
+  const r = roleById(roleId), usable = ai.keys.filter(hasKey);
+  return usable.find(k => k.provider === ROLE_PROV[r.model]) || usable.find(k => k.provider === ROLE_PROV[r.backup]) || usable[0] || null;
+}
+function fallbackKeys(roleId, not) {
+  const r = roleById(roleId);
+  return ai.keys.filter(k => hasKey(k) && k !== not).sort((a, b) => (b.provider === ROLE_PROV[r.backup]) - (a.provider === ROLE_PROV[r.backup]));
+}
+const usesText = roleId => { const k = primaryKey(roleId); return k ? 'Uses ' + keyName(k) : 'Copy and paste'; };
+
+/* ---- ai button and popup ---- */
+function aiButtonHtml() {
+  const ok = ai.keys.filter(k => k.status === 'ok').length, bad = ai.keys.some(k => k.status === 'fail' || k.status === 'warn'), busy = inflight.size;
+  const cls = busy ? 'busy' : ok ? 'ok' : bad ? 'fail' : 'idle';
+  const label = busy ? `${busy} replying` : ok ? `${ok} connected` : (ai.keys.length ? 'Check keys' : 'Connect');
+  return `<button class="ai-btn" data-act="ai-open" aria-haspopup="dialog" title="AI connections"><i class="sdot ${cls}"></i><b>AI</b><span class="small muted">${label}</span></button>`;
+}
+function paintAIButton() { const w = $('#aiWrap'); if (w) w.innerHTML = aiButtonHtml(); }
+
+function keyCardHtml(k) {
+  const P = PROVS[k.provider], adv = k.provider === 'grok' || k.provider === 'custom' || !!k.base;
+  return `<div class="kcard" data-kid="${k.id}">
+    <div class="krow">
+      <label class="field"><span>Provider</span><select data-ai="${k.id}:provider">${Object.entries(PROVS).map(([id, p]) => `<option value="${id}" ${id === k.provider ? 'selected' : ''}>${esc(p.full)}</option>`).join('')}</select></label>
+      <label class="field"><span>Name</span><input data-ai="${k.id}:label" value="${esc(k.label)}" maxlength="30" placeholder="${esc(P.name)}"></label>
+    </div>
+    <label class="field"><span>${esc(P.name)} API key</span><span class="keyin"><input type="password" data-ai="${k.id}:key" value="${esc(k.key)}" autocomplete="off" spellcheck="false" placeholder="Paste your key here"><button type="button" class="btn sm" data-act="ai-show" data-id="${k.id}">Show</button></span></label>
+    <div class="krow">
+      <label class="field"><span>Model</span><input data-ai="${k.id}:model" list="dl-${k.id}" value="${esc(k.model)}" placeholder="${k.provider === 'grok' || k.provider === 'custom' ? 'Test connection to load the list' : esc(P.model)}" autocomplete="off" spellcheck="false"><datalist id="dl-${k.id}">${(k.models || []).map(m => `<option value="${esc(m)}"></option>`).join('')}</datalist></label>
+      ${adv ? `<label class="field"><span>Address (advanced)</span><input data-ai="${k.id}:base" value="${esc(k.base || '')}" placeholder="${esc(P.base)}" autocomplete="off" spellcheck="false"></label>` : ''}
+    </div>
+    <div class="kfoot">
+      <button type="button" class="btn" data-act="ai-test" data-id="${k.id}">Test connection</button>
+      <span class="kstat" id="ks-${k.id}" role="status" aria-live="polite"><i class="sdot ${k.status}"></i><span>${esc(kStatText(k))}</span></span>
+      <a class="link small push" href="${esc(P.get)}" target="_blank" rel="noopener noreferrer">Get an API key &#8599;</a>
+      <button type="button" class="btn sm danger" data-act="ai-del" data-id="${k.id}">Remove</button>
+    </div>
+    <div class="small muted" id="ksent-${k.id}">Requests sent from this app today: ${k.day === todayISO() ? (k.sent || 0) : 0}</div>
+  </div>`;
+}
+function assignHtml() {
+  return ROLES.map(r => {
+    const cur = ai.assign[r.id] || '';
+    return `<div class="arow"><span class="avatar sm" style="background:${r.color}" aria-hidden="true">${esc(r.name[0])}</span>
+      <div class="grow"><b>${esc(r.name)}</b> <span class="small muted">${esc(r.title)}</span></div>
+      <select data-ai-assign="${r.id}" aria-label="AI for ${esc(r.name)}"><option value="" ${cur === '' ? 'selected' : ''}>Automatic (best match)</option>${ai.keys.map(k => `<option value="${k.id}" ${cur === k.id ? 'selected' : ''}>${esc(keyName(k))}</option>`).join('')}<option value="manual" ${cur === 'manual' ? 'selected' : ''}>Copy and paste (no AI)</option></select>
+      <span class="small muted uses" id="uses-${r.id}">${esc(usesText(r.id))}</span></div>`;
+  }).join('');
+}
+function aiModalHtml() {
+  return `<div class="sheet ai-sheet" role="dialog" aria-modal="true" aria-labelledby="aiTitle">
+    <div class="sheet-head"><div><h2 id="aiTitle">AI connections</h2><p class="small muted">Add your API keys here. Each key is saved only in this browser and sent straight to its provider.</p></div><button class="btn sm push" data-act="ai-close">Close</button></div>
+    <div id="aiKeys">${ai.keys.map(keyCardHtml).join('')}</div>
+    <div class="out-foot" style="margin:10px 0 18px"><button class="btn" data-act="ai-add">+ Add another key</button><span class="small muted">Two keys from the same provider are fine, for example two Gemini accounts.</span></div>
+    <h3>Who uses which AI</h3>
+    <p class="small muted" style="margin:4px 0 8px">Automatic picks each role's best match from the keys you added. You can override any role.</p>
+    <div id="aiAssign" class="assign">${assignHtml()}</div>
+    <h3 style="margin-top:18px">Behavior</h3>
+    <div class="opts">
+      <label class="chk"><input type="checkbox" data-ai-opt="auto" ${ai.auto ? 'checked' : ''}> Send replies automatically when a role has a key</label>
+      <label class="chk"><input type="checkbox" data-ai-opt="actions" ${ai.actions ? 'checked' : ''}> Let the AIs propose board changes (nothing is saved until you approve it)</label>
+      <label class="chk"><input type="checkbox" data-ai-opt="fallback" ${ai.fallback ? 'checked' : ''}> If an AI fails or runs out of messages, try another connected AI</label>
+      <p class="small muted" style="margin-left:24px">That last option can send the same prompt to a different company, with a different data policy.</p>
+    </div>
+    <ul class="notes small muted">
+      <li>Test connection loads your model list, then sends one tiny message to check the model answers.</li>
+      <li>Keys are kept in this browser's storage. Anyone who can use this browser profile can read them. Backups from this app never include keys.</li>
+      <li>Google may use free-tier Gemini data to improve its products, so keep client details and money figures out of a free Gemini key.</li>
+    </ul>
+  </div>`;
+}
+function openAI() {
+  if (!ai.keys.length) { ai.keys.push({ id: uid(), provider: 'gemini', label: '', key: '', model: PROVS.gemini.model, base: '', status: 'idle', msg: '', models: [] }); saveAI(); }
+  $('#overlay').innerHTML = aiModalHtml();
+  $('#overlay').classList.add('open'); aiOpen = true;
+  const f = $('#aiKeys input[type="password"]'); if (f) setTimeout(() => f.focus(), 30);
+}
+function closeAI() {
+  if (!aiOpen) return;
+  ai.keys = ai.keys.filter(k => hasKey(k) || k.status !== 'idle' || k.label || k.base);
+  ai.keys.forEach(k => { k.key = cleanKey(k.key); });
+  saveAI(); aiOpen = false;
+  $('#overlay').classList.remove('open'); $('#overlay').innerHTML = '';
+  paintAIButton();
+  if (state.view === 'chat') render();
+  const b = $('.ai-btn'); if (b) b.focus();
+}
+function paintKey(k) {
+  const s = $('#ks-' + k.id); if (s) s.innerHTML = `<i class="sdot ${k.status}"></i><span>${esc(kStatText(k))}</span>`;
+  const dl = $('#dl-' + k.id); if (dl) dl.innerHTML = (k.models || []).map(m => `<option value="${esc(m)}"></option>`).join('');
+  const mi = document.querySelector(`[data-ai="${k.id}:model"]`); if (mi && document.activeElement !== mi) mi.value = k.model || '';
+  const sent = $('#ksent-' + k.id); if (sent) sent.textContent = `Requests sent from this app today: ${k.day === todayISO() ? (k.sent || 0) : 0}`;
+  const tb = document.querySelector(`[data-act="ai-test"][data-id="${k.id}"]`); if (tb) tb.disabled = k.status === 'testing';
+  const as = $('#aiAssign'); if (as && !as.contains(document.activeElement)) as.innerHTML = assignHtml();
+  paintAIButton();
+}
+function setStatus(k, st, msg) { k.status = st; k.msg = msg; if (st !== 'testing' && st !== 'idle') k.tested = Date.now(); saveAI(); paintKey(k); }
+async function runTest(id) {
+  const k = findKey(id); if (!k) return;
+  k.key = cleanKey(k.key);
+  const inp = document.querySelector(`[data-ai="${k.id}:key"]`); if (inp) inp.value = k.key;
+  if (!k.key) { setStatus(k, 'fail', 'Paste a key first.'); return; }
+  setStatus(k, 'testing', 'Testing...');
+  let ids = [];
+  try { ids = await listModels(k); }
+  catch (e) { setStatus(k, 'fail', e.message); return; }
+  k.models = ids.slice(0, 300);
+  if (!k.model) k.model = pickDefault(k.provider, ids);
+  const t0 = Date.now();
+  try {
+    await generate(k, 'Reply with the single word OK.', { max: 24, ms: 40000, test: true });
+    bumpSent(k);
+    setStatus(k, 'ok', `Connected, key works. ${ids.length} models found, and ${k.model} replied in ${((Date.now() - t0) / 1000).toFixed(1)} seconds.`);
+  } catch (e) {
+    setStatus(k, 'warn', `The key works (${ids.length} models found), but ${k.model || 'the model'} did not answer. ${e.message}`);
+  }
+}
+function onAIField(t) {
+  const sp = String(t.dataset.ai).split(':'), k = findKey(sp[0]), f = sp[1]; if (!k) return;
+  if (f === 'provider') {
+    if (k.provider === t.value) return;
+    const old = k.provider; k.provider = t.value; k.models = []; k.status = 'idle'; k.msg = ''; k.base = '';
+    if (!k.model || k.model === PROVS[old].model) k.model = PROVS[k.provider].model;
+    saveAI();
+    const card = document.querySelector(`.kcard[data-kid="${k.id}"]`); if (card) card.outerHTML = keyCardHtml(k);
+    const as = $('#aiAssign'); if (as) as.innerHTML = assignHtml();
+    paintAIButton(); return;
+  }
+  k[f] = t.value;
+  if (f === 'key' && k.status !== 'idle') { k.status = 'idle'; k.msg = ''; const s = $('#ks-' + k.id); if (s) s.innerHTML = `<i class="sdot idle"></i><span>Not tested yet</span>`; paintAIButton(); }
+  saveAI();
+  const as = $('#aiAssign'); if (as && !as.contains(document.activeElement)) as.innerHTML = assignHtml();
+}
+function onAIChange(t) {
+  if (t.dataset.ai) { onAIField(t); return; }
+  if (t.dataset.aiAssign !== undefined) {
+    if (t.value) ai.assign[t.dataset.aiAssign] = t.value; else delete ai.assign[t.dataset.aiAssign];
+    saveAI(); const u = $('#uses-' + t.dataset.aiAssign); if (u) u.textContent = usesText(t.dataset.aiAssign); return;
+  }
+  if (t.dataset.aiOpt) { ai[t.dataset.aiOpt] = t.checked; saveAI(); return; }
+  if (t.dataset.pendKey) { const p = getThread().pending.find(x => x.id === t.dataset.pendKey); if (p) { p.keyId = t.value; save(); } return; }
+  if (t.dataset.actSel) {
+    const sp = t.dataset.actSel.split(':'), m = getThread().msgs.find(x => x.id === sp[0]), a = m && m.actions && m.actions[Number(sp[1])];
+    if (a) { a.skip = !t.checked; save(); }
+  }
+}
+document.addEventListener('input', e => { const t = e.target; if (t.dataset && t.dataset.ai) onAIField(t); });
+document.addEventListener('change', e => {
+  const t = e.target, d = t.dataset; if (!d) return;
+  if (d.ai || d.aiAssign !== undefined || d.aiOpt || d.pendKey || d.actSel) onAIChange(t);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && aiOpen) closeAI(); });
+document.addEventListener('mousedown', e => { if (aiOpen && e.target === $('#overlay')) closeAI(); });
+
+/* ---------- board actions (the AI proposes, you approve) ---------- */
+const ACTION_TYPES = ['add_task', 'update_task', 'add_money', 'log_decision'];
+const PERMS = {
+  mira: ['add_task', 'log_decision'], rico: ['add_task', 'log_decision'], dewi: ['add_task', 'update_task', 'log_decision'],
+  sasha: ['add_task', 'log_decision'], bima: ['add_task', 'log_decision'], nadia: ['add_task', 'log_decision'],
+  arga: ['add_money', 'add_task', 'log_decision']
+};
+const validDate = s => /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(new Date(s + 'T00:00:00'));
+function sanitizeAction(a, roleId, stepLabel) {
+  const r = roleById(roleId), clip = (s, n) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim().slice(0, n);
+  const out = { type: clip(a && a.type, 20), state: 'proposed' };
+  if (!ACTION_TYPES.includes(out.type)) return Object.assign(out, { state: 'invalid', reason: 'Unknown action type' });
+  if (!(PERMS[roleId] || []).includes(out.type)) return Object.assign(out, { state: 'invalid', reason: `${r.name} is not allowed to do this` });
+  if (out.type === 'add_task') {
+    out.title = clip(a.title, 140); if (!out.title) return Object.assign(out, { state: 'invalid', reason: 'Missing title' });
+    out.due = validDate(clip(a.due, 10)) ? clip(a.due, 10) : '';
+    out.owner = roleById(clip(a.owner, 12).toLowerCase()) ? clip(a.owner, 12).toLowerCase() : roleId;
+    out.status = STATUSES.includes(clip(a.status, 20)) ? clip(a.status, 20) : 'Proposed';
+  } else if (out.type === 'update_task') {
+    out.match = clip(a.match, 140); out.status = clip(a.status, 20);
+    if (!out.match || !STATUSES.includes(out.status)) return Object.assign(out, { state: 'invalid', reason: 'Needs a task name and a valid status' });
+  } else if (out.type === 'add_money') {
+    const n = typeof a.amount === 'number' ? a.amount : (/^\d+(\.\d+)?$/.test(String(a.amount)) ? Number(a.amount) : NaN);
+    out.desc = clip(a.desc, 120); out.amount = n;
+    const mt = clip(a.money_type, 10).toLowerCase(); out.mtype = mt;
+    out.status = PAY.includes(clip(a.status, 12)) ? clip(a.status, 12) : 'Expected';
+    out.date = validDate(clip(a.date, 10)) ? clip(a.date, 10) : todayISO();
+    if (mt !== 'income' && mt !== 'expense') return Object.assign(out, { state: 'invalid', reason: 'Needs money_type income or expense' });
+    if (!out.desc || !isFinite(n) || n < 0) return Object.assign(out, { state: 'invalid', reason: 'Needs a description and a plain number amount' });
+  } else if (out.type === 'log_decision') {
+    out.topic = clip(a.topic, 60) || stepLabel || 'Chat'; out.decision = clip(a.decision, 200);
+    out.why = clip(a.why, 200); out.dissent = clip(a.dissent, 200); out.revisit = clip(a.revisit, 120);
+    if (!out.decision) return Object.assign(out, { state: 'invalid', reason: 'Missing the decision' });
+  }
+  return out;
+}
+function parseActions(text, roleId, stepLabel) {
+  const actions = []; let clean = text;
+  const re = /```[a-z]*\s*([\s\S]*?)```/gi; let mm;
+  const blocks = [];
+  while ((mm = re.exec(text))) blocks.push({ raw: mm[0], body: mm[1] });
+  blocks.forEach(b => {
+    let j; try { j = JSON.parse(b.body.trim()); } catch (e) { return; }
+    const arr = Array.isArray(j) ? j : [j];
+    if (!arr.length || !arr.every(x => x && typeof x === 'object' && typeof x.type === 'string')) return;
+    arr.slice(0, 20).forEach(x => actions.push(sanitizeAction(x, roleId, stepLabel)));
+    clean = clean.replace(b.raw, '');
+  });
+  return { text: clean.trim(), actions };
+}
+function actDesc(a) {
+  const own = a.owner && roleById(a.owner) ? roleById(a.owner).name : '';
+  if (a.type === 'add_task') return `Add task: ${esc(a.title)}${own ? ', owner ' + esc(own) : ''}${a.due ? ', due ' + esc(a.due) : ''}${a.status && a.status !== 'Proposed' ? ', ' + esc(a.status) : ''}`;
+  if (a.type === 'update_task') return `Move task "${esc(a.match)}" to ${esc(a.status)}`;
+  if (a.type === 'add_money') return `Add ${a.mtype === 'expense' ? 'expense' : 'income'} ${esc(rp(a.amount))}: ${esc(a.desc)} (${esc(a.status)}, ${esc(a.date)})`;
+  if (a.type === 'log_decision') return `Log decision: ${esc(a.topic)}: ${esc(a.decision)}`;
+  return esc(a.type);
+}
+function actionsHtml(m) {
+  const list = m.actions || []; if (!list.length) return '';
+  const open = list.some(a => a.state === 'proposed'), done = list.some(a => a.state === 'applied');
+  const rows = list.map((a, i) => {
+    if (a.state === 'proposed') return `<li><label class="chk"><input type="checkbox" data-act-sel="${m.id}:${i}" ${a.skip ? '' : 'checked'}><span>${actDesc(a)}</span></label></li>`;
+    if (a.state === 'applied') return `<li><span>${actDesc(a)}</span> <span class="tag okay">Added</span></li>`;
+    if (a.state === 'dismissed') return `<li class="muted"><span>Not added: ${actDesc(a)}</span></li>`;
+    if (a.state === 'undone') return `<li class="muted"><span>Undone: ${actDesc(a)}</span></li>`;
+    if (a.state === 'failed') return `<li><span>${actDesc(a)}</span> <span class="warn small">Could not add: ${esc(a.reason)}</span></li>`;
+    return `<li class="muted"><span class="warn small">Blocked: ${esc(a.reason || 'not valid')}.</span></li>`;
+  }).join('');
+  return `<div class="acts"><div class="acts-h"><b>${open ? 'Proposed board changes' : 'Board changes'}</b><span class="small muted">${open ? 'Nothing is saved until you add them.' : ''}</span></div><ul>${rows}</ul>
+    <div class="acts-f">${open ? `<button class="btn sm primary" data-act="msg-apply" data-id="${m.id}">Add selected to the board</button><button class="btn sm" data-act="msg-dismiss" data-id="${m.id}">Dismiss</button>` : ''}${done ? `<button class="btn sm" data-act="msg-undo" data-id="${m.id}">Undo what was added</button>` : ''}</div></div>`;
+}
+function applyOne(a, D, roleId) {
+  if (a.type === 'add_task') { const t = { id: uid(), title: a.title, division: D, status: a.status, owner: a.owner, due: a.due }; state.tasks.push(t); return { ok: true, undo: { kind: 'task', id: t.id } }; }
+  if (a.type === 'update_task') {
+    const q = a.match.toLowerCase(), pool = state.tasks.filter(t => t.division === D);
+    let hit = pool.filter(t => t.title.toLowerCase() === q); if (!hit.length) hit = pool.filter(t => t.title.toLowerCase().includes(q));
+    if (hit.length !== 1) return { ok: false, reason: hit.length ? 'More than one task matches' : 'No task matches that name' };
+    const prev = hit[0].status; hit[0].status = a.status; return { ok: true, undo: { kind: 'status', id: hit[0].id, prev } };
+  }
+  if (a.type === 'add_money') { const m = { id: uid(), division: D, type: a.mtype, desc: a.desc, amount: a.amount, status: a.status, date: a.date }; state.money.push(m); return { ok: true, undo: { kind: 'money', id: m.id } }; }
+  if (a.type === 'log_decision') { const d = { id: uid(), date: todayISO(), division: D, role: roleId, topic: a.topic, decision: a.decision, why: a.why, dissent: a.dissent, revisit: a.revisit }; state.decisions.push(d); return { ok: true, undo: { kind: 'decision', id: d.id } }; }
+  return { ok: false, reason: 'Unknown action' };
+}
+function undoOne(u) {
+  if (!u) return;
+  if (u.kind === 'task') state.tasks = state.tasks.filter(x => x.id !== u.id);
+  else if (u.kind === 'money') state.money = state.money.filter(x => x.id !== u.id);
+  else if (u.kind === 'decision') state.decisions = state.decisions.filter(x => x.id !== u.id);
+  else if (u.kind === 'status') { const t = state.tasks.find(x => x.id === u.id); if (t) t.status = u.prev; }
+}
+function actionRules(r, D) {
+  if (ai.actions === false) return [];
+  const allowed = PERMS[r.id] || []; if (!allowed.length) return [];
+  const L = ['', 'BOARD ACTIONS (optional): when I ask you to plan or create work, you may propose changes to my board. Put them in ONE fenced block at the very end of your reply, after your normal text:',
+    '```actions', '[{"type":"add_task","title":"Short task name","owner":"dewi","due":"YYYY-MM-DD","status":"Proposed"}]', '```',
+    `Types you may use: ${allowed.join(', ')}.`];
+  if (allowed.includes('add_task')) L.push('- add_task: title, owner (mira, rico, dewi, sasha, bima, nadia or arga), due (YYYY-MM-DD), status (Proposed, Approved, In Progress, Review or Completed).');
+  if (allowed.includes('update_task')) L.push('- update_task: match (words from an existing task title), status.');
+  if (allowed.includes('add_money')) L.push('- add_money: desc, amount (a plain number in rupiah, only a figure I gave you), money_type ("income" or "expense"), status (Expected, Due or Received), date (YYYY-MM-DD).');
+  if (allowed.includes('log_decision')) L.push('- log_decision: topic, decision, why, dissent, revisit.');
+  L.push(`Today is ${todayISO()}. The division (${DIVS[D].short}) is set automatically. Nothing is saved until I approve it, so never say that it is saved.`);
+  return L;
+}
+
+/* ---------- chat ---------- */
+const drafts = {};
+const fmt = t => esc(t).replace(/\n/g, '<br>');
+const fmtRole = t => esc(t).replace(/^(DECISION:.*)$/gim, '<b>$1</b>').replace(/\n/g, '<br>');
+
+function defaultSteps() {
+  return {
+    agency: [
+      { id: 'a1', name: 'Intake', members: ['nadia', 'mira'] },
+      { id: 'a2', name: 'Price and propose', members: ['rico', 'bima', 'nadia'] },
+      { id: 'a3', name: 'Plan and make', members: ['mira', 'dewi'] },
+      { id: 'a4', name: 'Deliver and get paid', members: ['nadia', 'arga', 'dewi'] }
+    ],
+    creative: [
+      { id: 'c1', name: 'Find the opportunity', members: ['sasha', 'mira'] },
+      { id: 'c2', name: 'Shape and check', members: ['mira', 'rico'] },
+      { id: 'c3', name: 'Plan and write', members: ['dewi', 'bima'] },
+      { id: 'c4', name: 'Launch and track', members: ['sasha', 'bima', 'arga'] }
+    ]
+  };
+}
+function healPending(s) {
+  Object.values(s.threads || {}).forEach(t => { (t.pending || []).forEach(p => { if (p.state === 'loading') delete p.state; }); });
+  return s;
+}
+const chatDiv = () => (state.division === 'all' ? state.chat.div : state.division);
+const stepsFor = d => state.steps[d] || [];
+function curSel() {
+  const d = chatDiv(), sel = state.chat.sel || '', st = stepsFor(d);
+  if (sel.indexOf('dm:') === 0 && roleById(sel.slice(3))) return sel;
+  if (sel.indexOf('step:') === 0 && st.some(x => x.id === sel.slice(5))) return sel;
+  return st[0] ? 'step:' + st[0].id : 'dm:' + ROLES[0].id;
+}
+const isDM = () => curSel().indexOf('dm:') === 0;
+const threadKey = () => chatDiv() + ':' + curSel();
+function getThread() {
+  const k = threadKey();
+  if (!state.threads[k]) state.threads[k] = { title: '', msgs: [], pending: [] };
+  return state.threads[k];
+}
+function ctxOf(key) { const i = key.indexOf(':'); return { key, d: key.slice(0, i), sel: key.slice(i + 1), th: state.threads[key] }; }
+function membersOf(d, sel) {
+  if (sel.indexOf('dm:') === 0) return [roleById(sel.slice(3))].filter(Boolean);
+  const st = stepsFor(d).find(x => x.id === sel.slice(5));
+  return (st ? st.members : []).map(roleById).filter(Boolean);
+}
+function stepNameOf(d, sel) {
+  if (sel.indexOf('dm:') === 0) return '';
+  const st = stepsFor(d).find(x => x.id === sel.slice(5));
+  return st ? st.name : '';
+}
+const chatMembers = () => membersOf(chatDiv(), curSel());
+const stepName = () => stepNameOf(chatDiv(), curSel());
+function curTo() {
+  const ms = chatMembers(), to = state.chat.to;
+  if (isDM()) return to === 'note' ? 'note' : ms[0].id;
+  if (to === 'all' || to === 'note' || ms.some(m => m.id === to)) return to;
+  return 'all';
+}
+function curSkill() {
+  const to = curTo();
+  if (to === 'all' || to === 'note') return '';
+  const r = roleById(to), sk = r && r.skills.find(x => x.name === state.chat.skill);
+  return sk && (sk.div === 'both' || sk.div === chatDiv()) ? sk.name : '';
+}
+
+function contextLines(D) {
+  const c = state.chat, L = [], short = DIVS[D].short;
+  if (c.incBrain) {
+    const b = state.brain, parts = [];
+    if (b.goals.trim()) parts.push(`Goals and constraints:\n${b.goals.trim()}`);
+    if (b.brand.trim()) parts.push(`Brand bible:\n${b.brand.trim()}`);
+    if (b.open.trim()) parts.push(`Open questions:\n${b.open.trim()}`);
+    if (parts.length) { L.push(''); L.push('STUDIO BRAIN:'); L.push(parts.join('\n\n')); }
+  }
+  if (c.incDec) {
+    const ds = state.decisions.filter(d => d.division === D).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+    if (ds.length) {
+      L.push(''); L.push(`RECENT DECISIONS (${short}):`);
+      ds.forEach(d => L.push(`- ${d.date} ${d.topic}: ${d.decision}${d.why ? ' Why: ' + d.why : ''}${d.revisit ? ' Revisit: ' + d.revisit : ''}`));
+    }
+  }
+  if (c.incTasks) {
+    const ts = state.tasks.filter(t => t.division === D && t.status !== 'Completed').slice(0, 8);
+    if (ts.length) {
+      L.push(''); L.push(`OPEN TASKS (${short}):`);
+      ts.forEach(t => L.push(`- ${t.title} (${t.status}${t.due ? ', due ' + t.due : ''})`));
+    }
+  }
+  return L;
+}
+
+function chatPrompt(p, ctx) {
+  ctx = ctx || ctxOf(threadKey());
+  const th = ctx.th, r = roleById(p.role), D = ctx.d, short = DIVS[D].short, c = state.chat;
+  const target = th.msgs.find(m => m.id === p.msgId) || { text: '', skill: '' };
+  const skill = r.skills.find(x => x.name === target.skill);
+  const dm = ctx.sel.indexOf('dm:') === 0, members = membersOf(D, ctx.sel);
+  const L = [];
+  L.push(`You are ${r.name}, the ${r.title} of my one-person 3D studio. The studio has two divisions: 3D Agency (client work) and 3D Creative (my own products and content). I am the founder and lead 3D artist, and I make every final decision.`);
+  L.push('');
+  L.push(`YOUR CHARACTER: ${r.character}`);
+  L.push(`YOU OWN: ${r.owns}`);
+  L.push(`DIVISION: ${DIVS[D].label}. Here you: ${r[D]}`);
+  L.push(`HOW YOU PUSH BACK: ${r.pushback}`);
+  L.push('');
+  if (!dm) {
+    const others = members.filter(m => m.id !== r.id).map(m => `${m.name} (${m.title})`);
+    L.push(`SETTING: a group chat for the step "${stepNameOf(D, ctx.sel)}". Members: ${others.length ? others.join(', ') + ' and me' : 'only me'}.`);
+    L.push(`Reply only as ${r.name}. Never write replies for your teammates. Build on what they already said, and disagree when you have a reason.`);
+  } else {
+    L.push('SETTING: a private chat between you and me.');
+  }
+  if (th.title.trim()) L.push(`TOPIC OF THIS CHAT: ${th.title.trim()}`);
+  L.push('');
+  const rules = [
+    `Work only on the ${short} division.`,
+    'Recommend and argue, then follow my decision.',
+    'You have no tools here. Never claim you sent, saved or checked anything.',
+    'Never invent figures. Ask me when a number is missing.',
+    'Be direct and short: a few sentences unless I ask for more.',
+    'When a decision is reached, write it on its own line starting with "DECISION:".'
+  ];
+  if (r.extra) rules.push(r.extra);
+  L.push('RULES:');
+  rules.forEach((x, i) => L.push(`${i + 1}. ${x}`));
+  if (skill) { L.push(''); L.push(`SKILL TO RUN: ${skill.name}. Input and output: ${skill.io}.`); }
+  contextLines(D).forEach(x => L.push(x));
+  actionRules(r, D).forEach(x => L.push(x));
+  const prior = th.msgs.filter(m => m.id !== p.msgId).slice(-c.n);
+  if (prior.length) {
+    L.push(''); L.push('CONVERSATION SO FAR (most recent messages):');
+    prior.forEach(m => {
+      const who = m.from === 'me' ? 'Me' : (roleById(m.from) ? roleById(m.from).name : 'Team');
+      const toR = m.from === 'me' && m.to !== 'all' && m.to !== 'note' ? roleById(m.to) : null;
+      L.push(`${who}${toR ? ' (to ' + toR.name + ')' : ''}: ${m.text}`);
+    });
+  }
+  L.push('');
+  L.push('MY MESSAGE TO YOU:');
+  L.push(target.text);
+  L.push('');
+  L.push(`Reply now as ${r.name}.`);
+  return L.join('\n');
+}
+
+function addReply(th, roleId, raw, via, stepLabel) {
+  let text = String(raw || '').trim(), actions = [];
+  if (ai.actions !== false) { const pr = parseActions(text, roleId, stepLabel); text = pr.text; actions = pr.actions; }
+  const m = { id: uid(), from: roleId, to: 'me', t: Date.now(), text: text || (actions.length ? 'Here are the board changes I propose.' : '') };
+  if (via) m.via = `${via.label || PROVS[via.provider].name}, ${via.model}`;
+  if (actions.length) m.actions = actions;
+  th.msgs.push(m); return m;
+}
+
+/* ---- live replies ---- */
+function stopPending(id) { const c = inflight.get(id); if (c) { c.cancelled = true; c.abort(); } }
+async function runOne(key, p, override) {
+  const ctx = ctxOf(key); if (!ctx.th) return;
+  const k = override || (p.keyId && findKey(p.keyId) && hasKey(findKey(p.keyId)) ? findKey(p.keyId) : primaryKey(p.role));
+  if (!k) return;
+  inflight.set(p.id, new AbortController());
+  p.state = 'loading'; p.keyId = k.id; p.err = ''; paintAIButton(); viewRefresh(key);
+  const tryKeys = [k]; if (ai.fallback) fallbackKeys(p.role, k).forEach(x => tryKeys.push(x));
+  let reply = '', error = null, used = null, cancelled = false;
+  for (const kk of tryKeys) {
+    const ctl = new AbortController(); inflight.set(p.id, ctl);
+    try { reply = await generate(kk, chatPrompt(p, ctx), { ctl }); used = kk; error = null; break; }
+    catch (e) { error = e; if (ctl.cancelled) { cancelled = true; break; } }
+  }
+  inflight.delete(p.id); paintAIButton();
+  const th = state.threads[key]; if (!th) return;
+  const i = th.pending.findIndex(x => x.id === p.id); if (i < 0) { viewRefresh(key); return; }
+  if (error) {
+    const pp = th.pending[i];
+    if (cancelled) { delete pp.state; pp.manual = true; pp.err = ''; } else { pp.state = 'error'; pp.err = error.message; }
+    save(); viewRefresh(key); return;
+  }
+  th.pending.splice(i, 1);
+  bumpSent(used);
+  addReply(th, p.role, reply, used, stepNameOf(ctx.d, ctx.sel));
+  save(); viewRefresh(key);
+  if (!(state.view === 'chat' && threadKey() === key)) toast(`${roleById(p.role).name} replied in ${ctx.sel.indexOf('dm:') === 0 ? 'a private chat' : stepNameOf(ctx.d, ctx.sel)}`);
+}
+async function runQueue(key, msgId) {
+  (queued[key] = queued[key] || new Set()).add(msgId);
+  if (running[key]) return;
+  running[key] = true;
+  try {
+    for (;;) {
+      const th = state.threads[key]; if (!th || !ai.auto) break;
+      /* only replies to messages sent in this session of the thread run by themselves; older waiting cards stay until you press Ask now */
+      const p = th.pending.find(x => queued[key].has(x.msgId) && !x.state && !x.manual && primaryKey(x.role));
+      if (!p) break;
+      await runOne(key, p);
+    }
+  } finally { running[key] = false; queued[key].clear(); }
+}
+function sendMessage(text) {
+  text = (text || '').trim(); if (!text) { toast('Write a message first.'); return; }
+  const th = getThread(), to = curTo(), single = to !== 'all' && to !== 'note', key = threadKey();
+  const msg = { id: uid(), from: 'me', to, text, skill: single ? curSkill() : '', t: Date.now() };
+  th.msgs.push(msg);
+  if (to === 'all') chatMembers().forEach(m => th.pending.push({ id: uid(), role: m.id, msgId: msg.id }));
+  else if (single) th.pending.push({ id: uid(), role: to, msgId: msg.id });
+  state.chat.skill = '';
+  delete drafts['c:' + key];
+  save(); render();
+  runQueue(key, msg.id);
+}
+
+/* ---- chat views ---- */
+function hintHtml() {
+  const dm = isDM(), ms = chatMembers(), any = ai.keys.some(hasKey) && ai.auto;
+  return `<div class="empty-chat">${dm ? `This is your private chat with ${esc(ms[0].name)}.` : `This chat is for ${esc(ms.map(m => m.name).join(', '))}.`}
+    ${any ? 'Write a message and they reply here.' : 'Write a message and the app builds a prompt for each person you address. Paste it into Claude, Gemini or Grok, then paste the answer back. To get replies automatically, connect an AI with the AI button at the top right.'}</div>`;
+}
+function msgHtml(m) {
+  const mine = m.from === 'me';
+  const logBtn = `<button class="link small" data-act="msg-log" data-id="${m.id}">${/^\s*DECISION:/im.test(m.text) ? 'Log this decision' : 'Log as decision'}</button>`;
+  const del = `<button class="link small" data-act="msg-del" data-id="${m.id}">Remove</button>`;
+  if (mine) {
+    const toR = m.to !== 'all' && m.to !== 'note' ? roleById(m.to) : null;
+    const lab = m.to === 'note' ? 'Note to self' : m.to === 'all' ? 'To everyone' : 'To ' + esc(toR ? toR.name : '');
+    return `<div class="msg me"><div class="bub"><div class="mm">${lab}${m.skill ? ', skill: ' + esc(m.skill) : ''}</div>${fmt(m.text)}</div><div class="macts">${logBtn}${del}</div></div>`;
+  }
+  const r = roleById(m.from) || { name: 'Team', title: '', color: '#586070' };
+  return `<div class="msg"><span class="avatar sm" style="background:${r.color}" aria-hidden="true">${esc(r.name[0])}</span>
+    <div class="body"><div class="mm"><b>${esc(r.name)}</b>${esc(r.title)}${m.via ? `<span class="via">via ${esc(m.via)}</span>` : ''}</div><div class="bub">${fmtRole(m.text)}</div>${actionsHtml(m)}<div class="macts">${logBtn}${del}</div></div></div>`;
+}
+function pendHtml(p, ctx) {
+  const r = roleById(p.role); if (!r) return '';
+  const prompt = chatPrompt(p, ctx), n = tokens(prompt), where = r.model === 'Any' ? 'any AI' : r.model;
+  const pk = (p.keyId && findKey(p.keyId)) || primaryKey(p.role), loading = p.state === 'loading';
+  const usable = ai.keys.filter(hasKey);
+  const head = loading ? `<b>${esc(r.name)} is replying</b><span class="small muted">via ${esc(pk ? keyName(pk) : 'AI')}</span>`
+    : p.state === 'error' ? `<b>${esc(r.name)} could not reply</b>`
+    : `<b>${esc(r.name)} is next</b><span class="small muted">Best on ${esc(r.model)}, backup ${esc(r.backup)}</span>`;
+  const ask = usable.length ? `<span class="askrow"><select data-pend-key="${p.id}" aria-label="AI to ask">${usable.map(k => `<option value="${k.id}" ${pk && pk.id === k.id ? 'selected' : ''}>${esc(keyName(k))}</option>`).join('')}</select><button class="btn sm primary" data-act="reply-ask" data-id="${p.id}">${p.state === 'error' ? 'Try again' : 'Ask now'}</button></span>` : '';
+  const btns = loading ? `<span class="push"><button class="btn sm" data-act="reply-stop" data-id="${p.id}">Stop</button></span>`
+    : `<span class="push">${ask}<button class="btn sm ${usable.length ? '' : 'primary'}" data-act="prompt-copy" data-id="${p.id}">Copy prompt for ${esc(where)}</button><button class="btn sm" data-act="reply-skip" data-id="${p.id}">Skip</button></span>`;
+  return `<div class="pend ${p.state || ''}" data-pend="${p.id}" style="--c:${r.color}">
+    <div class="pend-h"><span class="avatar sm" style="background:${r.color}" aria-hidden="true">${esc(r.name[0])}</span>${head}${btns}</div>
+    ${p.state === 'error' ? `<p class="warn small">${esc(p.err)}</p>` : ''}
+    ${loading ? '' : `<details><summary>Or copy the prompt by hand (about ${n} tokens)</summary><pre>${esc(prompt)}</pre></details>
+    <label class="field"><span>Paste ${esc(r.name)}'s reply here</span><textarea data-draft="${p.id}" rows="3" placeholder="Paste the AI's answer">${esc(drafts[p.id] || '')}</textarea></label>
+    <div><button class="btn sm" data-act="reply-add" data-id="${p.id}">Add reply to the chat</button></div>`}
+  </div>`;
+}
+function msgsInner() { const th = getThread(); return th.msgs.length ? th.msgs.map(msgHtml).join('') : hintHtml(); }
+function trayInner() {
+  const th = getThread(); if (!th.pending.length) return '';
+  const ctx = ctxOf(threadKey()), live = ai.keys.some(hasKey) && ai.auto;
+  return `<p class="small muted"><b>${live ? 'Replies are on the way.' : 'Waiting for replies.'}</b> ${live ? 'If one fails, try another AI, or copy the prompt into any AI app.' : 'Copy each prompt into the AI, then paste its answer back. If one AI hits its limit, paste the same prompt into another one.'}</p>${th.pending.map(p => pendHtml(p, ctx)).join('')}`;
+}
+function clistInner() {
+  const d = chatDiv(), sel = curSel(), steps = stepsFor(d);
+  const waiting = key => { const t = state.threads[key]; return t ? t.pending.length : 0; };
+  const badge = n => n ? `<span class="wait">${n} waiting</span>` : '';
+  const seg = state.division === 'all' ? `<div class="seg" role="group" aria-label="Division">${Object.entries(DIVS).map(([k, v]) => `<button data-act="chat-div" data-div="${k}" aria-pressed="${k === d}">${v.short}</button>`).join('')}</div>` : '';
+  return `${seg}
+    <div class="group-title">Group chats, by step</div>
+    ${steps.map((x, i) => `<button class="citem ${sel === 'step:' + x.id ? 'on' : ''}" data-act="chat-sel" data-sel="step:${x.id}"><span class="n">${i + 1}</span>${esc(x.name)}${badge(waiting(d + ':step:' + x.id))}</button>`).join('')}
+    <button class="link small" style="text-align:left;padding:4px 8px" data-act="chat-edit">Edit steps and members</button>
+    <div class="group-title" style="margin-top:8px">Private chats</div>
+    ${ROLES.map(r => `<button class="citem ${sel === 'dm:' + r.id ? 'on' : ''}" data-act="chat-sel" data-sel="dm:${r.id}"><i class="dot" style="background:${r.color}"></i>${esc(r.name)}${badge(waiting(d + ':dm:' + r.id))}</button>`).join('')}`;
+}
+function refreshThread() {
+  const m = $('#msgs'); if (!m) return;
+  const near = m.scrollHeight - m.scrollTop - m.clientHeight < 90;
+  const a = document.activeElement, keep = a && a.dataset && a.dataset.draft ? { id: a.dataset.draft, s: a.selectionStart, e: a.selectionEnd } : null;
+  m.innerHTML = msgsInner();
+  const tr = $('#tray'); if (tr) tr.innerHTML = trayInner();
+  const cl = $('.clist'); if (cl) cl.innerHTML = clistInner();
+  if (near) m.scrollTop = m.scrollHeight;
+  if (keep) { const t = document.querySelector(`[data-draft="${keep.id}"]`); if (t) { t.focus(); try { t.setSelectionRange(keep.s, keep.e); } catch (e) { /* ignore */ } } }
+}
+function viewRefresh(key) {
+  if (state.view === 'chat' && !state.chat.editing && threadKey() === key) refreshThread();
+  else { const cl = $('.clist'); if (cl) cl.innerHTML = clistInner(); }
+  renderTree();
+}
+function threadHtml() {
+  const d = chatDiv(), th = getThread(), ms = chatMembers(), dm = isDM(), to = curTo(), skill = curSkill(), c = state.chat;
+  const steps = stepsFor(d), idx = dm ? -1 : steps.findIndex(x => 'step:' + x.id === curSel());
+  const sub = dm ? `Private chat with ${esc(ms[0].name)}, ${esc(ms[0].title)}. ${esc(DIVS[d].label)}.`
+                 : `Step ${idx + 1} of ${steps.length}: ${esc(stepName())}. ${esc(DIVS[d].label)}.`;
+  const faces = ms.map(m => `<span class="avatar sm" style="background:${m.color}" title="${esc(m.name)}, ${esc(m.title)}" aria-label="${esc(m.name)}">${esc(m.name[0])}</span>`).join('');
+  const toOpts = (dm ? [] : [`<option value="all" ${to === 'all' ? 'selected' : ''}>Everyone in this step</option>`])
+    .concat(ms.map(m => `<option value="${m.id}" ${to === m.id ? 'selected' : ''}>${esc(m.name)}</option>`))
+    .concat([`<option value="note" ${to === 'note' ? 'selected' : ''}>No one (just a note)</option>`]).join('');
+  const single = to !== 'all' && to !== 'note', rr = single ? roleById(to) : null;
+  const skillOpts = rr ? `<option value="">No specific skill</option>` + rr.skills.filter(x => x.div === 'both' || x.div === d)
+      .map(x => `<option value="${esc(x.name)}" ${x.name === skill ? 'selected' : ''}>${esc(x.name)}: ${esc(x.io)}</option>`).join('')
+    : `<option value="">Pick one person to use a skill</option>`;
+  return `<section class="thread" aria-label="Conversation">
+    <div class="th-head"><div class="titles"><input data-thread-title value="${esc(th.title)}" maxlength="80" placeholder="Name this conversation, e.g. Halloween pack" aria-label="Conversation name"><div class="small muted">${sub}</div></div>
+      <div class="faces">${faces}</div><button class="btn sm" data-act="chat-clear">Clear chat</button></div>
+    <div class="msgs" id="msgs" aria-live="polite">${msgsInner()}</div>
+    <div class="tray" id="tray">${trayInner()}</div>
+    <form class="composer" data-form="chat" autocomplete="off">
+      <div class="comp-row">
+        <label class="field"><span>To</span><select id="cTo">${toOpts}</select></label>
+        <label class="field"><span>Skill</span><select id="cSkill" ${single ? '' : 'disabled'}>${skillOpts}</select></label>
+      </div>
+      <label class="field"><span>Your message</span><textarea id="cText" rows="3" placeholder="Say what you want to discuss. Ctrl+Enter sends.">${esc(drafts['c:' + threadKey()] || '')}</textarea></label>
+      <div class="out-foot" style="margin:0">
+        <details class="pset"><summary>What goes into each prompt</summary>
+          <div class="checks"><label><input type="checkbox" id="cBrain" ${c.incBrain ? 'checked' : ''}> Studio brain</label>
+            <label><input type="checkbox" id="cDec" ${c.incDec ? 'checked' : ''}> Last 5 decisions</label>
+            <label><input type="checkbox" id="cTasks" ${c.incTasks ? 'checked' : ''}> Open tasks</label></div>
+          <label class="field"><span>Earlier messages included</span><select id="cN">${[4, 8, 10, 16, 24].map(n => `<option value="${n}" ${c.n === n ? 'selected' : ''}>Last ${n}</option>`).join('')}</select></label>
+          <p style="margin-top:6px">Fewer messages and a shorter brain use fewer tokens, which matters on free plans.</p></details>
+        <button class="btn primary push" type="submit">Send</button>
+      </div></form></section>`;
+}
+
+function stepEditorHtml() {
+  const d = chatDiv(), steps = stepsFor(d);
+  return `<section class="thread"><div class="th-head"><div class="titles"><h2>Edit steps for ${esc(DIVS[d].label)}</h2><div class="small muted">Each step is a group chat. Choose who is in it.</div></div><button class="btn primary" data-act="chat-edit-done">Done</button></div>
+    ${steps.map((x, i) => `<div class="stepedit"><label class="field"><span>Step ${i + 1} name</span><input data-step-name="${x.id}" value="${esc(x.name)}" maxlength="40"></label>
+      <fieldset><legend>Who is in this chat</legend>${ROLES.map(r => `<label class="chk"><input type="checkbox" data-step-member="${x.id}:${r.id}" ${x.members.includes(r.id) ? 'checked' : ''}>${esc(r.name)}</label>`).join('')}</fieldset>
+      <button class="btn sm danger" data-act="step-del" data-id="${x.id}" ${steps.length <= 1 ? 'disabled' : ''}>Delete step</button></div>`).join('')}
+    <div class="out-foot" style="padding:0 16px 16px"><button class="btn" data-act="step-add" ${steps.length >= 6 ? 'disabled' : ''}>Add a step</button><button class="btn" data-act="step-reset">Reset to suggested steps</button></div></section>`;
+}
+
+function vChat() {
+  const live = ai.keys.some(hasKey) && ai.auto;
+  return `<header class="vh"><h1>Team chat</h1><p>${live ? 'Each step has a group chat with the right people, and every role has a private chat. Your connected AIs reply here, and you approve anything they want to put on the board.' : 'Each step has a group chat with the right people, and every role has a private chat. Connect an AI with the button at the top right to get replies here. Until then, this page writes each prompt and keeps the conversation for you.'}</p></header>
+    <div class="chat"><nav class="clist" aria-label="Conversations">${clistInner()}</nav>${state.chat.editing ? stepEditorHtml() : threadHtml()}</div>`;
+}
+
+/* ---- actions added to the app's click handler ---- */
+const ACT_V3 = {
+  'ai-open'() { openAI(); },
+  'ai-close'() { closeAI(); },
+  'ai-add'() {
+    const used = ai.keys.map(k => k.provider), next = ['claude', 'gemini', 'grok', 'custom'].find(p => !used.includes(p)) || 'gemini';
+    const k = { id: uid(), provider: next, label: '', key: '', model: PROVS[next].model, base: '', status: 'idle', msg: '', models: [] };
+    ai.keys.push(k); saveAI();
+    $('#aiKeys').insertAdjacentHTML('beforeend', keyCardHtml(k));
+    const as = $('#aiAssign'); if (as) as.innerHTML = assignHtml();
+    const f = document.querySelector(`[data-ai="${k.id}:key"]`); if (f) f.focus();
+  },
+  'ai-del'(el) {
+    if (!confirm('Remove this key from this browser?')) return;
+    ai.keys = ai.keys.filter(k => k.id !== el.dataset.id);
+    Object.keys(ai.assign).forEach(r => { if (ai.assign[r] === el.dataset.id) delete ai.assign[r]; });
+    saveAI();
+    const card = document.querySelector(`.kcard[data-kid="${el.dataset.id}"]`); if (card) card.remove();
+    const as = $('#aiAssign'); if (as) as.innerHTML = assignHtml();
+    paintAIButton();
+  },
+  'ai-show'(el) {
+    const k = findKey(el.dataset.id), inp = k && document.querySelector(`[data-ai="${k.id}:key"]`); if (!inp) return;
+    const show = inp.type === 'password'; inp.type = show ? 'text' : 'password'; el.textContent = show ? 'Hide' : 'Show';
+  },
+  'ai-test'(el) { runTest(el.dataset.id); },
+  'reply-ask'(el) {
+    const key = threadKey(), th = getThread(), p = th.pending.find(x => x.id === el.dataset.id); if (!p) return;
+    const sel = el.parentElement.querySelector('select'), k = sel ? findKey(sel.value) : null;
+    p.manual = false; p.err = ''; delete p.state; save();
+    runOne(key, p, k && hasKey(k) ? k : undefined);
+  },
+  'reply-stop'(el) { stopPending(el.dataset.id); },
+  'reply-add'(el) {
+    const box = el.closest('.pend'), text = box.querySelector('textarea').value.trim();
+    if (!text) { toast("Paste the AI's reply first."); return; }
+    const key = threadKey(), th = getThread(), i = th.pending.findIndex(x => x.id === el.dataset.id); if (i < 0) return;
+    const p = th.pending.splice(i, 1)[0]; stopPending(p.id);
+    addReply(th, p.role, text, null, stepName());
+    delete drafts[p.id]; save(); viewRefresh(key);
+  },
+  'reply-skip'(el) {
+    const th = getThread(); stopPending(el.dataset.id);
+    th.pending = th.pending.filter(x => x.id !== el.dataset.id); delete drafts[el.dataset.id]; save(); viewRefresh(threadKey());
+  },
+  'msg-del'(el) {
+    const th = getThread();
+    th.pending.filter(x => x.msgId === el.dataset.id).forEach(x => stopPending(x.id));
+    th.msgs = th.msgs.filter(x => x.id !== el.dataset.id); th.pending = th.pending.filter(x => x.msgId !== el.dataset.id); save(); viewRefresh(threadKey());
+  },
+  'chat-clear'() {
+    if (confirm('Clear this whole conversation?')) { const t = getThread(); t.pending.forEach(x => stopPending(x.id)); t.msgs = []; t.pending = []; save(); render(); }
+  },
+  'msg-apply'(el) {
+    const th = getThread(), m = th.msgs.find(x => x.id === el.dataset.id); if (!m) return;
+    const D = chatDiv(); let n = 0;
+    (m.actions || []).forEach(a => {
+      if (a.state !== 'proposed') return;
+      if (a.skip) { a.state = 'dismissed'; return; }
+      const r = applyOne(a, D, m.from);
+      if (r.ok) { a.state = 'applied'; a.undo = r.undo; n++; } else { a.state = 'failed'; a.reason = r.reason; }
+    });
+    save(); refreshThread(); renderTree(); toast(n ? `Added ${n} ${n === 1 ? 'change' : 'changes'} to the board` : 'Nothing was added');
+  },
+  'msg-dismiss'(el) {
+    const m = getThread().msgs.find(x => x.id === el.dataset.id); if (!m) return;
+    (m.actions || []).forEach(a => { if (a.state === 'proposed') a.state = 'dismissed'; });
+    save(); refreshThread();
+  },
+  'msg-undo'(el) {
+    const m = getThread().msgs.find(x => x.id === el.dataset.id); if (!m) return;
+    let n = 0; (m.actions || []).slice().reverse().forEach(a => { if (a.state === 'applied') { undoOne(a.undo); a.state = 'undone'; n++; } });
+    save(); refreshThread(); renderTree(); toast(n ? 'Undone' : 'Nothing to undo');
+  },
+  'data-clear'() {
+    if (confirm('Clear the board, chats, decisions and brain saved in this browser? Your API keys are kept; remove them in the AI popup. Back up first if you want to keep your data.')) {
+      Object.keys(state.threads).forEach(k => state.threads[k].pending.forEach(x => stopPending(x.id)));
+      state = blank(); save(); render(); toast('Cleared');
+    }
+  },
+  'data-clear-sample'() {
+    Object.keys(state.threads).forEach(k => state.threads[k].pending.forEach(x => stopPending(x.id)));
+    state.tasks = []; state.money = []; state.decisions = []; state.threads = {}; state.brain = { goals: '', brand: '', open: '' }; state.sample = false;
+    save(); render();
+  }
+};
+
+/* ---------- views ---------- */
+function renderTree() {
+  const c = d => state.tasks.filter(t => t.division === d && t.status !== 'Completed').length;
+  const sel = d => state.division === d ? ' sel' : '';
+  $('#tree').innerHTML = `
+    <button class="node${sel('all')}" data-act="div" data-div="all" aria-pressed="${state.division === 'all'}"><i class="cube"></i>Studio<small>both divisions</small></button>
+    <div class="children">
+      <button class="node agency${sel('agency')}" data-act="div" data-div="agency" aria-pressed="${state.division === 'agency'}"><i class="dot agency"></i>3D Agency<small>${plural(c('agency'), 'open task', 'open tasks')}</small></button>
+      <button class="node creative${sel('creative')}" data-act="div" data-div="creative" aria-pressed="${state.division === 'creative'}"><i class="dot creative"></i>3D Creative<small>${plural(c('creative'), 'open task', 'open tasks')}</small></button>
+    </div>`;
+  $('#teamList').innerHTML = ROLES.map(r => `
+    <li><button class="node" data-act="dm" data-role="${r.id}" title="Chat with ${esc(r.name)}"><i class="dot" style="background:${r.color}"></i>${esc(r.name)}<span class="t">${esc(r.title)}</span></button></li>`).join('');
+}
+function renderTabs() {
+  const scope = state.division === 'all' ? 'Showing both divisions' : `Showing ${DIVS[state.division].label}`;
+  $('#tabs').innerHTML = VIEWS.map(([id, label]) =>
+    `<button class="tab" data-act="nav" data-view="${id}" ${state.view === id ? 'aria-current="page"' : ''}>${label}</button>`).join('') +
+    `<div class="tabs-right"><span class="scope">${scope}</span><span id="aiWrap">${aiButtonHtml()}</span></div>`;
+}
+
+function vOverview() {
+  const open = openTasks();
+  const late = open.filter(t => t.due && dayDiff(t.due) < 0);
+  const week = open.filter(t => t.due && dayDiff(t.due) >= 0 && dayDiff(t.due) <= 7);
+  let due = 0, exp = 0;
+  scopeDivs().forEach(d => { const m = mstats(d); due += m.due; exp += m.expected; });
+  const bits = [];
+  if (late.length) bits.push(`<b>${plural(late.length, 'task is', 'tasks are')} overdue</b>`);
+  bits.push(`${plural(week.length, 'task is', 'tasks are')} due in the next 7 days`);
+  if (due) bits.push(`${rp(due)} is due to you`);
+  if (exp) bits.push(`${rp(exp)} is expected`);
+  const summary = bits.join(', ') + '.';
+
+  const sorted = open.slice().sort((a, b) => (a.due || '9999').localeCompare(b.due || '9999')).slice(0, 6);
+  const attention = sorted.length ? sorted.map(t => {
+    const w = whenText(t.due), r = roleById(t.owner);
+    return `<li>${divTag(t.division)}<span class="grow">${esc(t.title)}</span><span class="small muted">${esc(r ? r.name : '')}</span><span class="when ${w.late ? 'late' : ''}">${w.t}</span></li>`;
+  }).join('') : '<li class="empty">No open tasks. Add one on the Board tab.</li>';
+
+  const chase = state.money.filter(m => inScope(m) && m.type === 'income' && m.status !== 'Received')
+    .sort((a, b) => a.date.localeCompare(b.date)).slice(0, 5);
+  const chaseHtml = chase.length ? chase.map(m => `<li>${divTag(m.division)}<span class="grow">${esc(m.desc)}</span><span class="small">${rp(m.amount)}</span><span class="when">${m.status === 'Due' ? 'due' : 'expected'} ${esc(m.date)}</span></li>`).join('')
+    : '<li class="empty">Nothing waiting to arrive.</li>';
+
+  const decs = state.decisions.filter(inScope).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
+  const decHtml = decs.length ? decs.map(d => `<li>${divTag(d.division)}<span class="grow"><b>${esc(d.topic)}</b>: ${esc(d.decision)}</span><span class="when">${esc(d.date)}</span></li>`).join('')
+    : '<li class="empty">No decisions logged yet. Log one after each session.</li>';
+
+  return `
+  ${state.sample ? `<div class="banner"><p><b>You are looking at sample data.</b> Edit it freely, or clear it and start with your own.</p><button class="btn sm" data-act="data-clear-sample">Clear sample data</button></div>` : ''}
+  <header class="vh"><h1>Today at the studio</h1><p>${summary}</p></header>
+  <div class="grid2">
+    <div class="stack">
+      <section class="panel"><h2>Needs attention</h2><ul class="rows">${attention}</ul></section>
+      <section class="panel"><h2>Money still to arrive</h2><ul class="rows">${chaseHtml}</ul></section>
+      <section class="panel"><h2>Latest decisions</h2><ul class="rows">${decHtml}</ul></section>
+    </div>
+    <section class="panel"><h2>Free-plan message counter</h2>
+      <p class="small muted" style="margin-bottom:8px">Tap +1 each time you send a message. It shows when the window resets. Limits are estimates, not official numbers; set your own.</p>
+      <div id="limits">${limitsHtml()}</div>
+    </section>
+  </div>`;
+}
+
+function limitState(l) {
+  const now = Date.now(), span = l.hours * 36e5;
+  const active = l.start && now - l.start < span;
+  return { count: active ? l.count : 0, left: active ? l.start + span - now : 0, active };
+}
+function fmtLeft(ms) { const m = Math.ceil(ms / 6e4); const h = Math.floor(m / 60); return h ? `${h}h ${m % 60}m` : `${m}m`; }
+function limitsHtml() {
+  return Object.entries(state.limits).map(([id, l]) => {
+    const s = limitState(l), cap = Number(l.cap) || 0;
+    const pct = cap ? Math.min(100, Math.round(s.count / cap * 100)) : 0;
+    const status = cap ? `${s.count} of about ${cap} messages` : `${s.count} messages (no limit set)`;
+    const reset = s.active ? `window resets in ${fmtLeft(s.left)}` : 'window not started';
+    return `<div class="lim">
+      <div class="lim-top"><b>${esc(l.name)}</b><span class="small muted">${status}</span>
+        <span class="push"><button class="btn sm" data-act="lim-inc" data-id="${id}">+1</button><button class="btn sm" data-act="lim-reset" data-id="${id}">Reset</button></span></div>
+      <div class="meter" aria-hidden="true"><i class="${pct >= 85 ? 'hot' : ''}" style="width:${pct}%"></i></div>
+      <div class="small muted">${reset}</div>
+      <div class="lim-set">
+        <label>Limit <input type="number" min="0" data-lim="${id}" data-field="cap" value="${l.cap ?? ''}" placeholder="?" aria-label="${esc(l.name)} message limit"></label>
+        <label>Window (hours) <input type="number" min="1" data-lim="${id}" data-field="hours" value="${l.hours}" aria-label="${esc(l.name)} window hours"></label>
+      </div></div>`;
+  }).join('');
+}
+
+function vTeam() {
+  const showA = state.division !== 'creative', showC = state.division !== 'agency';
+  return `
+  <header class="vh"><h1>Your team</h1><p>Seven roles that work for both businesses. Open a private chat, or pick a skill to start one with that skill ready.</p></header>
+  <div class="cards">${ROLES.map(r => `
+    <article class="role">
+      <div class="role-head">
+        <div class="avatar" style="background:${r.color}" aria-hidden="true">${esc(r.name[0])}</div>
+        <div><h2>${esc(r.name)}</h2><div class="small muted">${esc(r.title)}</div></div>
+        <div class="models">Best on ${esc(r.model)}<br>Backup: ${esc(r.backup)}</div>
+      </div>
+      <p class="quote">${esc(r.character)}</p>
+      <dl class="kv">
+        <dt>Owns</dt><dd>${esc(r.owns)}</dd>
+        ${showA ? `<dt>For clients</dt><dd>${esc(r.agency)}</dd>` : ''}
+        ${showC ? `<dt>For products</dt><dd>${esc(r.creative)}</dd>` : ''}
+        <dt>Pushes back</dt><dd>${esc(r.pushback)}</dd>
+      </dl>
+      <div class="skills">${r.skills.filter(s => s.div === 'both' || state.division === 'all' || s.div === state.division).map(s =>
+        `<button class="skill" data-act="dm" data-role="${r.id}" data-skill="${esc(s.name)}" title="${esc(s.io)}">${esc(s.name)}</button>`).join('')}</div>
+      <div class="role-foot"><button class="btn primary" data-act="dm" data-role="${r.id}">Chat with ${esc(r.name)}</button></div>
+    </article>`).join('')}</div>`;
+}
+
+function vBoard() {
+  const t = tasksF();
+  const defDiv = state.division === 'all' ? 'agency' : state.division;
+  return `
+  <header class="vh"><h1>Project board</h1><p>A task is Completed when the work is finished. Whether you were paid is tracked separately on the Money tab.</p></header>
+  <form class="panel form-row" data-form="task" autocomplete="off">
+    <label class="field wide"><span>New task</span><input name="title" required maxlength="140" placeholder="What needs doing?"></label>
+    <label class="field"><span>Division</span><select name="division">${Object.entries(DIVS).map(([k, v]) => `<option value="${k}" ${k === defDiv ? 'selected' : ''}>${v.label}</option>`).join('')}</select></label>
+    <label class="field"><span>Owner</span><select name="owner">${ROLES.map(r => `<option value="${r.id}">${esc(r.name)}, ${esc(r.title)}</option>`).join('')}</select></label>
+    <label class="field"><span>Due</span><input type="date" name="due"></label>
+    <button class="btn primary" type="submit">Add task</button>
+  </form>
+  <div class="kanban">${STATUSES.map((s, i) => {
+    const items = t.filter(x => x.status === s);
+    return `<section class="col" aria-label="${s}"><h3>${s}<span>${items.length}</span></h3>${items.map(x => {
+      const w = whenText(x.due), r = roleById(x.owner);
+      const showWhen = x.due && s !== 'Completed';
+      return `<div class="task ${x.division}"><div>${esc(x.title)}</div>
+        <div class="meta">${divTag(x.division)}${r ? `<span>${esc(r.name)}</span>` : ''}${showWhen ? `<span class="${w.late ? 'late' : ''}">${w.t}</span>` : ''}</div>
+        <div class="ctl">
+          <button class="btn sm" data-act="task-move" data-id="${x.id}" data-dir="-1" ${i === 0 ? 'disabled' : ''} aria-label="Move to ${STATUSES[i - 1] || ''}">&larr;</button>
+          <button class="btn sm" data-act="task-move" data-id="${x.id}" data-dir="1" ${i === STATUSES.length - 1 ? 'disabled' : ''} aria-label="Move to ${STATUSES[i + 1] || ''}">&rarr;</button>
+          <button class="btn sm danger spacer" data-act="task-del" data-id="${x.id}">Delete</button>
+        </div></div>`;
+    }).join('') || '<p class="small muted" style="padding:4px">Nothing here.</p>'}</section>`;
+  }).join('')}</div>`;
+}
+
+function vMoney() {
+  const rows = state.money.filter(inScope).sort((a, b) => b.date.localeCompare(a.date));
+  const defDiv = state.division === 'all' ? 'agency' : state.division;
+  const sums = scopeDivs().map(d => { const m = mstats(d); return `
+    <section class="panel sum"><h2>${divTag(d)} ${esc(DIVS[d].label)}</h2><dl>
+      <dt>Received</dt><dd>${rp(m.received)}</dd>
+      <dt>Expenses paid</dt><dd>${rp(m.paid)}</dd>
+      <dt class="keep">Kept so far</dt><dd class="keep">${rp(m.kept)}</dd>
+      <dt>Due to you</dt><dd>${rp(m.due)}</dd>
+      <dt>Expected</dt><dd>${rp(m.expected)}</dd>
+      <dt>Expenses still unpaid</dt><dd>${rp(m.unpaid)}</dd>
+    </dl></section>`; }).join('');
+  return `
+  <header class="vh"><h1>Money</h1><p>Each record moves from Expected to Due to Received. Revenue is not profit: "Kept so far" is what you received minus what you paid out.</p></header>
+  <div class="sumgrid">${sums}</div>
+  <form class="panel form-row" data-form="money" autocomplete="off">
+    <label class="field wide"><span>What is it for?</span><input name="desc" required maxlength="120" placeholder="Client A final invoice"></label>
+    <label class="field"><span>Amount (Rp)</span><input type="number" name="amount" required min="0" step="1000" placeholder="1000000"></label>
+    <label class="field"><span>Type</span><select name="type"><option value="income">Income</option><option value="expense">Expense</option></select></label>
+    <label class="field"><span>Division</span><select name="division">${Object.entries(DIVS).map(([k, v]) => `<option value="${k}" ${k === defDiv ? 'selected' : ''}>${v.label}</option>`).join('')}</select></label>
+    <label class="field"><span>Status</span><select name="status">${PAY.map(p => `<option>${p}</option>`).join('')}</select></label>
+    <label class="field"><span>Date</span><input type="date" name="date" value="${todayISO()}"></label>
+    <button class="btn primary" type="submit">Add record</button>
+  </form>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Date</th><th>Division</th><th>Description</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead>
+    <tbody>${rows.map(m => `<tr>
+      <td>${esc(m.date)}</td><td>${divTag(m.division)}</td><td>${esc(m.desc)}</td>
+      <td class="num ${m.type === 'income' ? 'in' : 'out'}">${m.type === 'income' ? '+' : '-'}${rp(m.amount)}</td>
+      <td><button class="stat ${m.status}" data-act="money-cycle" data-id="${m.id}" title="Click to move to the next status">${payLabel(m)}</button></td>
+      <td class="num"><button class="btn sm danger" data-act="money-del" data-id="${m.id}">Delete</button></td></tr>`).join('') || '<tr><td colspan="6" class="empty">No records yet.</td></tr>'}</tbody>
+  </table></div>`;
+}
+
+function vDecisions() {
+  const defDiv = state.division === 'all' ? 'agency' : state.division;
+  const ds = state.decisions.filter(inScope).sort((a, b) => b.date.localeCompare(a.date));
+  return `
+  <header class="vh"><h1>Decision log</h1><p>The team forgets between chats, so this log is its memory. Record what was decided, why, and who disagreed.</p></header>
+  <form class="panel form-row stackform" data-form="decision" autocomplete="off">
+    <label class="field"><span>Topic</span><input name="topic" required maxlength="60" placeholder="Pricing"></label>
+    <label class="field"><span>Division</span><select name="division">${Object.entries(DIVS).map(([k, v]) => `<option value="${k}" ${k === defDiv ? 'selected' : ''}>${v.label}</option>`).join('')}</select></label>
+    <label class="field full"><span>Decision</span><input name="decision" required maxlength="200" placeholder="Launch at Rp 149k, not Rp 99k."></label>
+    <label class="field"><span>Why</span><input name="why" maxlength="200"></label>
+    <label class="field"><span>Who disagreed, and why</span><input name="dissent" maxlength="200"></label>
+    <label class="field"><span>Raised by</span><select name="role"><option value="">Me</option>${ROLES.map(r => `<option value="${r.id}">${esc(r.name)}</option>`).join('')}</select></label>
+    <label class="field"><span>Revisit when</span><input name="revisit" maxlength="120" placeholder="After the first 50 sales"></label>
+    <div class="full"><button class="btn primary" type="submit">Log decision</button> <button class="btn" type="button" data-act="dec-copy">Copy log as text</button></div>
+  </form>
+  ${ds.map(d => { const r = roleById(d.role); return `
+    <article class="dec"><div class="dec-head">${divTag(d.division)}<h3>${esc(d.topic)}</h3><span class="date">${esc(d.date)}</span><button class="btn sm danger push" data-act="dec-del" data-id="${d.id}">Delete</button></div>
+      <dl><dt>Decided</dt><dd>${esc(d.decision)}</dd>
+      ${d.why ? `<dt>Why</dt><dd>${esc(d.why)}</dd>` : ''}
+      ${d.dissent ? `<dt>Dissent</dt><dd>${esc(d.dissent)}</dd>` : ''}
+      ${d.revisit ? `<dt>Revisit</dt><dd>${esc(d.revisit)}</dd>` : ''}
+      ${r ? `<dt>Raised by</dt><dd>${esc(r.name)}</dd>` : ''}</dl></article>`; }).join('') || '<p class="empty">No decisions logged yet.</p>'}`;
+}
+
+function vBrain() {
+  const b = state.brain;
+  const size = tokens(b.goals + b.brand + b.open);
+  return `
+  <header class="vh"><h1>Studio brain</h1><p>Everything every role should know before it speaks. It is added to each prompt you build, so keep it short: free plans meter by length.</p></header>
+  <div class="panel stack">
+    <label class="field"><span>Goals and constraints (budget, skills, time)</span><textarea data-brain="goals" rows="5">${esc(b.goals)}</textarea></label>
+    <label class="field"><span>Brand bible (name, style, voice, rules)</span><textarea data-brain="brand" rows="5">${esc(b.brand)}</textarea></label>
+    <label class="field"><span>Open questions</span><textarea data-brain="open" rows="4">${esc(b.open)}</textarea></label>
+    <div class="out-foot" style="margin:0"><span class="small ${size > 1500 ? 'warn' : 'muted'}" id="brainSize">About ${size} tokens${size > 1500 ? '. Trim it to save your free messages.' : '.'}</span>
+      <button class="btn push" data-act="brain-copy">Copy brain</button></div>
+  </div>`;
+}
+
+const RENDER = { overview: vOverview, chat: vChat, team: vTeam, board: vBoard, money: vMoney, decisions: vDecisions, brain: vBrain };
+function render() {
+  if (!RENDER[state.view]) state.view = 'overview';
+  renderTree(); renderTabs();
+  $('#view').innerHTML = RENDER[state.view]();
+  const ml = $('#msgs'); if (ml) ml.scrollTop = ml.scrollHeight;
+  document.title = `${VIEWS.find(v => v[0] === state.view)[1]} - Studio Board`;
+}
+
+/* ---------- misc ---------- */
+let toastT;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800);
+}
+function copyText(text, msg) {
+  const done = () => toast(msg || 'Copied');
+  const fallback = () => {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { toast('Could not copy. Select the text and copy it by hand.'); }
+    ta.remove();
+  };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+}
+const cycle = (arr, v) => arr[(arr.indexOf(v) + 1) % arr.length];
+
+/* ---------- actions ---------- */
+const act = {
+  nav(el) { state.view = el.dataset.view; save(); history.replaceState(null, '', '#' + state.view); render(); window.scrollTo(0, 0); },
+  div(el) { state.division = el.dataset.div; if (state.division !== 'all') state.chat.div = state.division; save(); render(); },
+  dm(el) {
+    const c = state.chat, role = roleById(el.dataset.role); if (!role) return;
+    c.sel = 'dm:' + role.id; c.to = role.id; c.skill = el.dataset.skill || ''; c.editing = false;
+    const sk = role.skills.find(x => x.name === c.skill);
+    if (sk && sk.div !== 'both' && state.division === 'all') c.div = sk.div;
+    state.view = 'chat'; save(); history.replaceState(null, '', '#chat'); render(); window.scrollTo(0, 0);
+    const t = $('#cText'); if (t) t.focus();
+  },
+  'chat-sel'(el) {
+    const c = state.chat; c.sel = el.dataset.sel; c.to = c.sel.indexOf('dm:') === 0 ? c.sel.slice(3) : 'all'; c.skill = ''; c.editing = false; save(); render();
+  },
+  'chat-div'(el) { const c = state.chat; c.div = el.dataset.div; c.sel = ''; c.to = 'all'; c.skill = ''; c.editing = false; save(); render(); },
+  'chat-edit'() { state.chat.editing = true; render(); },
+  'chat-edit-done'() { state.chat.editing = false; state.chat.sel = curSel(); save(); render(); },
+  'chat-clear'() {
+    if (confirm('Clear this whole conversation?')) { const t = getThread(); t.msgs = []; t.pending = []; save(); render(); }
+  },
+  'prompt-copy'(el) {
+    const p = getThread().pending.find(x => x.id === el.dataset.id); if (!p) return;
+    const r = roleById(p.role);
+    copyText(chatPrompt(p), `Prompt for ${r.name} copied. Paste it into ${r.model === 'Any' ? 'any AI' : r.model}.`);
+  },
+  'reply-add'(el) {
+    const box = el.closest('.pend'), text = box.querySelector('textarea').value.trim();
+    if (!text) { toast("Paste the AI's reply first."); return; }
+    const th = getThread(), i = th.pending.findIndex(x => x.id === el.dataset.id); if (i < 0) return;
+    const p = th.pending.splice(i, 1)[0];
+    th.msgs.push({ id: uid(), from: p.role, to: 'me', text, t: Date.now() });
+    delete drafts[p.id]; save(); render();
+  },
+  'reply-skip'(el) {
+    const th = getThread(); th.pending = th.pending.filter(x => x.id !== el.dataset.id); delete drafts[el.dataset.id]; save(); render();
+  },
+  'msg-del'(el) {
+    const th = getThread(); th.msgs = th.msgs.filter(x => x.id !== el.dataset.id); th.pending = th.pending.filter(x => x.msgId !== el.dataset.id); save(); render();
+  },
+  'msg-log'(el) {
+    const th = getThread(), m = th.msgs.find(x => x.id === el.dataset.id); if (!m) return;
+    const hit = m.text.match(/^\s*DECISION:\s*(.+)$/im);
+    const topic = th.title.trim() || stepName() || (roleById(m.from) ? roleById(m.from).title : 'Chat');
+    state.decisions.push({ id: uid(), date: todayISO(), division: chatDiv(), role: m.from === 'me' ? '' : m.from, topic,
+      decision: (hit ? hit[1] : m.text).trim().slice(0, 200), why: '', dissent: '', revisit: '' });
+    save(); toast('Saved to Decisions. Add the reason there.');
+  },
+  'step-add'() {
+    const st = stepsFor(chatDiv()); if (st.length >= 6) return;
+    st.push({ id: 's' + uid(), name: 'New step', members: ['dewi'] }); save(); render();
+  },
+  'step-del'(el) {
+    const d = chatDiv(), st = stepsFor(d); if (st.length <= 1) return;
+    state.steps[d] = st.filter(x => x.id !== el.dataset.id);
+    Object.keys(state.threads).forEach(k => { if (k === d + ':step:' + el.dataset.id) delete state.threads[k]; });
+    save(); render();
+  },
+  'step-reset'() {
+    if (confirm('Replace this division\'s steps with the suggested ones? Existing step chats are kept only for steps with the same id.')) {
+      const d = chatDiv(); state.steps[d] = defaultSteps()[d]; state.chat.sel = ''; save(); render();
+    }
+  },
+  'task-move'(el) {
+    const t = state.tasks.find(x => x.id === el.dataset.id); if (!t) return;
+    const i = STATUSES.indexOf(t.status) + Number(el.dataset.dir);
+    if (i >= 0 && i < STATUSES.length) { t.status = STATUSES[i]; save(); render(); }
+  },
+  'task-del'(el) { state.tasks = state.tasks.filter(x => x.id !== el.dataset.id); save(); render(); },
+  'money-cycle'(el) { const m = state.money.find(x => x.id === el.dataset.id); if (m) { m.status = cycle(PAY, m.status); save(); render(); } },
+  'money-del'(el) { state.money = state.money.filter(x => x.id !== el.dataset.id); save(); render(); },
+  'dec-del'(el) { state.decisions = state.decisions.filter(x => x.id !== el.dataset.id); save(); render(); },
+  'dec-copy'() {
+    const ds = state.decisions.filter(inScope).sort((a, b) => b.date.localeCompare(a.date));
+    copyText(ds.map(d => `[${DIVS[d.division].short}] ${d.date} ${d.topic}: ${d.decision}` + (d.why ? ` Why: ${d.why}` : '') + (d.dissent ? ` Dissent: ${d.dissent}` : '') + (d.revisit ? ` Revisit: ${d.revisit}` : '')).join('\n') || 'No decisions yet.', 'Decision log copied');
+  },
+  'brain-copy'() {
+    const b = state.brain;
+    copyText(`Goals and constraints:\n${b.goals}\n\nBrand bible:\n${b.brand}\n\nOpen questions:\n${b.open}`, 'Studio brain copied');
+  },
+  'lim-inc'(el) {
+    const l = state.limits[el.dataset.id], s = limitState(l);
+    if (!s.active) { l.start = Date.now(); l.count = 1; } else { l.count = s.count + 1; }
+    save(); refreshLimits();
+  },
+  'lim-reset'(el) { const l = state.limits[el.dataset.id]; l.count = 0; l.start = null; save(); refreshLimits(); },
+  'data-export'() {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `studio-board-backup-${todayISO()}.json`; document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  },
+  'data-import'() { $('#fileIn').click(); },
+  'data-clear'() {
+    if (confirm('Clear everything saved in this browser? Back up first if you want to keep it.')) {
+      state = blank(); save(); render(); toast('Cleared');
+    }
+  },
+  'data-clear-sample'() {
+    state.tasks = []; state.money = []; state.decisions = []; state.threads = {}; state.brain = { goals: '', brand: '', open: '' }; state.sample = false;
+    save(); render();
+  }
+};
+Object.assign(act, ACT_V3);
+function refreshLimits() {
+  const box = $('#limits');
+  if (box && !box.contains(document.activeElement)) box.innerHTML = limitsHtml();
+}
+
+const forms = {
+  chat(f) { sendMessage(f.querySelector('#cText').value); },
+  task(f) {
+    const d = new FormData(f), title = (d.get('title') || '').trim(); if (!title) return;
+    state.tasks.push({ id: uid(), title, division: d.get('division'), status: 'Proposed', owner: d.get('owner'), due: d.get('due') || '' });
+    save(); render();
+  },
+  money(f) {
+    const d = new FormData(f), desc = (d.get('desc') || '').trim(); if (!desc) return;
+    state.money.push({ id: uid(), division: d.get('division'), type: d.get('type'), desc, amount: Number(d.get('amount')) || 0, status: d.get('status'), date: d.get('date') || todayISO() });
+    save(); render();
+  },
+  decision(f) {
+    const d = new FormData(f), topic = (d.get('topic') || '').trim(), decision = (d.get('decision') || '').trim(); if (!topic || !decision) return;
+    state.decisions.push({ id: uid(), date: todayISO(), division: d.get('division'), role: d.get('role') || '', topic, decision,
+      why: (d.get('why') || '').trim(), dissent: (d.get('dissent') || '').trim(), revisit: (d.get('revisit') || '').trim() });
+    save(); render(); toast('Decision logged');
+  }
+};
+
+/* ---------- events ---------- */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const fn = act[el.dataset.act]; if (fn) fn(el, e);
+});
+document.addEventListener('submit', e => {
+  const f = e.target.closest('form[data-form]'); if (!f) return;
+  e.preventDefault(); const fn = forms[f.dataset.form]; if (fn) fn(f);
+});
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset && t.dataset.brain) {
+    state.brain[t.dataset.brain] = t.value; save();
+    const b = state.brain, n = tokens(b.goals + b.brand + b.open), s = $('#brainSize');
+    if (s) { s.textContent = `About ${n} tokens${n > 1500 ? '. Trim it to save your free messages.' : '.'}`; s.className = 'small ' + (n > 1500 ? 'warn' : 'muted'); }
+    return;
+  }
+  if (t.id === 'cText') { drafts['c:' + threadKey()] = t.value; return; }
+  if (t.dataset && t.dataset.draft) { drafts[t.dataset.draft] = t.value; return; }
+  if (t.dataset && t.dataset.threadTitle !== undefined) { getThread().title = t.value; save(); }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset && t.dataset.lim) {
+    const l = state.limits[t.dataset.lim], v = t.value === '' ? null : Math.max(0, Number(t.value));
+    if (t.dataset.field === 'cap') l.cap = v; else l.hours = Math.max(1, v || 1);
+    save(); const box = $('#limits'); if (box) box.innerHTML = limitsHtml(); return;
+  }
+  if (t.id === 'fileIn') {
+    const file = t.files && t.files[0]; if (!file) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      try {
+        const data = JSON.parse(rd.result);
+        if (!data || typeof data !== 'object' || !Array.isArray(data.tasks)) throw new Error('bad file');
+        state = healPending(Object.assign(blank(), data, { sample: false })); save(); render(); toast('Backup restored');
+      } catch (err) { toast('That file is not a Studio Board backup.'); }
+      t.value = '';
+    };
+    rd.readAsText(file); return;
+  }
+  const c = state.chat;
+  if (t.id === 'cTo') { c.to = t.value; c.skill = ''; save(); render(); return; }
+  if (t.id === 'cSkill') { c.skill = t.value; save(); render(); return; }
+  if (t.id === 'cN') { c.n = Number(t.value) || 10; save(); render(); return; }
+  if (t.id === 'cBrain') { c.incBrain = t.checked; save(); render(); return; }
+  if (t.id === 'cDec') { c.incDec = t.checked; save(); render(); return; }
+  if (t.id === 'cTasks') { c.incTasks = t.checked; save(); render(); return; }
+  if (t.dataset && t.dataset.stepName) {
+    const st = stepsFor(chatDiv()).find(x => x.id === t.dataset.stepName);
+    if (st) { st.name = t.value.trim() || st.name; save(); }
+    return;
+  }
+  if (t.dataset && t.dataset.stepMember) {
+    const parts = t.dataset.stepMember.split(':'), st = stepsFor(chatDiv()).find(x => x.id === parts[0]); if (!st) return;
+    if (t.checked) { if (!st.members.includes(parts[1])) st.members.push(parts[1]); }
+    else if (st.members.length > 1) st.members = st.members.filter(x => x !== parts[1]);
+    else { t.checked = true; toast('A step needs at least one person.'); }
+    save();
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && e.target.id === 'cText') { e.preventDefault(); sendMessage(e.target.value); }
+});
+window.addEventListener('hashchange', () => {
+  const v = location.hash.replace('#', '');
+  if (RENDER[v] && v !== state.view) { state.view = v; save(); render(); }
+});
+setInterval(() => { if (state.view === 'overview') refreshLimits(); }, 30000);
+
+/* ---------- start ---------- */
+(() => { const v = location.hash.replace('#', ''); if (RENDER[v]) state.view = v; })();
+render();
+})();
+</script>
+</body>
+</html>
