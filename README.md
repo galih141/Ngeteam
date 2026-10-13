@@ -45,7 +45,8 @@ The defaults use about 300 to 450 tokens and 1 request per message:
 - One role at a time. There is no "Everyone" option.
 - Studio brain, last 5 decisions and open tasks are off. Turn them on under "What goes into each prompt" when a question needs them.
 - Earlier messages included is 4. Reply length is Short and capped.
-- "Let the AIs propose board changes" and "try another connected AI" are off.
+- "Try another connected AI if one fails" is off.
+- "Let the AIs propose board changes" is on, but the board instructions are only added to a prompt when your message is about tasks, money or decisions, so normal chat pays nothing for it. Proposed changes are never saved until you press **Add selected to the board**.
 - Use Joy for lookups, sums and checklists.
 
 ## Joy
