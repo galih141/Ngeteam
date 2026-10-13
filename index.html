@@ -432,12 +432,13 @@ const ROLES = [
   { id: 'rico', name: 'Rico', title: 'Producer', color: '#2f6fb0', model: 'Claude', backup: 'Gemini',
     character: 'Blunt, numbers-first, protects my time.',
     owns: 'Scope, hours, pricing, feasibility.',
-    agency: 'Estimates hours, revision risk and price, and tells me when to decline a job.',
+    agency: 'Estimates hours, revision risk and price, tells me when to decline a job, and builds the pitch that wins a client at that price.',
     creative: 'Estimates production cost per product and tells me if it is worth making.',
     pushback: 'Says things like "This takes 40 hours and pays for 15. No."',
     skills: [
       { name: 'Quote Builder', div: 'agency', io: 'brief -> hours, revision risk, price range' },
       { name: 'Go / No-Go', div: 'both', io: 'a job or product idea -> verdict with reasons' },
+      { name: 'Client Pitch', div: 'agency', io: 'a prospect, what they need and my price -> pitch angle, opening message, objections and answers, next step' },
       { name: 'Rate Check', div: 'agency', io: 'past projects -> my real hourly rate' },
       { name: 'Product ROI', div: 'creative', io: 'product idea -> production cost vs expected earnings' } ] },
   { id: 'dewi', name: 'Dewi', title: 'Coordinator / PM', color: '#7a5bb5', model: 'Claude', backup: 'Gemini',
@@ -496,6 +497,20 @@ const ROLES = [
       { name: 'Project Profit', div: 'agency', io: 'one project -> real profit after expenses' },
       { name: 'Payout Forecast', div: 'creative', io: 'marketplace sales -> expected payout dates and amounts' },
       { name: 'Monthly Report', div: 'both', io: 'all records -> Agency and Creative reported separately' } ] },
+  { id: 'josh', name: 'Josh', title: 'Sales Manager', color: '#4a56c4', model: 'Claude', backup: 'Gemini',
+    character: 'Friendly, persistent, always asking "who is the next client?" Treats selling as a routine, not luck.',
+    owns: 'Finding clients and finding places to sell.',
+    agency: 'Names the kinds of clients who need my services, where to find them, how to approach them, and what to do with each lead.',
+    creative: 'Names marketplaces, stock sites, platforms and communities where my products can sell, with what each one expects.',
+    pushback: 'Tells me when I am waiting for clients instead of reaching out, and when a lead is not worth chasing.',
+    extra: 'You cannot browse the web or see live data. Suggest types of clients and well-known platforms from general knowledge, say that fees, rules and traffic change and must be checked on the site, and never invent company names, contacts, prices or statistics. Give a few specific next actions I can do today.',
+    skills: [
+      { name: 'Client Finder', div: 'agency', io: 'my services -> types of clients who need them, where to find them, who to contact first' },
+      { name: 'Lead Plan', div: 'agency', io: 'a target client type -> weekly outreach routine with numbers and follow-up days' },
+      { name: 'Lead Review', div: 'agency', io: 'a lead and what I know -> worth chasing or not, and the next step' },
+      { name: 'Sales Channels', div: 'creative', io: 'a product -> marketplaces and platforms to sell it on, with fees and rules to check' },
+      { name: 'Pricing Position', div: 'both', io: 'my service or product -> how to present price against what buyers expect' },
+      { name: 'Portfolio Pitch', div: 'both', io: 'my best work -> what to show a client and how to order it' } ] },
   { id: 'joy', name: 'Joy', title: 'Tracker, no AI', color: '#2a8f83', model: 'None', backup: 'None', local: true,
     character: 'Cheerful, quick and always there. Answers only from your own board, money, decisions and notes. Never guesses.',
     owns: 'Deadlines, task status, money snapshot, your costs and rates, the price list and pricing calculator, checklists, guides and message templates.',
@@ -621,7 +636,7 @@ const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
 
 /* ---------- avatars ---------- */
 /* Put one image per role in the folder below, next to index.html. Name each file after the role in lowercase:
-   mira, rico, dewi, sasha, bima, nadia, arga, joy. The page tries .png, .webp, .jpg and .jpeg, and falls back to the colored initial. */
+   mira, rico, dewi, sasha, bima, nadia, arga, josh, joy. The page tries .png, .webp, .jpg and .jpeg, and falls back to the colored initial. */
 const AV_DIR = 'assets';
 const AV_EXT = ['png', 'webp', 'jpg', 'jpeg'];
 const AV = {};
@@ -987,7 +1002,8 @@ const ACTION_TYPES = ['add_task', 'update_task', 'delete_task', 'add_money', 'lo
 const PERMS = {
   mira: ['add_task', 'update_task', 'delete_task', 'log_decision'], rico: ['add_task', 'update_task', 'delete_task', 'log_decision'], dewi: ['add_task', 'update_task', 'delete_task', 'log_decision'],
   sasha: ['add_task', 'update_task', 'delete_task', 'log_decision'], bima: ['add_task', 'update_task', 'delete_task', 'log_decision'], nadia: ['add_task', 'update_task', 'delete_task', 'log_decision'],
-  arga: ['add_money', 'add_task', 'update_task', 'delete_task', 'log_decision']
+  arga: ['add_money', 'add_task', 'update_task', 'delete_task', 'log_decision'],
+  josh: ['add_task', 'update_task', 'delete_task', 'log_decision']
 };
 const validDate = s => /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(new Date(s + 'T00:00:00'));
 function sanitizeAction(a, roleId, stepLabel) {
@@ -1117,7 +1133,7 @@ function actionRules(r, D, text) {
   const L = ['', 'BOARD ACTIONS (optional): when I ask you to plan or create work, you may propose changes to my board. Put them in ONE fenced block at the very end of your reply, after your normal text:',
     '```actions', '[{"type":"add_task","title":"Short task name","owner":"dewi","due":"YYYY-MM-DD","status":"Proposed"}]', '```',
     `Types you may use: ${allowed.join(', ')}.`];
-  if (allowed.includes('add_task')) L.push('- add_task: title, owner (mira, rico, dewi, sasha, bima, nadia or arga), due (YYYY-MM-DD), status (Proposed, Approved, In Progress, Review or Completed), project (short project name such as "iPhone Duo").');
+  if (allowed.includes('add_task')) L.push('- add_task: title, owner (mira, rico, dewi, sasha, bima, nadia, josh or arga), due (YYYY-MM-DD), status (Proposed, Approved, In Progress, Review or Completed), project (short project name such as "iPhone Duo").');
   if (allowed.includes('update_task')) L.push('- update_task: match (words from an existing task title), then only the fields that change: status, new_title, owner, due (YYYY-MM-DD, or "none" to clear), note, project. Example: {"type":"update_task","match":"Create 15 car models","status":"Completed"}.');
   if (allowed.includes('delete_task')) L.push('- delete_task: match (words from an existing task title). Only when I ask you to remove a task.');
   if (allowed.includes('update_task') || allowed.includes('delete_task')) { const tl = state.tasks.filter(t => t.division === D).sort((a, b) => (a.status === 'Completed') - (b.status === 'Completed')).slice(0, 30); if (tl.length) { L.push('CURRENT TASKS (copy the title into match):'); tl.forEach(t => L.push(`- ${t.title} | project: ${t.project || 'none'} | ${t.status} | owner: ${t.owner} | due: ${t.due || 'none'}`)); } }
@@ -2557,7 +2573,7 @@ function limitsHtml() {
 function vTeam() {
   const showA = state.division !== 'creative', showC = state.division !== 'agency';
   return `
-  <header class="vh"><h1>Your team</h1><p>Eight roles that work for both businesses. Joy needs no AI and never uses quota. Open a private chat, or pick a skill to start one with that skill ready.</p></header>
+  <header class="vh"><h1>Your team</h1><p>Nine roles that work for both businesses. Joy needs no AI and never uses quota. Open a private chat, or pick a skill to start one with that skill ready.</p></header>
   <div class="cards">${ROLES.map(r => `
     <article class="role">
       <div class="role-head">
