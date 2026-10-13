@@ -1,0 +1,60 @@
+{
+  "about": "Joy's data for Studio Board. Edit the numbers and save. To use a changed file, put it next to index.html (when the page is hosted) or press Import data in Joy's chat. Money is in rupiah (idr) and dollars (usd). Fiverr prices are the list price before fees.",
+  "version": 1,
+  "costs": [
+    {"name": "Boarding house", "monthly": 500000},
+    {"name": "Internet", "monthly": 150000},
+    {"name": "Food", "monthly": 500000},
+    {"name": "Transportation", "monthly": 500000},
+    {"name": "Adobe (shared account)", "monthly": 65000},
+    {"name": "Laptop fund (Rp 13jt over 36 months)", "monthly": 361000},
+    {"name": "Other: phone, electricity, health (placeholder, replace with your real figure)", "monthly": 200000}
+  ],
+  "settings": {"billable": 80, "workdays": 21, "savings": 20, "salary": 5000000, "fx": 16000, "fee": 20, "conv": 3, "rush": 30, "rights": 25, "source": 10, "revDays": 0.5, "openUp": 30},
+  "settings_help": {
+    "billable": "billable hours you can charge for in a month",
+    "workdays": "work days in a month",
+    "savings": "percent of income you want to save",
+    "salary": "monthly income goal in rupiah",
+    "fx": "rupiah per dollar",
+    "fee": "percent Fiverr keeps from each order",
+    "conv": "percent lost to payout and currency conversion",
+    "rush": "percent added for a rush deadline",
+    "rights": "percent added for commercial rights",
+    "source": "percent added for source files",
+    "revDays": "work days added for each extra revision round",
+    "openUp": "percent added to your quote for the opening ask"
+  },
+  "services": [
+    {"id": "ad", "name": "3D product ad video", "keywords": ["ad", "ads", "iklan", "promo", "advert"],
+      "tiers": [
+        {"tier": "Basic", "desc": "15s, 1 revision, 7 days", "idr": 1800000, "usd": 150},
+        {"tier": "Standard", "desc": "30s, 2 revisions, 10 days", "idr": 3200000, "usd": 300},
+        {"tier": "Premium", "desc": "30s plus a vertical version, 3 revisions, source file", "idr": 5500000, "usd": 550}
+      ]},
+    {"id": "viz", "name": "Product visualization", "keywords": ["visuali", "viz", "render", "still", "product image"],
+      "tiers": [
+        {"tier": "Basic", "desc": "1 hero image, 2 revisions", "idr": 1500000, "usd": 80},
+        {"tier": "Standard", "desc": "3 images or angles, 2 revisions", "idr": 3000000, "usd": 200},
+        {"tier": "Premium", "desc": "6 images plus 1 styled scene, 3 revisions", "idr": 5000000, "usd": 400}
+      ]},
+    {"id": "mockup", "name": "3D mockup", "keywords": ["mockup", "mock-up", "mock up"],
+      "tiers": [
+        {"tier": "Basic", "desc": "1 mockup", "idr": 800000, "usd": 50},
+        {"tier": "Standard", "desc": "3 mockups", "idr": 2000000, "usd": 120},
+        {"tier": "Premium", "desc": "6 mockups", "idr": 3500000, "usd": 220}
+      ]},
+    {"id": "explainer", "name": "Explainer / UI motion video", "keywords": ["explainer", "ui motion", "motion", "warehouse", "process video", "infographic", "video"],
+      "tiers": [
+        {"tier": "Basic", "desc": "30 seconds", "idr": 2500000, "usd": 250},
+        {"tier": "Standard", "desc": "1 minute", "idr": 4000000, "usd": 450},
+        {"tier": "Premium", "desc": "2 minutes", "idr": 6500000, "usd": 800}
+      ]},
+    {"id": "model", "name": "3D modelling", "keywords": ["model", "3d model", "asset", "prop", "character"], "note": "These 3D modelling prices are estimates from your costs, not market data. Check them against real jobs.",
+      "tiers": [
+        {"tier": "Basic", "desc": "1 simple model, 2 revisions", "idr": 900000, "usd": 60},
+        {"tier": "Standard", "desc": "1 detailed model with materials and UV, 2 revisions", "idr": 2000000, "usd": 150},
+        {"tier": "Premium", "desc": "3 detailed models in one style, source files, 3 revisions", "idr": 5000000, "usd": 350}
+      ]}
+  ]
+}
