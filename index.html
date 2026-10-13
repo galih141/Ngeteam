@@ -333,6 +333,15 @@ td.num,th.num{text-align:right}
 .aimg{display:block;max-width:220px;max-height:160px;border-radius:8px;margin-top:6px}
 .cutrow td{padding:2px 8px 10px;border-top:0}.cutrow .addcut{display:inline-flex;gap:6px;margin-left:8px}.cutrow .addcut input{width:240px;padding:3px 8px}
 .left{margin-left:8px;font-size:13px}.at{font-weight:700;color:var(--creative-text)}
+
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal .dow{font-size:12px;font-weight:700;text-align:center;color:var(--ink);padding:2px}
+.cal .day{min-height:96px;border:1px solid var(--line);border-radius:8px;padding:3px;background:#fff;display:flex;flex-direction:column;gap:2px;min-width:0}
+.cal .day.other{opacity:.45}.cal .day.wkend{background:#f6f7f9}.cal .day.today{outline:2px solid var(--ink)}
+.cal .dnum{align-self:flex-start;border:0;background:none;font-size:12px;font-weight:700;padding:1px 4px;border-radius:6px;cursor:pointer}
+.cal .dnum:hover{background:#e6e8ec}
+.chipt{border:0;border-left:3px solid var(--creative);background:#eef3f8;border-radius:4px;font-size:11px;text-align:left;padding:2px 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.chipt.agency{border-left-color:var(--agency);background:#fbf0e8}.chipt.done{text-decoration:line-through;opacity:.6}
 </style>
 </head>
 <body>
@@ -1943,6 +1952,7 @@ function keysFor(role, k) {
 }
 function histLines(th, msgId, label) {
   const c = state.chat, L = [], target = th.msgs.find(m => m.id === msgId) || { text: '' };
+  L.push(''); L.push('TODAY: ' + new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + ' (' + todayISO() + '). Use this when you talk about days, deadlines and dates.');
   const pm = new Set(); th.msgs.slice(-(c.n + 1)).forEach(m => (m.mentions || []).forEach(i => pm.add(i)));
   if (pm.size) { L.push(''); L.push('OTHER PEOPLE I WORK WITH (not on your team, they do not reply here; I may be sharing this project with them):'); [...pm].forEach(i => { const x = (state.people || []).find(q => q.id === i); if (x) L.push(`- ${x.name}${x.note ? ': ' + x.note : ''}`); }); }
   const prior = th.msgs.filter(m => m.id !== msgId && (c.incJoy || (m.from !== 'joy' && !(m.from === 'me' && m.to === 'joy')))).slice(-c.n);
@@ -2511,11 +2521,40 @@ function vTeam() {
     </article>`).join('')}</div>`;
 }
 
+let editingTask = '';
+const pad2 = n => String(n).padStart(2, '0');
+const calMonth = () => state.calMonth || todayISO().slice(0, 7);
+function taskEditForm(x) {
+  return `<form data-form="taskEdit" autocomplete="off" style="display:grid;gap:6px"><input type="hidden" name="id" value="${x.id}">
+    <label class="field"><span>Task</span><input name="title" required maxlength="140" value="${esc(x.title)}" autofocus></label>
+    <label class="field"><span>Status</span><select name="status">${STATUSES.map(v => `<option ${v === x.status ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+    <label class="field"><span>Division</span><select name="division">${Object.entries(DIVS).map(([k, v]) => `<option value="${k}" ${k === x.division ? 'selected' : ''}>${v.label}</option>`).join('')}</select></label>
+    <label class="field"><span>Owner</span><select name="owner">${ROLES.map(r => `<option value="${r.id}" ${r.id === x.owner ? 'selected' : ''}>${esc(r.name)}</option>`).join('')}</select></label>
+    <label class="field"><span>Due</span><input type="date" name="due" value="${esc(x.due || '')}"></label>
+    <label class="field"><span>Note</span><textarea name="note" rows="2" maxlength="400" placeholder="Details, links, what is blocking it">${esc(x.note || '')}</textarea></label>
+    <div class="ctl"><button class="btn primary sm" type="submit">Save</button><button class="btn sm" type="button" data-act="task-cancel">Cancel</button><button class="btn sm danger spacer" type="button" data-act="task-del" data-id="${x.id}">Delete</button></div></form>`;
+}
+function calendarHtml() {
+  const [y, m] = calMonth().split('-').map(Number), first = new Date(y, m - 1, 1), off = (first.getDay() + 6) % 7, dim = new Date(y, m, 0).getDate();
+  const cells = Math.ceil((off + dim) / 7) * 7, today = todayISO(), tasks = tasksF(), edit = tasks.find(t => t.id === editingTask);
+  const title = first.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  const late = tasks.filter(t => t.due && t.due < today && t.status !== 'Completed').length, nodue = tasks.filter(t => !t.due && t.status !== 'Completed').length;
+  let h = `${edit ? `<div class="panel">${taskEditForm(edit)}</div>` : ''}
+  <section class="panel"><div class="attrow" style="justify-content:space-between;margin-bottom:8px"><div class="attrow"><button class="btn sm" data-act="cal-nav" data-dir="-1" aria-label="Previous month">&larr;</button><b>${esc(title)}</b><button class="btn sm" data-act="cal-nav" data-dir="1" aria-label="Next month">&rarr;</button><button class="btn sm" data-act="cal-today">Today</button></div><span class="small muted">${late ? late + ' overdue. ' : ''}${nodue ? nodue + ' open without a date.' : ''}</span></div>
+  <div class="cal">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => `<div class="dow">${d}</div>`).join('')}`;
+  for (let i = 0; i < cells; i++) {
+    const dn = i - off + 1, inM = dn >= 1 && dn <= dim, d = new Date(y, m - 1, dn), key = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+    const items = tasks.filter(t => t.due === key), wk = (i % 7) >= 5;
+    h += `<div class="day ${inM ? '' : 'other'} ${key === today ? 'today' : ''} ${wk ? 'wkend' : ''}"><button class="dnum" data-act="cal-day" data-date="${key}" title="Add a task on this day">${d.getDate()}</button>${items.slice(0, 3).map(t => `<button class="chipt ${t.division} ${t.status === 'Completed' ? 'done' : ''}" data-act="task-edit" data-id="${t.id}" title="${esc(t.title)} (${esc(t.status)})">${esc(t.title)}</button>`).join('')}${items.length > 3 ? `<span class="small muted">+${items.length - 3} more</span>` : ''}</div>`;
+  }
+  return h + '</div></section>';
+}
 function vBoard() {
   const t = tasksF();
   const defDiv = state.division === 'all' ? 'agency' : state.division;
   return `
   <header class="vh"><h1>Project board</h1><p>A task is Completed when the work is finished. Whether you were paid is tracked separately on the Money tab.</p></header>
+  <div class="attrow" style="margin-bottom:10px"><button class="btn sm ${state.boardMode === 'calendar' ? '' : 'primary'}" data-act="board-mode" data-mode="board">Board</button><button class="btn sm ${state.boardMode === 'calendar' ? 'primary' : ''}" data-act="board-mode" data-mode="calendar">Calendar</button><span class="small muted">Today is ${esc(new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }))}</span></div>
   <form class="panel form-row" data-form="task" autocomplete="off">
     <label class="field wide"><span>New task</span><input name="title" required maxlength="140" placeholder="What needs doing?"></label>
     <label class="field"><span>Division</span><select name="division">${Object.entries(DIVS).map(([k, v]) => `<option value="${k}" ${k === defDiv ? 'selected' : ''}>${v.label}</option>`).join('')}</select></label>
@@ -2523,16 +2562,19 @@ function vBoard() {
     <label class="field"><span>Due</span><input type="date" name="due"></label>
     <button class="btn primary" type="submit">Add task</button>
   </form>
-  <div class="kanban">${STATUSES.map((s, i) => {
+  ${state.boardMode === 'calendar' ? calendarHtml() : ''}
+  <div class="kanban"${state.boardMode === 'calendar' ? ' style="display:none"' : ''}>${STATUSES.map((s, i) => {
     const items = t.filter(x => x.status === s);
     return `<section class="col" aria-label="${s}"><h3>${s}<span>${items.length}</span></h3>${items.map(x => {
       const w = whenText(x.due), r = roleById(x.owner);
       const showWhen = x.due && s !== 'Completed';
-      return `<div class="task ${x.division}"><div>${esc(x.title)}</div>
+      if (editingTask === x.id) return `<div class="task ${x.division}">${taskEditForm(x)}</div>`;
+      return `<div class="task ${x.division}"><div>${esc(x.title)}</div>${x.note ? `<div class="small muted">${esc(x.note.slice(0, 120))}</div>` : ''}
         <div class="meta">${divTag(x.division)}${r ? `<span>${esc(r.name)}</span>` : ''}${showWhen ? `<span class="${w.late ? 'late' : ''}">${w.t}</span>` : ''}</div>
         <div class="ctl">
           <button class="btn sm" data-act="task-move" data-id="${x.id}" data-dir="-1" ${i === 0 ? 'disabled' : ''} aria-label="Move to ${STATUSES[i - 1] || ''}">&larr;</button>
           <button class="btn sm" data-act="task-move" data-id="${x.id}" data-dir="1" ${i === STATUSES.length - 1 ? 'disabled' : ''} aria-label="Move to ${STATUSES[i + 1] || ''}">&rarr;</button>
+          <button class="btn sm" data-act="task-edit" data-id="${x.id}">Edit</button>
           <button class="btn sm danger spacer" data-act="task-del" data-id="${x.id}">Delete</button>
         </div></div>`;
     }).join('') || '<p class="small muted" style="padding:4px">Nothing here.</p>'}</section>`;
@@ -2772,6 +2814,12 @@ Object.assign(act, {
     }
     sendMessage(q);
   },
+  'board-mode'(el) { state.boardMode = el.dataset.mode === 'calendar' ? 'calendar' : 'board'; editingTask = ''; save(); render(); },
+  'cal-nav'(el) { const [y, m] = calMonth().split('-').map(Number), d = new Date(y, m - 1 + Number(el.dataset.dir), 1); state.calMonth = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`; save(); render(); },
+  'cal-today'() { state.calMonth = ''; save(); render(); },
+  'cal-day'(el) { const f = document.querySelector('[data-form="task"]'); if (!f) return; f.querySelector('[name="due"]').value = el.dataset.date; f.querySelector('[name="title"]').focus(); toast('Due date set to ' + el.dataset.date + '. Type the task above.'); },
+  'task-edit'(el) { editingTask = el.dataset.id; render(); },
+  'task-cancel'() { editingTask = ''; render(); },
   'att-del'(el) { atts.splice(Number(el.dataset.i), 1); const s = $('#cAtt'); if (s) s.innerHTML = attHtml(); },
   mention(el) {
     const t = $('#cText'); if (!t) return; const a = t.selectionStart || t.value.length, add = '@' + el.dataset.name + ' ';
@@ -2801,6 +2849,12 @@ const forms = {
     const d = new FormData(f), title = (d.get('title') || '').trim(); if (!title) return;
     state.tasks.push({ id: uid(), title, division: d.get('division'), status: 'Proposed', owner: d.get('owner'), due: d.get('due') || '' });
     save(); render();
+  },
+  taskEdit(f) {
+    const d = new FormData(f), t = state.tasks.find(x => x.id === d.get('id')), title = (d.get('title') || '').trim(); if (!t || !title) return;
+    t.title = title.slice(0, 140); if (DIVS[d.get('division')]) t.division = d.get('division'); if (roleById(d.get('owner'))) t.owner = d.get('owner');
+    if (STATUSES.includes(d.get('status'))) t.status = d.get('status'); t.due = validDate(d.get('due') || '') ? d.get('due') : ''; t.note = (d.get('note') || '').trim().slice(0, 400);
+    editingTask = ''; save(); render();
   },
   money(f) {
     const d = new FormData(f), desc = (d.get('desc') || '').trim(); if (!desc) return;
