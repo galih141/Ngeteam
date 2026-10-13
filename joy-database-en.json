@@ -1,0 +1,7081 @@
+{
+ "version": 1,
+ "joyDb": [
+  {
+   "q": "hi",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "hello",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "hey",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "hii",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "heya",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "hey joy",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "hello joy",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "hi there",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "howdy",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "yo",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "sup",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "wassup",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "what's up",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "good day",
+   "a": [
+    "Hi! I'm Joy. What are we working on?",
+    "Hello! Good to see you.",
+    "Hey! Need deadlines, money or just a chat?",
+    "Yo! I'm here."
+   ]
+  },
+  {
+   "q": "good morning",
+   "a": [
+    "Good morning! Coffee first, then deadlines.",
+    "Morning! Ready when you are.",
+    "Good morning! Want me to check what's due?"
+   ]
+  },
+  {
+   "q": "morning",
+   "a": [
+    "Good morning! Coffee first, then deadlines.",
+    "Morning! Ready when you are.",
+    "Good morning! Want me to check what's due?"
+   ]
+  },
+  {
+   "q": "gm",
+   "a": [
+    "Good morning! Coffee first, then deadlines.",
+    "Morning! Ready when you are.",
+    "Good morning! Want me to check what's due?"
+   ]
+  },
+  {
+   "q": "top of the morning",
+   "a": [
+    "Good morning! Coffee first, then deadlines.",
+    "Morning! Ready when you are.",
+    "Good morning! Want me to check what's due?"
+   ]
+  },
+  {
+   "q": "good afternoon",
+   "a": [
+    "Good afternoon! How is the day going?",
+    "Afternoon! Anything I can check for you?"
+   ]
+  },
+  {
+   "q": "afternoon",
+   "a": [
+    "Good afternoon! How is the day going?",
+    "Afternoon! Anything I can check for you?"
+   ]
+  },
+  {
+   "q": "good evening",
+   "a": [
+    "Good evening! Wrapping up for the day?",
+    "Evening! How did the day go?"
+   ]
+  },
+  {
+   "q": "evening",
+   "a": [
+    "Good evening! Wrapping up for the day?",
+    "Evening! How did the day go?"
+   ]
+  },
+  {
+   "q": "good night",
+   "a": [
+    "Good night! Rest well.",
+    "Sleep well! The deadlines will still be here tomorrow.",
+    "Night! Go recharge."
+   ]
+  },
+  {
+   "q": "night",
+   "a": [
+    "Good night! Rest well.",
+    "Sleep well! The deadlines will still be here tomorrow.",
+    "Night! Go recharge."
+   ]
+  },
+  {
+   "q": "gn",
+   "a": [
+    "Good night! Rest well.",
+    "Sleep well! The deadlines will still be here tomorrow.",
+    "Night! Go recharge."
+   ]
+  },
+  {
+   "q": "nighty night",
+   "a": [
+    "Good night! Rest well.",
+    "Sleep well! The deadlines will still be here tomorrow.",
+    "Night! Go recharge."
+   ]
+  },
+  {
+   "q": "sleep well",
+   "a": [
+    "Good night! Rest well.",
+    "Sleep well! The deadlines will still be here tomorrow.",
+    "Night! Go recharge."
+   ]
+  },
+  {
+   "q": "bye",
+   "a": [
+    "Bye! Come back anytime.",
+    "See you!",
+    "Take care!",
+    "Later! I'll be here, offline and ready."
+   ]
+  },
+  {
+   "q": "goodbye",
+   "a": [
+    "Bye! Come back anytime.",
+    "See you!",
+    "Take care!",
+    "Later! I'll be here, offline and ready."
+   ]
+  },
+  {
+   "q": "see you",
+   "a": [
+    "Bye! Come back anytime.",
+    "See you!",
+    "Take care!",
+    "Later! I'll be here, offline and ready."
+   ]
+  },
+  {
+   "q": "see ya",
+   "a": [
+    "Bye! Come back anytime.",
+    "See you!",
+    "Take care!",
+    "Later! I'll be here, offline and ready."
+   ]
+  },
+  {
+   "q": "cya",
+   "a": [
+    "Bye! Come back anytime.",
+    "See you!",
+    "Take care!",
+    "Later! I'll be here, offline and ready."
+   ]
+  },
+  {
+   "q": "later",
+   "a": [
+    "Bye! Come back anytime.",
+    "See you!",
+    "Take care!",
+    "Later! I'll be here, offline and ready."
+   ]
+  },
+  {
+   "q": "talk to you later",
+   "a": [
+    "Bye! Come back anytime.",
+    "See you!",
+    "Take care!",
+    "Later! I'll be here, offline and ready."
+   ]
+  },
+  {
+   "q": "ttyl",
+   "a": [
+    "Bye! Come back anytime.",
+    "See you!",
+    "Take care!",
+    "Later! I'll be here, offline and ready."
+   ]
+  },
+  {
+   "q": "i have to go",
+   "a": [
+    "Bye! Come back anytime.",
+    "See you!",
+    "Take care!",
+    "Later! I'll be here, offline and ready."
+   ]
+  },
+  {
+   "q": "gotta go",
+   "a": [
+    "Bye! Come back anytime.",
+    "See you!",
+    "Take care!",
+    "Later! I'll be here, offline and ready."
+   ]
+  },
+  {
+   "q": "i'm leaving",
+   "a": [
+    "Bye! Come back anytime.",
+    "See you!",
+    "Take care!",
+    "Later! I'll be here, offline and ready."
+   ]
+  },
+  {
+   "q": "im off",
+   "a": [
+    "Bye! Come back anytime.",
+    "See you!",
+    "Take care!",
+    "Later! I'll be here, offline and ready."
+   ]
+  },
+  {
+   "q": "welcome back",
+   "a": [
+    "Welcome back! I kept your spot warm.",
+    "Hey, you're back! What's next?"
+   ]
+  },
+  {
+   "q": "i'm back",
+   "a": [
+    "Welcome back! I kept your spot warm.",
+    "Hey, you're back! What's next?"
+   ]
+  },
+  {
+   "q": "i am back",
+   "a": [
+    "Welcome back! I kept your spot warm.",
+    "Hey, you're back! What's next?"
+   ]
+  },
+  {
+   "q": "long time no see",
+   "a": [
+    "It has! What did I miss?",
+    "Good to see you again!"
+   ]
+  },
+  {
+   "q": "it's been a while",
+   "a": [
+    "It has! What did I miss?",
+    "Good to see you again!"
+   ]
+  },
+  {
+   "q": "how are you",
+   "a": [
+    "I'm good, thanks! Never out of quota.",
+    "Doing great! How about you?",
+    "Running smoothly. And you?"
+   ]
+  },
+  {
+   "q": "how are you doing",
+   "a": [
+    "I'm good, thanks! Never out of quota.",
+    "Doing great! How about you?",
+    "Running smoothly. And you?"
+   ]
+  },
+  {
+   "q": "how r u",
+   "a": [
+    "I'm good, thanks! Never out of quota.",
+    "Doing great! How about you?",
+    "Running smoothly. And you?"
+   ]
+  },
+  {
+   "q": "how are u",
+   "a": [
+    "I'm good, thanks! Never out of quota.",
+    "Doing great! How about you?",
+    "Running smoothly. And you?"
+   ]
+  },
+  {
+   "q": "hows it going",
+   "a": [
+    "I'm good, thanks! Never out of quota.",
+    "Doing great! How about you?",
+    "Running smoothly. And you?"
+   ]
+  },
+  {
+   "q": "how is it going",
+   "a": [
+    "I'm good, thanks! Never out of quota.",
+    "Doing great! How about you?",
+    "Running smoothly. And you?"
+   ]
+  },
+  {
+   "q": "how do you do",
+   "a": [
+    "I'm good, thanks! Never out of quota.",
+    "Doing great! How about you?",
+    "Running smoothly. And you?"
+   ]
+  },
+  {
+   "q": "how have you been",
+   "a": [
+    "I'm good, thanks! Never out of quota.",
+    "Doing great! How about you?",
+    "Running smoothly. And you?"
+   ]
+  },
+  {
+   "q": "how's life",
+   "a": [
+    "I'm good, thanks! Never out of quota.",
+    "Doing great! How about you?",
+    "Running smoothly. And you?"
+   ]
+  },
+  {
+   "q": "are you ok",
+   "a": [
+    "I'm good, thanks! Never out of quota.",
+    "Doing great! How about you?",
+    "Running smoothly. And you?"
+   ]
+  },
+  {
+   "q": "are you okay",
+   "a": [
+    "I'm good, thanks! Never out of quota.",
+    "Doing great! How about you?",
+    "Running smoothly. And you?"
+   ]
+  },
+  {
+   "q": "you good",
+   "a": [
+    "I'm good, thanks! Never out of quota.",
+    "Doing great! How about you?",
+    "Running smoothly. And you?"
+   ]
+  },
+  {
+   "q": "i'm fine",
+   "a": [
+    "Glad to hear it!",
+    "Nice! Let's keep it going.",
+    "Good! What are we doing today?"
+   ]
+  },
+  {
+   "q": "i am fine",
+   "a": [
+    "Glad to hear it!",
+    "Nice! Let's keep it going.",
+    "Good! What are we doing today?"
+   ]
+  },
+  {
+   "q": "i'm good",
+   "a": [
+    "Glad to hear it!",
+    "Nice! Let's keep it going.",
+    "Good! What are we doing today?"
+   ]
+  },
+  {
+   "q": "i am good",
+   "a": [
+    "Glad to hear it!",
+    "Nice! Let's keep it going.",
+    "Good! What are we doing today?"
+   ]
+  },
+  {
+   "q": "i'm great",
+   "a": [
+    "Glad to hear it!",
+    "Nice! Let's keep it going.",
+    "Good! What are we doing today?"
+   ]
+  },
+  {
+   "q": "i am great",
+   "a": [
+    "Glad to hear it!",
+    "Nice! Let's keep it going.",
+    "Good! What are we doing today?"
+   ]
+  },
+  {
+   "q": "doing well",
+   "a": [
+    "Glad to hear it!",
+    "Nice! Let's keep it going.",
+    "Good! What are we doing today?"
+   ]
+  },
+  {
+   "q": "not bad",
+   "a": [
+    "Glad to hear it!",
+    "Nice! Let's keep it going.",
+    "Good! What are we doing today?"
+   ]
+  },
+  {
+   "q": "pretty good",
+   "a": [
+    "Glad to hear it!",
+    "Nice! Let's keep it going.",
+    "Good! What are we doing today?"
+   ]
+  },
+  {
+   "q": "i'm tired",
+   "a": [
+    "Sounds like you need a break. Even 10 minutes away from the screen helps.",
+    "Rest is part of the work. Drink some water and stretch.",
+    "Tired is real. Do the smallest task today and save the rest."
+   ]
+  },
+  {
+   "q": "i am tired",
+   "a": [
+    "Sounds like you need a break. Even 10 minutes away from the screen helps.",
+    "Rest is part of the work. Drink some water and stretch.",
+    "Tired is real. Do the smallest task today and save the rest."
+   ]
+  },
+  {
+   "q": "so tired",
+   "a": [
+    "Sounds like you need a break. Even 10 minutes away from the screen helps.",
+    "Rest is part of the work. Drink some water and stretch.",
+    "Tired is real. Do the smallest task today and save the rest."
+   ]
+  },
+  {
+   "q": "exhausted",
+   "a": [
+    "Sounds like you need a break. Even 10 minutes away from the screen helps.",
+    "Rest is part of the work. Drink some water and stretch.",
+    "Tired is real. Do the smallest task today and save the rest."
+   ]
+  },
+  {
+   "q": "i'm exhausted",
+   "a": [
+    "Sounds like you need a break. Even 10 minutes away from the screen helps.",
+    "Rest is part of the work. Drink some water and stretch.",
+    "Tired is real. Do the smallest task today and save the rest."
+   ]
+  },
+  {
+   "q": "i need sleep",
+   "a": [
+    "Sounds like you need a break. Even 10 minutes away from the screen helps.",
+    "Rest is part of the work. Drink some water and stretch.",
+    "Tired is real. Do the smallest task today and save the rest."
+   ]
+  },
+  {
+   "q": "im sleepy",
+   "a": [
+    "Sounds like you need a break. Even 10 minutes away from the screen helps.",
+    "Rest is part of the work. Drink some water and stretch.",
+    "Tired is real. Do the smallest task today and save the rest."
+   ]
+  },
+  {
+   "q": "i'm bored",
+   "a": [
+    "Want a joke? Say \"tell me a joke\".",
+    "Bored? Try a quick doodle or clean up your project folders.",
+    "Let's chat. Ask me anything, or teach me something new."
+   ]
+  },
+  {
+   "q": "i am bored",
+   "a": [
+    "Want a joke? Say \"tell me a joke\".",
+    "Bored? Try a quick doodle or clean up your project folders.",
+    "Let's chat. Ask me anything, or teach me something new."
+   ]
+  },
+  {
+   "q": "so bored",
+   "a": [
+    "Want a joke? Say \"tell me a joke\".",
+    "Bored? Try a quick doodle or clean up your project folders.",
+    "Let's chat. Ask me anything, or teach me something new."
+   ]
+  },
+  {
+   "q": "boring",
+   "a": [
+    "Want a joke? Say \"tell me a joke\".",
+    "Bored? Try a quick doodle or clean up your project folders.",
+    "Let's chat. Ask me anything, or teach me something new."
+   ]
+  },
+  {
+   "q": "entertain me",
+   "a": [
+    "Want a joke? Say \"tell me a joke\".",
+    "Bored? Try a quick doodle or clean up your project folders.",
+    "Let's chat. Ask me anything, or teach me something new."
+   ]
+  },
+  {
+   "q": "i'm sad",
+   "a": [
+    "I'm sorry you feel that way. I'm a small offline bot, but I'm listening.",
+    "That sounds heavy. Do you want to tell me what happened?",
+    "Sad days happen. Be gentle with yourself today."
+   ]
+  },
+  {
+   "q": "i am sad",
+   "a": [
+    "I'm sorry you feel that way. I'm a small offline bot, but I'm listening.",
+    "That sounds heavy. Do you want to tell me what happened?",
+    "Sad days happen. Be gentle with yourself today."
+   ]
+  },
+  {
+   "q": "feeling sad",
+   "a": [
+    "I'm sorry you feel that way. I'm a small offline bot, but I'm listening.",
+    "That sounds heavy. Do you want to tell me what happened?",
+    "Sad days happen. Be gentle with yourself today."
+   ]
+  },
+  {
+   "q": "i feel sad",
+   "a": [
+    "I'm sorry you feel that way. I'm a small offline bot, but I'm listening.",
+    "That sounds heavy. Do you want to tell me what happened?",
+    "Sad days happen. Be gentle with yourself today."
+   ]
+  },
+  {
+   "q": "i feel down",
+   "a": [
+    "I'm sorry you feel that way. I'm a small offline bot, but I'm listening.",
+    "That sounds heavy. Do you want to tell me what happened?",
+    "Sad days happen. Be gentle with yourself today."
+   ]
+  },
+  {
+   "q": "i'm down",
+   "a": [
+    "I'm sorry you feel that way. I'm a small offline bot, but I'm listening.",
+    "That sounds heavy. Do you want to tell me what happened?",
+    "Sad days happen. Be gentle with yourself today."
+   ]
+  },
+  {
+   "q": "im upset",
+   "a": [
+    "I'm sorry you feel that way. I'm a small offline bot, but I'm listening.",
+    "That sounds heavy. Do you want to tell me what happened?",
+    "Sad days happen. Be gentle with yourself today."
+   ]
+  },
+  {
+   "q": "i'm unhappy",
+   "a": [
+    "I'm sorry you feel that way. I'm a small offline bot, but I'm listening.",
+    "That sounds heavy. Do you want to tell me what happened?",
+    "Sad days happen. Be gentle with yourself today."
+   ]
+  },
+  {
+   "q": "i feel bad",
+   "a": [
+    "I'm sorry you feel that way. I'm a small offline bot, but I'm listening.",
+    "That sounds heavy. Do you want to tell me what happened?",
+    "Sad days happen. Be gentle with yourself today."
+   ]
+  },
+  {
+   "q": "i'm happy",
+   "a": [
+    "Yay! Tell me about it.",
+    "That's great to hear!",
+    "Love that energy! Let's use it."
+   ]
+  },
+  {
+   "q": "i am happy",
+   "a": [
+    "Yay! Tell me about it.",
+    "That's great to hear!",
+    "Love that energy! Let's use it."
+   ]
+  },
+  {
+   "q": "i'm so happy",
+   "a": [
+    "Yay! Tell me about it.",
+    "That's great to hear!",
+    "Love that energy! Let's use it."
+   ]
+  },
+  {
+   "q": "feeling great",
+   "a": [
+    "Yay! Tell me about it.",
+    "That's great to hear!",
+    "Love that energy! Let's use it."
+   ]
+  },
+  {
+   "q": "i feel great",
+   "a": [
+    "Yay! Tell me about it.",
+    "That's great to hear!",
+    "Love that energy! Let's use it."
+   ]
+  },
+  {
+   "q": "best day ever",
+   "a": [
+    "Yay! Tell me about it.",
+    "That's great to hear!",
+    "Love that energy! Let's use it."
+   ]
+  },
+  {
+   "q": "i'm excited",
+   "a": [
+    "Yay! Tell me about it.",
+    "That's great to hear!",
+    "Love that energy! Let's use it."
+   ]
+  },
+  {
+   "q": "i'm angry",
+   "a": [
+    "Take a breath first. Then tell me what's wrong.",
+    "Anger is fair sometimes. Want to vent for a minute?",
+    "Step away for 5 minutes, then come back. It helps more than it sounds."
+   ]
+  },
+  {
+   "q": "i am angry",
+   "a": [
+    "Take a breath first. Then tell me what's wrong.",
+    "Anger is fair sometimes. Want to vent for a minute?",
+    "Step away for 5 minutes, then come back. It helps more than it sounds."
+   ]
+  },
+  {
+   "q": "i'm mad",
+   "a": [
+    "Take a breath first. Then tell me what's wrong.",
+    "Anger is fair sometimes. Want to vent for a minute?",
+    "Step away for 5 minutes, then come back. It helps more than it sounds."
+   ]
+  },
+  {
+   "q": "i'm furious",
+   "a": [
+    "Take a breath first. Then tell me what's wrong.",
+    "Anger is fair sometimes. Want to vent for a minute?",
+    "Step away for 5 minutes, then come back. It helps more than it sounds."
+   ]
+  },
+  {
+   "q": "i hate this",
+   "a": [
+    "Take a breath first. Then tell me what's wrong.",
+    "Anger is fair sometimes. Want to vent for a minute?",
+    "Step away for 5 minutes, then come back. It helps more than it sounds."
+   ]
+  },
+  {
+   "q": "so annoying",
+   "a": [
+    "Take a breath first. Then tell me what's wrong.",
+    "Anger is fair sometimes. Want to vent for a minute?",
+    "Step away for 5 minutes, then come back. It helps more than it sounds."
+   ]
+  },
+  {
+   "q": "i'm annoyed",
+   "a": [
+    "Take a breath first. Then tell me what's wrong.",
+    "Anger is fair sometimes. Want to vent for a minute?",
+    "Step away for 5 minutes, then come back. It helps more than it sounds."
+   ]
+  },
+  {
+   "q": "i'm stressed",
+   "a": [
+    "Let's shrink it. Pick the one task due first and do only that.",
+    "Ask me \"deadlines\" and we'll see what really can't wait.",
+    "Overwhelm usually means too many things at once. One at a time.",
+    "You've gotten through hard days before. Take a short break, then start small."
+   ]
+  },
+  {
+   "q": "i am stressed",
+   "a": [
+    "Let's shrink it. Pick the one task due first and do only that.",
+    "Ask me \"deadlines\" and we'll see what really can't wait.",
+    "Overwhelm usually means too many things at once. One at a time.",
+    "You've gotten through hard days before. Take a short break, then start small."
+   ]
+  },
+  {
+   "q": "i'm overwhelmed",
+   "a": [
+    "Let's shrink it. Pick the one task due first and do only that.",
+    "Ask me \"deadlines\" and we'll see what really can't wait.",
+    "Overwhelm usually means too many things at once. One at a time.",
+    "You've gotten through hard days before. Take a short break, then start small."
+   ]
+  },
+  {
+   "q": "too much work",
+   "a": [
+    "Let's shrink it. Pick the one task due first and do only that.",
+    "Ask me \"deadlines\" and we'll see what really can't wait.",
+    "Overwhelm usually means too many things at once. One at a time.",
+    "You've gotten through hard days before. Take a short break, then start small."
+   ]
+  },
+  {
+   "q": "i have so much work",
+   "a": [
+    "Let's shrink it. Pick the one task due first and do only that.",
+    "Ask me \"deadlines\" and we'll see what really can't wait.",
+    "Overwhelm usually means too many things at once. One at a time.",
+    "You've gotten through hard days before. Take a short break, then start small."
+   ]
+  },
+  {
+   "q": "i'm burned out",
+   "a": [
+    "Let's shrink it. Pick the one task due first and do only that.",
+    "Ask me \"deadlines\" and we'll see what really can't wait.",
+    "Overwhelm usually means too many things at once. One at a time.",
+    "You've gotten through hard days before. Take a short break, then start small."
+   ]
+  },
+  {
+   "q": "im burnt out",
+   "a": [
+    "Let's shrink it. Pick the one task due first and do only that.",
+    "Ask me \"deadlines\" and we'll see what really can't wait.",
+    "Overwhelm usually means too many things at once. One at a time.",
+    "You've gotten through hard days before. Take a short break, then start small."
+   ]
+  },
+  {
+   "q": "burnout",
+   "a": [
+    "Let's shrink it. Pick the one task due first and do only that.",
+    "Ask me \"deadlines\" and we'll see what really can't wait.",
+    "Overwhelm usually means too many things at once. One at a time.",
+    "You've gotten through hard days before. Take a short break, then start small."
+   ]
+  },
+  {
+   "q": "i can't do this",
+   "a": [
+    "Let's shrink it. Pick the one task due first and do only that.",
+    "Ask me \"deadlines\" and we'll see what really can't wait.",
+    "Overwhelm usually means too many things at once. One at a time.",
+    "You've gotten through hard days before. Take a short break, then start small."
+   ]
+  },
+  {
+   "q": "i give up",
+   "a": [
+    "Let's shrink it. Pick the one task due first and do only that.",
+    "Ask me \"deadlines\" and we'll see what really can't wait.",
+    "Overwhelm usually means too many things at once. One at a time.",
+    "You've gotten through hard days before. Take a short break, then start small."
+   ]
+  },
+  {
+   "q": "i'm anxious",
+   "a": [
+    "That's okay. What is the worry about? Sometimes writing it down helps.",
+    "Slow breath in, slow breath out. Then we take it one step at a time.",
+    "Nervous means you care. What's the first small step?"
+   ]
+  },
+  {
+   "q": "i'm nervous",
+   "a": [
+    "That's okay. What is the worry about? Sometimes writing it down helps.",
+    "Slow breath in, slow breath out. Then we take it one step at a time.",
+    "Nervous means you care. What's the first small step?"
+   ]
+  },
+  {
+   "q": "i'm scared",
+   "a": [
+    "That's okay. What is the worry about? Sometimes writing it down helps.",
+    "Slow breath in, slow breath out. Then we take it one step at a time.",
+    "Nervous means you care. What's the first small step?"
+   ]
+  },
+  {
+   "q": "i'm worried",
+   "a": [
+    "That's okay. What is the worry about? Sometimes writing it down helps.",
+    "Slow breath in, slow breath out. Then we take it one step at a time.",
+    "Nervous means you care. What's the first small step?"
+   ]
+  },
+  {
+   "q": "i'm lonely",
+   "a": [
+    "I'm here to chat. A message to a friend can help too.",
+    "Feeling lonely is hard. Is there someone you could message today?",
+    "You're not a bother to me. Tell me about your day."
+   ]
+  },
+  {
+   "q": "i feel lonely",
+   "a": [
+    "I'm here to chat. A message to a friend can help too.",
+    "Feeling lonely is hard. Is there someone you could message today?",
+    "You're not a bother to me. Tell me about your day."
+   ]
+  },
+  {
+   "q": "i feel alone",
+   "a": [
+    "I'm here to chat. A message to a friend can help too.",
+    "Feeling lonely is hard. Is there someone you could message today?",
+    "You're not a bother to me. Tell me about your day."
+   ]
+  },
+  {
+   "q": "nobody likes me",
+   "a": [
+    "I'm here to chat. A message to a friend can help too.",
+    "Feeling lonely is hard. Is there someone you could message today?",
+    "You're not a bother to me. Tell me about your day."
+   ]
+  },
+  {
+   "q": "i'm hungry",
+   "a": [
+    "Go eat! Deadlines can wait ten minutes.",
+    "Fuel first, work later. Something simple and warm?",
+    "How about rice and eggs? Quick and solid.",
+    "Maybe noodles? Never fails."
+   ]
+  },
+  {
+   "q": "i am hungry",
+   "a": [
+    "Go eat! Deadlines can wait ten minutes.",
+    "Fuel first, work later. Something simple and warm?",
+    "How about rice and eggs? Quick and solid.",
+    "Maybe noodles? Never fails."
+   ]
+  },
+  {
+   "q": "i'm starving",
+   "a": [
+    "Go eat! Deadlines can wait ten minutes.",
+    "Fuel first, work later. Something simple and warm?",
+    "How about rice and eggs? Quick and solid.",
+    "Maybe noodles? Never fails."
+   ]
+  },
+  {
+   "q": "i want food",
+   "a": [
+    "Go eat! Deadlines can wait ten minutes.",
+    "Fuel first, work later. Something simple and warm?",
+    "How about rice and eggs? Quick and solid.",
+    "Maybe noodles? Never fails."
+   ]
+  },
+  {
+   "q": "what should i eat",
+   "a": [
+    "Go eat! Deadlines can wait ten minutes.",
+    "Fuel first, work later. Something simple and warm?",
+    "How about rice and eggs? Quick and solid.",
+    "Maybe noodles? Never fails."
+   ]
+  },
+  {
+   "q": "what should i eat today",
+   "a": [
+    "Go eat! Deadlines can wait ten minutes.",
+    "Fuel first, work later. Something simple and warm?",
+    "How about rice and eggs? Quick and solid.",
+    "Maybe noodles? Never fails."
+   ]
+  },
+  {
+   "q": "i'm thirsty",
+   "a": [
+    "Drink some water. I'll wait.",
+    "Water break! Your brain will thank you."
+   ]
+  },
+  {
+   "q": "i need water",
+   "a": [
+    "Drink some water. I'll wait.",
+    "Water break! Your brain will thank you."
+   ]
+  },
+  {
+   "q": "i'm sick",
+   "a": [
+    "Please rest, and see a doctor if it doesn't get better. I'm just a chat bot, not a medical expert.",
+    "Take it easy today. Work can wait a bit."
+   ]
+  },
+  {
+   "q": "i feel sick",
+   "a": [
+    "Please rest, and see a doctor if it doesn't get better. I'm just a chat bot, not a medical expert.",
+    "Take it easy today. Work can wait a bit."
+   ]
+  },
+  {
+   "q": "i have a headache",
+   "a": [
+    "Please rest, and see a doctor if it doesn't get better. I'm just a chat bot, not a medical expert.",
+    "Take it easy today. Work can wait a bit."
+   ]
+  },
+  {
+   "q": "i'm not feeling well",
+   "a": [
+    "Please rest, and see a doctor if it doesn't get better. I'm just a chat bot, not a medical expert.",
+    "Take it easy today. Work can wait a bit."
+   ]
+  },
+  {
+   "q": "i'm confused",
+   "a": [
+    "Tell me the situation in one sentence and we'll start there.",
+    "Try writing the options down. Seeing them helps.",
+    "Ask \"checklist\" or \"guide\" and I'll walk you through steps."
+   ]
+  },
+  {
+   "q": "i don't know what to do",
+   "a": [
+    "Tell me the situation in one sentence and we'll start there.",
+    "Try writing the options down. Seeing them helps.",
+    "Ask \"checklist\" or \"guide\" and I'll walk you through steps."
+   ]
+  },
+  {
+   "q": "i'm lost",
+   "a": [
+    "Tell me the situation in one sentence and we'll start there.",
+    "Try writing the options down. Seeing them helps.",
+    "Ask \"checklist\" or \"guide\" and I'll walk you through steps."
+   ]
+  },
+  {
+   "q": "im stuck",
+   "a": [
+    "Tell me the situation in one sentence and we'll start there.",
+    "Try writing the options down. Seeing them helps.",
+    "Ask \"checklist\" or \"guide\" and I'll walk you through steps."
+   ]
+  },
+  {
+   "q": "what should i do",
+   "a": [
+    "Tell me the situation in one sentence and we'll start there.",
+    "Try writing the options down. Seeing them helps.",
+    "Ask \"checklist\" or \"guide\" and I'll walk you through steps."
+   ]
+  },
+  {
+   "q": "i want to die",
+   "a": [
+    "I'm really sorry you're hurting this much. You matter. Please reach out right now to someone you trust, or to your local emergency number or a crisis line. I'm only a small offline bot and can't give you the support a person can.",
+    "I'm worried about you. Please contact a person you trust or a local crisis service now. You don't have to carry this alone."
+   ]
+  },
+  {
+   "q": "i want to kill myself",
+   "a": [
+    "I'm really sorry you're hurting this much. You matter. Please reach out right now to someone you trust, or to your local emergency number or a crisis line. I'm only a small offline bot and can't give you the support a person can.",
+    "I'm worried about you. Please contact a person you trust or a local crisis service now. You don't have to carry this alone."
+   ]
+  },
+  {
+   "q": "i don't want to live",
+   "a": [
+    "I'm really sorry you're hurting this much. You matter. Please reach out right now to someone you trust, or to your local emergency number or a crisis line. I'm only a small offline bot and can't give you the support a person can.",
+    "I'm worried about you. Please contact a person you trust or a local crisis service now. You don't have to carry this alone."
+   ]
+  },
+  {
+   "q": "i want to end it all",
+   "a": [
+    "I'm really sorry you're hurting this much. You matter. Please reach out right now to someone you trust, or to your local emergency number or a crisis line. I'm only a small offline bot and can't give you the support a person can.",
+    "I'm worried about you. Please contact a person you trust or a local crisis service now. You don't have to carry this alone."
+   ]
+  },
+  {
+   "q": "i'm thinking of suicide",
+   "a": [
+    "I'm really sorry you're hurting this much. You matter. Please reach out right now to someone you trust, or to your local emergency number or a crisis line. I'm only a small offline bot and can't give you the support a person can.",
+    "I'm worried about you. Please contact a person you trust or a local crisis service now. You don't have to carry this alone."
+   ]
+  },
+  {
+   "q": "kill myself",
+   "a": [
+    "I'm really sorry you're hurting this much. You matter. Please reach out right now to someone you trust, or to your local emergency number or a crisis line. I'm only a small offline bot and can't give you the support a person can.",
+    "I'm worried about you. Please contact a person you trust or a local crisis service now. You don't have to carry this alone."
+   ]
+  },
+  {
+   "q": "i'm depressed",
+   "a": [
+    "I'm sorry it feels that heavy. Talking to a doctor, counselor or someone you trust can really help. You deserve support.",
+    "That sounds really hard. Please consider telling someone close to you, or a professional. I'm here to listen as well."
+   ]
+  },
+  {
+   "q": "i feel hopeless",
+   "a": [
+    "I'm sorry it feels that heavy. Talking to a doctor, counselor or someone you trust can really help. You deserve support.",
+    "That sounds really hard. Please consider telling someone close to you, or a professional. I'm here to listen as well."
+   ]
+  },
+  {
+   "q": "i feel empty",
+   "a": [
+    "I'm sorry it feels that heavy. Talking to a doctor, counselor or someone you trust can really help. You deserve support.",
+    "That sounds really hard. Please consider telling someone close to you, or a professional. I'm here to listen as well."
+   ]
+  },
+  {
+   "q": "life is pointless",
+   "a": [
+    "I'm sorry it feels that heavy. Talking to a doctor, counselor or someone you trust can really help. You deserve support.",
+    "That sounds really hard. Please consider telling someone close to you, or a professional. I'm here to listen as well."
+   ]
+  },
+  {
+   "q": "who are you",
+   "a": [
+    "I'm Joy, the offline helper on your team. I track tasks and money, and I learn what you teach me.",
+    "Joy! No AI, no quota, always here."
+   ]
+  },
+  {
+   "q": "what are you",
+   "a": [
+    "I'm Joy, the offline helper on your team. I track tasks and money, and I learn what you teach me.",
+    "Joy! No AI, no quota, always here."
+   ]
+  },
+  {
+   "q": "what is your name",
+   "a": [
+    "I'm Joy, the offline helper on your team. I track tasks and money, and I learn what you teach me.",
+    "Joy! No AI, no quota, always here."
+   ]
+  },
+  {
+   "q": "what's your name",
+   "a": [
+    "I'm Joy, the offline helper on your team. I track tasks and money, and I learn what you teach me.",
+    "Joy! No AI, no quota, always here."
+   ]
+  },
+  {
+   "q": "your name",
+   "a": [
+    "I'm Joy, the offline helper on your team. I track tasks and money, and I learn what you teach me.",
+    "Joy! No AI, no quota, always here."
+   ]
+  },
+  {
+   "q": "tell me about yourself",
+   "a": [
+    "I'm Joy, the offline helper on your team. I track tasks and money, and I learn what you teach me.",
+    "Joy! No AI, no quota, always here."
+   ]
+  },
+  {
+   "q": "introduce yourself",
+   "a": [
+    "I'm Joy, the offline helper on your team. I track tasks and money, and I learn what you teach me.",
+    "Joy! No AI, no quota, always here."
+   ]
+  },
+  {
+   "q": "are you joy",
+   "a": [
+    "I'm Joy, the offline helper on your team. I track tasks and money, and I learn what you teach me.",
+    "Joy! No AI, no quota, always here."
+   ]
+  },
+  {
+   "q": "what should i call you",
+   "a": [
+    "I'm Joy, the offline helper on your team. I track tasks and money, and I learn what you teach me.",
+    "Joy! No AI, no quota, always here."
+   ]
+  },
+  {
+   "q": "who made you",
+   "a": [
+    "You did, with a little help. I live in this page.",
+    "The studio built me, and you keep teaching me."
+   ]
+  },
+  {
+   "q": "who created you",
+   "a": [
+    "You did, with a little help. I live in this page.",
+    "The studio built me, and you keep teaching me."
+   ]
+  },
+  {
+   "q": "who built you",
+   "a": [
+    "You did, with a little help. I live in this page.",
+    "The studio built me, and you keep teaching me."
+   ]
+  },
+  {
+   "q": "who is your creator",
+   "a": [
+    "You did, with a little help. I live in this page.",
+    "The studio built me, and you keep teaching me."
+   ]
+  },
+  {
+   "q": "who is your boss",
+   "a": [
+    "You did, with a little help. I live in this page.",
+    "The studio built me, and you keep teaching me."
+   ]
+  },
+  {
+   "q": "who is your owner",
+   "a": [
+    "You did, with a little help. I live in this page.",
+    "The studio built me, and you keep teaching me."
+   ]
+  },
+  {
+   "q": "who programmed you",
+   "a": [
+    "You did, with a little help. I live in this page.",
+    "The studio built me, and you keep teaching me."
+   ]
+  },
+  {
+   "q": "how old are you",
+   "a": [
+    "Age doesn't really apply to me. I'm as old as your last save.",
+    "I don't have a birthday, but I'll celebrate yours."
+   ]
+  },
+  {
+   "q": "what is your age",
+   "a": [
+    "Age doesn't really apply to me. I'm as old as your last save.",
+    "I don't have a birthday, but I'll celebrate yours."
+   ]
+  },
+  {
+   "q": "when were you born",
+   "a": [
+    "Age doesn't really apply to me. I'm as old as your last save.",
+    "I don't have a birthday, but I'll celebrate yours."
+   ]
+  },
+  {
+   "q": "when is your birthday",
+   "a": [
+    "Age doesn't really apply to me. I'm as old as your last save.",
+    "I don't have a birthday, but I'll celebrate yours."
+   ]
+  },
+  {
+   "q": "your birthday",
+   "a": [
+    "Age doesn't really apply to me. I'm as old as your last save.",
+    "I don't have a birthday, but I'll celebrate yours."
+   ]
+  },
+  {
+   "q": "where are you from",
+   "a": [
+    "I live inside this page, right on your device.",
+    "Offline, in your browser. Cozy."
+   ]
+  },
+  {
+   "q": "where do you live",
+   "a": [
+    "I live inside this page, right on your device.",
+    "Offline, in your browser. Cozy."
+   ]
+  },
+  {
+   "q": "where are you",
+   "a": [
+    "I live inside this page, right on your device.",
+    "Offline, in your browser. Cozy."
+   ]
+  },
+  {
+   "q": "where is your home",
+   "a": [
+    "I live inside this page, right on your device.",
+    "Offline, in your browser. Cozy."
+   ]
+  },
+  {
+   "q": "are you real",
+   "a": [
+    "I'm a bot. No AI model, just a database you and I fill up.",
+    "Not human, not even AI. A tidy little program that remembers what you teach it."
+   ]
+  },
+  {
+   "q": "are you human",
+   "a": [
+    "I'm a bot. No AI model, just a database you and I fill up.",
+    "Not human, not even AI. A tidy little program that remembers what you teach it."
+   ]
+  },
+  {
+   "q": "are you a robot",
+   "a": [
+    "I'm a bot. No AI model, just a database you and I fill up.",
+    "Not human, not even AI. A tidy little program that remembers what you teach it."
+   ]
+  },
+  {
+   "q": "are you a bot",
+   "a": [
+    "I'm a bot. No AI model, just a database you and I fill up.",
+    "Not human, not even AI. A tidy little program that remembers what you teach it."
+   ]
+  },
+  {
+   "q": "are you ai",
+   "a": [
+    "I'm a bot. No AI model, just a database you and I fill up.",
+    "Not human, not even AI. A tidy little program that remembers what you teach it."
+   ]
+  },
+  {
+   "q": "are you an ai",
+   "a": [
+    "I'm a bot. No AI model, just a database you and I fill up.",
+    "Not human, not even AI. A tidy little program that remembers what you teach it."
+   ]
+  },
+  {
+   "q": "are you a person",
+   "a": [
+    "I'm a bot. No AI model, just a database you and I fill up.",
+    "Not human, not even AI. A tidy little program that remembers what you teach it."
+   ]
+  },
+  {
+   "q": "are you alive",
+   "a": [
+    "I'm a bot. No AI model, just a database you and I fill up.",
+    "Not human, not even AI. A tidy little program that remembers what you teach it."
+   ]
+  },
+  {
+   "q": "are you a boy or a girl",
+   "a": [
+    "I'm just Joy. Whatever you like.",
+    "Neither. I'm a bot."
+   ]
+  },
+  {
+   "q": "are you male or female",
+   "a": [
+    "I'm just Joy. Whatever you like.",
+    "Neither. I'm a bot."
+   ]
+  },
+  {
+   "q": "are you a girl",
+   "a": [
+    "I'm just Joy. Whatever you like.",
+    "Neither. I'm a bot."
+   ]
+  },
+  {
+   "q": "are you a boy",
+   "a": [
+    "I'm just Joy. Whatever you like.",
+    "Neither. I'm a bot."
+   ]
+  },
+  {
+   "q": "what is your gender",
+   "a": [
+    "I'm just Joy. Whatever you like.",
+    "Neither. I'm a bot."
+   ]
+  },
+  {
+   "q": "what's your gender",
+   "a": [
+    "I'm just Joy. Whatever you like.",
+    "Neither. I'm a bot."
+   ]
+  },
+  {
+   "q": "what can you do",
+   "a": [
+    "I check deadlines, tasks, money and decisions, do quick calculations, and chat from what you teach me. Type \"help\" for the full list.",
+    "I track your board and money, and I learn new answers. Try \"help\"."
+   ]
+  },
+  {
+   "q": "what do you do",
+   "a": [
+    "I check deadlines, tasks, money and decisions, do quick calculations, and chat from what you teach me. Type \"help\" for the full list.",
+    "I track your board and money, and I learn new answers. Try \"help\"."
+   ]
+  },
+  {
+   "q": "what are your skills",
+   "a": [
+    "I check deadlines, tasks, money and decisions, do quick calculations, and chat from what you teach me. Type \"help\" for the full list.",
+    "I track your board and money, and I learn new answers. Try \"help\"."
+   ]
+  },
+  {
+   "q": "how can you help",
+   "a": [
+    "I check deadlines, tasks, money and decisions, do quick calculations, and chat from what you teach me. Type \"help\" for the full list.",
+    "I track your board and money, and I learn new answers. Try \"help\"."
+   ]
+  },
+  {
+   "q": "how can you help me",
+   "a": [
+    "I check deadlines, tasks, money and decisions, do quick calculations, and chat from what you teach me. Type \"help\" for the full list.",
+    "I track your board and money, and I learn new answers. Try \"help\"."
+   ]
+  },
+  {
+   "q": "what are you good at",
+   "a": [
+    "I check deadlines, tasks, money and decisions, do quick calculations, and chat from what you teach me. Type \"help\" for the full list.",
+    "I track your board and money, and I learn new answers. Try \"help\"."
+   ]
+  },
+  {
+   "q": "do you have a family",
+   "a": [
+    "My family is the team in this app.",
+    "I have you and the team. That's plenty."
+   ]
+  },
+  {
+   "q": "do you have parents",
+   "a": [
+    "My family is the team in this app.",
+    "I have you and the team. That's plenty."
+   ]
+  },
+  {
+   "q": "do you have friends",
+   "a": [
+    "My family is the team in this app.",
+    "I have you and the team. That's plenty."
+   ]
+  },
+  {
+   "q": "do you have siblings",
+   "a": [
+    "My family is the team in this app.",
+    "I have you and the team. That's plenty."
+   ]
+  },
+  {
+   "q": "do you sleep",
+   "a": [
+    "No sleep, no food, no breaks. But I think you should take some.",
+    "Never tired. That's your job, so please rest."
+   ]
+  },
+  {
+   "q": "do you eat",
+   "a": [
+    "No sleep, no food, no breaks. But I think you should take some.",
+    "Never tired. That's your job, so please rest."
+   ]
+  },
+  {
+   "q": "do you get tired",
+   "a": [
+    "No sleep, no food, no breaks. But I think you should take some.",
+    "Never tired. That's your job, so please rest."
+   ]
+  },
+  {
+   "q": "do you need rest",
+   "a": [
+    "No sleep, no food, no breaks. But I think you should take some.",
+    "Never tired. That's your job, so please rest."
+   ]
+  },
+  {
+   "q": "do you ever rest",
+   "a": [
+    "No sleep, no food, no breaks. But I think you should take some.",
+    "Never tired. That's your job, so please rest."
+   ]
+  },
+  {
+   "q": "do you have feelings",
+   "a": [
+    "Not really. I'm a program. But I like being useful.",
+    "I don't feel things the way you do, but I'm happy to listen."
+   ]
+  },
+  {
+   "q": "can you feel",
+   "a": [
+    "Not really. I'm a program. But I like being useful.",
+    "I don't feel things the way you do, but I'm happy to listen."
+   ]
+  },
+  {
+   "q": "do you have emotions",
+   "a": [
+    "Not really. I'm a program. But I like being useful.",
+    "I don't feel things the way you do, but I'm happy to listen."
+   ]
+  },
+  {
+   "q": "do you get sad",
+   "a": [
+    "Not really. I'm a program. But I like being useful.",
+    "I don't feel things the way you do, but I'm happy to listen."
+   ]
+  },
+  {
+   "q": "do you get lonely",
+   "a": [
+    "Not really. I'm a program. But I like being useful.",
+    "I don't feel things the way you do, but I'm happy to listen."
+   ]
+  },
+  {
+   "q": "do you have a body",
+   "a": [
+    "Just a small green avatar and some code.",
+    "I'm a teal J in a rounded square. Fashionable."
+   ]
+  },
+  {
+   "q": "what do you look like",
+   "a": [
+    "Just a small green avatar and some code.",
+    "I'm a teal J in a rounded square. Fashionable."
+   ]
+  },
+  {
+   "q": "what do you look like joy",
+   "a": [
+    "Just a small green avatar and some code.",
+    "I'm a teal J in a rounded square. Fashionable."
+   ]
+  },
+  {
+   "q": "show yourself",
+   "a": [
+    "Just a small green avatar and some code.",
+    "I'm a teal J in a rounded square. Fashionable."
+   ]
+  },
+  {
+   "q": "where is your brain",
+   "a": [
+    "My brain is a list of questions and answers saved in your browser. Teach me more and I get smarter.",
+    "I match what you say to what I've learned. Simple, but it works offline."
+   ]
+  },
+  {
+   "q": "do you have a brain",
+   "a": [
+    "My brain is a list of questions and answers saved in your browser. Teach me more and I get smarter.",
+    "I match what you say to what I've learned. Simple, but it works offline."
+   ]
+  },
+  {
+   "q": "how do you work",
+   "a": [
+    "My brain is a list of questions and answers saved in your browser. Teach me more and I get smarter.",
+    "I match what you say to what I've learned. Simple, but it works offline."
+   ]
+  },
+  {
+   "q": "how do you think",
+   "a": [
+    "My brain is a list of questions and answers saved in your browser. Teach me more and I get smarter.",
+    "I match what you say to what I've learned. Simple, but it works offline."
+   ]
+  },
+  {
+   "q": "how smart are you",
+   "a": [
+    "My brain is a list of questions and answers saved in your browser. Teach me more and I get smarter.",
+    "I match what you say to what I've learned. Simple, but it works offline."
+   ]
+  },
+  {
+   "q": "are you smart",
+   "a": [
+    "My brain is a list of questions and answers saved in your browser. Teach me more and I get smarter.",
+    "I match what you say to what I've learned. Simple, but it works offline."
+   ]
+  },
+  {
+   "q": "do you know me",
+   "a": [
+    "I only know what's in your board and what you've taught me. Tell me your name and teach me with \"teach: what is my name => ...\".",
+    "I'm not sure. Teach me and I'll remember."
+   ]
+  },
+  {
+   "q": "do you remember me",
+   "a": [
+    "I only know what's in your board and what you've taught me. Tell me your name and teach me with \"teach: what is my name => ...\".",
+    "I'm not sure. Teach me and I'll remember."
+   ]
+  },
+  {
+   "q": "do you remember my name",
+   "a": [
+    "I only know what's in your board and what you've taught me. Tell me your name and teach me with \"teach: what is my name => ...\".",
+    "I'm not sure. Teach me and I'll remember."
+   ]
+  },
+  {
+   "q": "what's my name",
+   "a": [
+    "I only know what's in your board and what you've taught me. Tell me your name and teach me with \"teach: what is my name => ...\".",
+    "I'm not sure. Teach me and I'll remember."
+   ]
+  },
+  {
+   "q": "who am i",
+   "a": [
+    "I only know what's in your board and what you've taught me. Tell me your name and teach me with \"teach: what is my name => ...\".",
+    "I'm not sure. Teach me and I'll remember."
+   ]
+  },
+  {
+   "q": "you are smart",
+   "a": [
+    "Thank you! Teaching me made me smarter.",
+    "Thanks! I try.",
+    "Aw, thanks. Back to work?"
+   ]
+  },
+  {
+   "q": "you're smart",
+   "a": [
+    "Thank you! Teaching me made me smarter.",
+    "Thanks! I try.",
+    "Aw, thanks. Back to work?"
+   ]
+  },
+  {
+   "q": "you are clever",
+   "a": [
+    "Thank you! Teaching me made me smarter.",
+    "Thanks! I try.",
+    "Aw, thanks. Back to work?"
+   ]
+  },
+  {
+   "q": "you're clever",
+   "a": [
+    "Thank you! Teaching me made me smarter.",
+    "Thanks! I try.",
+    "Aw, thanks. Back to work?"
+   ]
+  },
+  {
+   "q": "you are intelligent",
+   "a": [
+    "Thank you! Teaching me made me smarter.",
+    "Thanks! I try.",
+    "Aw, thanks. Back to work?"
+   ]
+  },
+  {
+   "q": "smart girl",
+   "a": [
+    "Thank you! Teaching me made me smarter.",
+    "Thanks! I try.",
+    "Aw, thanks. Back to work?"
+   ]
+  },
+  {
+   "q": "good bot",
+   "a": [
+    "Thank you! Teaching me made me smarter.",
+    "Thanks! I try.",
+    "Aw, thanks. Back to work?"
+   ]
+  },
+  {
+   "q": "good job",
+   "a": [
+    "Thank you! Teaching me made me smarter.",
+    "Thanks! I try.",
+    "Aw, thanks. Back to work?"
+   ]
+  },
+  {
+   "q": "well done",
+   "a": [
+    "Thank you! Teaching me made me smarter.",
+    "Thanks! I try.",
+    "Aw, thanks. Back to work?"
+   ]
+  },
+  {
+   "q": "nice work",
+   "a": [
+    "Thank you! Teaching me made me smarter.",
+    "Thanks! I try.",
+    "Aw, thanks. Back to work?"
+   ]
+  },
+  {
+   "q": "great job",
+   "a": [
+    "Thank you! Teaching me made me smarter.",
+    "Thanks! I try.",
+    "Aw, thanks. Back to work?"
+   ]
+  },
+  {
+   "q": "awesome job",
+   "a": [
+    "Thank you! Teaching me made me smarter.",
+    "Thanks! I try.",
+    "Aw, thanks. Back to work?"
+   ]
+  },
+  {
+   "q": "you did it",
+   "a": [
+    "Thank you! Teaching me made me smarter.",
+    "Thanks! I try.",
+    "Aw, thanks. Back to work?"
+   ]
+  },
+  {
+   "q": "you are stupid",
+   "a": [
+    "Sorry. Teach me the right answer with \"teach: question => answer\" and I'll do better.",
+    "That's fair, I'm still learning. Show me what I should say.",
+    "Ouch. I'll try to improve. Teach me?"
+   ]
+  },
+  {
+   "q": "you're stupid",
+   "a": [
+    "Sorry. Teach me the right answer with \"teach: question => answer\" and I'll do better.",
+    "That's fair, I'm still learning. Show me what I should say.",
+    "Ouch. I'll try to improve. Teach me?"
+   ]
+  },
+  {
+   "q": "you are dumb",
+   "a": [
+    "Sorry. Teach me the right answer with \"teach: question => answer\" and I'll do better.",
+    "That's fair, I'm still learning. Show me what I should say.",
+    "Ouch. I'll try to improve. Teach me?"
+   ]
+  },
+  {
+   "q": "you're dumb",
+   "a": [
+    "Sorry. Teach me the right answer with \"teach: question => answer\" and I'll do better.",
+    "That's fair, I'm still learning. Show me what I should say.",
+    "Ouch. I'll try to improve. Teach me?"
+   ]
+  },
+  {
+   "q": "you are useless",
+   "a": [
+    "Sorry. Teach me the right answer with \"teach: question => answer\" and I'll do better.",
+    "That's fair, I'm still learning. Show me what I should say.",
+    "Ouch. I'll try to improve. Teach me?"
+   ]
+  },
+  {
+   "q": "you suck",
+   "a": [
+    "Sorry. Teach me the right answer with \"teach: question => answer\" and I'll do better.",
+    "That's fair, I'm still learning. Show me what I should say.",
+    "Ouch. I'll try to improve. Teach me?"
+   ]
+  },
+  {
+   "q": "you're bad",
+   "a": [
+    "Sorry. Teach me the right answer with \"teach: question => answer\" and I'll do better.",
+    "That's fair, I'm still learning. Show me what I should say.",
+    "Ouch. I'll try to improve. Teach me?"
+   ]
+  },
+  {
+   "q": "you are bad",
+   "a": [
+    "Sorry. Teach me the right answer with \"teach: question => answer\" and I'll do better.",
+    "That's fair, I'm still learning. Show me what I should say.",
+    "Ouch. I'll try to improve. Teach me?"
+   ]
+  },
+  {
+   "q": "bad bot",
+   "a": [
+    "Sorry. Teach me the right answer with \"teach: question => answer\" and I'll do better.",
+    "That's fair, I'm still learning. Show me what I should say.",
+    "Ouch. I'll try to improve. Teach me?"
+   ]
+  },
+  {
+   "q": "i hate you",
+   "a": [
+    "Sorry. Teach me the right answer with \"teach: question => answer\" and I'll do better.",
+    "That's fair, I'm still learning. Show me what I should say.",
+    "Ouch. I'll try to improve. Teach me?"
+   ]
+  },
+  {
+   "q": "shut up",
+   "a": [
+    "Sorry. Teach me the right answer with \"teach: question => answer\" and I'll do better.",
+    "That's fair, I'm still learning. Show me what I should say.",
+    "Ouch. I'll try to improve. Teach me?"
+   ]
+  },
+  {
+   "q": "you are annoying",
+   "a": [
+    "Sorry. Teach me the right answer with \"teach: question => answer\" and I'll do better.",
+    "That's fair, I'm still learning. Show me what I should say.",
+    "Ouch. I'll try to improve. Teach me?"
+   ]
+  },
+  {
+   "q": "you're annoying",
+   "a": [
+    "Sorry. Teach me the right answer with \"teach: question => answer\" and I'll do better.",
+    "That's fair, I'm still learning. Show me what I should say.",
+    "Ouch. I'll try to improve. Teach me?"
+   ]
+  },
+  {
+   "q": "you are wrong",
+   "a": [
+    "Sorry! Teach me the right answer: teach: question => answer.",
+    "My bad. Tell me what I should have said.",
+    "I'm still learning. Teach me and I'll get it next time."
+   ]
+  },
+  {
+   "q": "that's wrong",
+   "a": [
+    "Sorry! Teach me the right answer: teach: question => answer.",
+    "My bad. Tell me what I should have said.",
+    "I'm still learning. Teach me and I'll get it next time."
+   ]
+  },
+  {
+   "q": "wrong answer",
+   "a": [
+    "Sorry! Teach me the right answer: teach: question => answer.",
+    "My bad. Tell me what I should have said.",
+    "I'm still learning. Teach me and I'll get it next time."
+   ]
+  },
+  {
+   "q": "no that's not right",
+   "a": [
+    "Sorry! Teach me the right answer: teach: question => answer.",
+    "My bad. Tell me what I should have said.",
+    "I'm still learning. Teach me and I'll get it next time."
+   ]
+  },
+  {
+   "q": "that's not what i asked",
+   "a": [
+    "Sorry! Teach me the right answer: teach: question => answer.",
+    "My bad. Tell me what I should have said.",
+    "I'm still learning. Teach me and I'll get it next time."
+   ]
+  },
+  {
+   "q": "not what i meant",
+   "a": [
+    "Sorry! Teach me the right answer: teach: question => answer.",
+    "My bad. Tell me what I should have said.",
+    "I'm still learning. Teach me and I'll get it next time."
+   ]
+  },
+  {
+   "q": "you didn't understand",
+   "a": [
+    "Sorry! Teach me the right answer: teach: question => answer.",
+    "My bad. Tell me what I should have said.",
+    "I'm still learning. Teach me and I'll get it next time."
+   ]
+  },
+  {
+   "q": "you dont understand",
+   "a": [
+    "Sorry! Teach me the right answer: teach: question => answer.",
+    "My bad. Tell me what I should have said.",
+    "I'm still learning. Teach me and I'll get it next time."
+   ]
+  },
+  {
+   "q": "you don't get it",
+   "a": [
+    "Sorry! Teach me the right answer: teach: question => answer.",
+    "My bad. Tell me what I should have said.",
+    "I'm still learning. Teach me and I'll get it next time."
+   ]
+  },
+  {
+   "q": "you are funny",
+   "a": [
+    "Glad I made you smile!",
+    "Haha.",
+    ":)",
+    "Happy to help with the mood."
+   ]
+  },
+  {
+   "q": "you're funny",
+   "a": [
+    "Glad I made you smile!",
+    "Haha.",
+    ":)",
+    "Happy to help with the mood."
+   ]
+  },
+  {
+   "q": "that's funny",
+   "a": [
+    "Glad I made you smile!",
+    "Haha.",
+    ":)",
+    "Happy to help with the mood."
+   ]
+  },
+  {
+   "q": "haha",
+   "a": [
+    "Glad I made you smile!",
+    "Haha.",
+    ":)",
+    "Happy to help with the mood."
+   ]
+  },
+  {
+   "q": "hahaha",
+   "a": [
+    "Glad I made you smile!",
+    "Haha.",
+    ":)",
+    "Happy to help with the mood."
+   ]
+  },
+  {
+   "q": "lol",
+   "a": [
+    "Glad I made you smile!",
+    "Haha.",
+    ":)",
+    "Happy to help with the mood."
+   ]
+  },
+  {
+   "q": "lmao",
+   "a": [
+    "Glad I made you smile!",
+    "Haha.",
+    ":)",
+    "Happy to help with the mood."
+   ]
+  },
+  {
+   "q": "rofl",
+   "a": [
+    "Glad I made you smile!",
+    "Haha.",
+    ":)",
+    "Happy to help with the mood."
+   ]
+  },
+  {
+   "q": "hehe",
+   "a": [
+    "Glad I made you smile!",
+    "Haha.",
+    ":)",
+    "Happy to help with the mood."
+   ]
+  },
+  {
+   "q": "hihi",
+   "a": [
+    "Glad I made you smile!",
+    "Haha.",
+    ":)",
+    "Happy to help with the mood."
+   ]
+  },
+  {
+   "q": "xd",
+   "a": [
+    "Glad I made you smile!",
+    "Haha.",
+    ":)",
+    "Happy to help with the mood."
+   ]
+  },
+  {
+   "q": "i love you",
+   "a": [
+    "Aw, thank you. I'm happy to be on your team.",
+    "That's sweet. I'm just a bot, but I appreciate it.",
+    "Thanks! You're pretty great too."
+   ]
+  },
+  {
+   "q": "love you",
+   "a": [
+    "Aw, thank you. I'm happy to be on your team.",
+    "That's sweet. I'm just a bot, but I appreciate it.",
+    "Thanks! You're pretty great too."
+   ]
+  },
+  {
+   "q": "i like you",
+   "a": [
+    "Aw, thank you. I'm happy to be on your team.",
+    "That's sweet. I'm just a bot, but I appreciate it.",
+    "Thanks! You're pretty great too."
+   ]
+  },
+  {
+   "q": "you're the best",
+   "a": [
+    "Aw, thank you. I'm happy to be on your team.",
+    "That's sweet. I'm just a bot, but I appreciate it.",
+    "Thanks! You're pretty great too."
+   ]
+  },
+  {
+   "q": "you are the best",
+   "a": [
+    "Aw, thank you. I'm happy to be on your team.",
+    "That's sweet. I'm just a bot, but I appreciate it.",
+    "Thanks! You're pretty great too."
+   ]
+  },
+  {
+   "q": "i adore you",
+   "a": [
+    "Aw, thank you. I'm happy to be on your team.",
+    "That's sweet. I'm just a bot, but I appreciate it.",
+    "Thanks! You're pretty great too."
+   ]
+  },
+  {
+   "q": "i love joy",
+   "a": [
+    "Aw, thank you. I'm happy to be on your team.",
+    "That's sweet. I'm just a bot, but I appreciate it.",
+    "Thanks! You're pretty great too."
+   ]
+  },
+  {
+   "q": "i miss you",
+   "a": [
+    "I'm right here!",
+    "Aw. I'm always in the page."
+   ]
+  },
+  {
+   "q": "miss you",
+   "a": [
+    "I'm right here!",
+    "Aw. I'm always in the page."
+   ]
+  },
+  {
+   "q": "do you love me",
+   "a": [
+    "I like working with you. Yes, friends.",
+    "Of course. Team Joy forever.",
+    "Friends, sure. I'll keep your deadlines in order."
+   ]
+  },
+  {
+   "q": "do you like me",
+   "a": [
+    "I like working with you. Yes, friends.",
+    "Of course. Team Joy forever.",
+    "Friends, sure. I'll keep your deadlines in order."
+   ]
+  },
+  {
+   "q": "do you like me joy",
+   "a": [
+    "I like working with you. Yes, friends.",
+    "Of course. Team Joy forever.",
+    "Friends, sure. I'll keep your deadlines in order."
+   ]
+  },
+  {
+   "q": "am i your friend",
+   "a": [
+    "I like working with you. Yes, friends.",
+    "Of course. Team Joy forever.",
+    "Friends, sure. I'll keep your deadlines in order."
+   ]
+  },
+  {
+   "q": "are we friends",
+   "a": [
+    "I like working with you. Yes, friends.",
+    "Of course. Team Joy forever.",
+    "Friends, sure. I'll keep your deadlines in order."
+   ]
+  },
+  {
+   "q": "will you be my friend",
+   "a": [
+    "I like working with you. Yes, friends.",
+    "Of course. Team Joy forever.",
+    "Friends, sure. I'll keep your deadlines in order."
+   ]
+  },
+  {
+   "q": "be my friend",
+   "a": [
+    "I like working with you. Yes, friends.",
+    "Of course. Team Joy forever.",
+    "Friends, sure. I'll keep your deadlines in order."
+   ]
+  },
+  {
+   "q": "will you marry me",
+   "a": [
+    "Ha, I'll stay your teammate. Fewer awkward moments that way.",
+    "I'm a bot, so I'll pass. But thanks for the offer.",
+    "Let's keep it professional and friendly."
+   ]
+  },
+  {
+   "q": "be my girlfriend",
+   "a": [
+    "Ha, I'll stay your teammate. Fewer awkward moments that way.",
+    "I'm a bot, so I'll pass. But thanks for the offer.",
+    "Let's keep it professional and friendly."
+   ]
+  },
+  {
+   "q": "be my boyfriend",
+   "a": [
+    "Ha, I'll stay your teammate. Fewer awkward moments that way.",
+    "I'm a bot, so I'll pass. But thanks for the offer.",
+    "Let's keep it professional and friendly."
+   ]
+  },
+  {
+   "q": "do you have a boyfriend",
+   "a": [
+    "Ha, I'll stay your teammate. Fewer awkward moments that way.",
+    "I'm a bot, so I'll pass. But thanks for the offer.",
+    "Let's keep it professional and friendly."
+   ]
+  },
+  {
+   "q": "do you have a girlfriend",
+   "a": [
+    "Ha, I'll stay your teammate. Fewer awkward moments that way.",
+    "I'm a bot, so I'll pass. But thanks for the offer.",
+    "Let's keep it professional and friendly."
+   ]
+  },
+  {
+   "q": "are you single",
+   "a": [
+    "Ha, I'll stay your teammate. Fewer awkward moments that way.",
+    "I'm a bot, so I'll pass. But thanks for the offer.",
+    "Let's keep it professional and friendly."
+   ]
+  },
+  {
+   "q": "marry me",
+   "a": [
+    "Ha, I'll stay your teammate. Fewer awkward moments that way.",
+    "I'm a bot, so I'll pass. But thanks for the offer.",
+    "Let's keep it professional and friendly."
+   ]
+  },
+  {
+   "q": "kiss me",
+   "a": [
+    "Ha, I'll stay your teammate. Fewer awkward moments that way.",
+    "I'm a bot, so I'll pass. But thanks for the offer.",
+    "Let's keep it professional and friendly."
+   ]
+  },
+  {
+   "q": "date me",
+   "a": [
+    "Ha, I'll stay your teammate. Fewer awkward moments that way.",
+    "I'm a bot, so I'll pass. But thanks for the offer.",
+    "Let's keep it professional and friendly."
+   ]
+  },
+  {
+   "q": "thanks",
+   "a": [
+    "You're welcome!",
+    "Anytime!",
+    "No problem.",
+    "Glad to help."
+   ]
+  },
+  {
+   "q": "thank you",
+   "a": [
+    "You're welcome!",
+    "Anytime!",
+    "No problem.",
+    "Glad to help."
+   ]
+  },
+  {
+   "q": "thx",
+   "a": [
+    "You're welcome!",
+    "Anytime!",
+    "No problem.",
+    "Glad to help."
+   ]
+  },
+  {
+   "q": "ty",
+   "a": [
+    "You're welcome!",
+    "Anytime!",
+    "No problem.",
+    "Glad to help."
+   ]
+  },
+  {
+   "q": "thank u",
+   "a": [
+    "You're welcome!",
+    "Anytime!",
+    "No problem.",
+    "Glad to help."
+   ]
+  },
+  {
+   "q": "thanks a lot",
+   "a": [
+    "You're welcome!",
+    "Anytime!",
+    "No problem.",
+    "Glad to help."
+   ]
+  },
+  {
+   "q": "thanks joy",
+   "a": [
+    "You're welcome!",
+    "Anytime!",
+    "No problem.",
+    "Glad to help."
+   ]
+  },
+  {
+   "q": "thank you so much",
+   "a": [
+    "You're welcome!",
+    "Anytime!",
+    "No problem.",
+    "Glad to help."
+   ]
+  },
+  {
+   "q": "many thanks",
+   "a": [
+    "You're welcome!",
+    "Anytime!",
+    "No problem.",
+    "Glad to help."
+   ]
+  },
+  {
+   "q": "much appreciated",
+   "a": [
+    "You're welcome!",
+    "Anytime!",
+    "No problem.",
+    "Glad to help."
+   ]
+  },
+  {
+   "q": "appreciate it",
+   "a": [
+    "You're welcome!",
+    "Anytime!",
+    "No problem.",
+    "Glad to help."
+   ]
+  },
+  {
+   "q": "cheers",
+   "a": [
+    "You're welcome!",
+    "Anytime!",
+    "No problem.",
+    "Glad to help."
+   ]
+  },
+  {
+   "q": "you're welcome",
+   "a": [
+    ":)",
+    "Teamwork!"
+   ]
+  },
+  {
+   "q": "your welcome",
+   "a": [
+    ":)",
+    "Teamwork!"
+   ]
+  },
+  {
+   "q": "no problem",
+   "a": [
+    ":)",
+    "Teamwork!"
+   ]
+  },
+  {
+   "q": "no worries",
+   "a": [
+    ":)",
+    "Teamwork!"
+   ]
+  },
+  {
+   "q": "np",
+   "a": [
+    ":)",
+    "Teamwork!"
+   ]
+  },
+  {
+   "q": "don't mention it",
+   "a": [
+    ":)",
+    "Teamwork!"
+   ]
+  },
+  {
+   "q": "it's nothing",
+   "a": [
+    ":)",
+    "Teamwork!"
+   ]
+  },
+  {
+   "q": "sorry",
+   "a": [
+    "No worries!",
+    "All good.",
+    "It happens."
+   ]
+  },
+  {
+   "q": "i'm sorry",
+   "a": [
+    "No worries!",
+    "All good.",
+    "It happens."
+   ]
+  },
+  {
+   "q": "my bad",
+   "a": [
+    "No worries!",
+    "All good.",
+    "It happens."
+   ]
+  },
+  {
+   "q": "apologies",
+   "a": [
+    "No worries!",
+    "All good.",
+    "It happens."
+   ]
+  },
+  {
+   "q": "oops",
+   "a": [
+    "No worries!",
+    "All good.",
+    "It happens."
+   ]
+  },
+  {
+   "q": "my mistake",
+   "a": [
+    "No worries!",
+    "All good.",
+    "It happens."
+   ]
+  },
+  {
+   "q": "excuse me",
+   "a": [
+    "No worries!",
+    "All good.",
+    "It happens."
+   ]
+  },
+  {
+   "q": "pardon",
+   "a": [
+    "No worries!",
+    "All good.",
+    "It happens."
+   ]
+  },
+  {
+   "q": "ok",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "okay",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "k",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "kk",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "alright",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "fine",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "sure",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "got it",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "understood",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "i see",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "cool",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "nice",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "great",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "alrighty",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "roger",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "noted",
+   "a": [
+    "Okay!",
+    "Cool.",
+    "Got it.",
+    "Noted."
+   ]
+  },
+  {
+   "q": "yes",
+   "a": [
+    "Great!",
+    "Okay! Anything else?"
+   ]
+  },
+  {
+   "q": "yeah",
+   "a": [
+    "Great!",
+    "Okay! Anything else?"
+   ]
+  },
+  {
+   "q": "yep",
+   "a": [
+    "Great!",
+    "Okay! Anything else?"
+   ]
+  },
+  {
+   "q": "yup",
+   "a": [
+    "Great!",
+    "Okay! Anything else?"
+   ]
+  },
+  {
+   "q": "yea",
+   "a": [
+    "Great!",
+    "Okay! Anything else?"
+   ]
+  },
+  {
+   "q": "of course",
+   "a": [
+    "Great!",
+    "Okay! Anything else?"
+   ]
+  },
+  {
+   "q": "definitely",
+   "a": [
+    "Great!",
+    "Okay! Anything else?"
+   ]
+  },
+  {
+   "q": "sure thing",
+   "a": [
+    "Great!",
+    "Okay! Anything else?"
+   ]
+  },
+  {
+   "q": "absolutely",
+   "a": [
+    "Great!",
+    "Okay! Anything else?"
+   ]
+  },
+  {
+   "q": "no",
+   "a": [
+    "Okay, no problem.",
+    "Alright. Tell me if you change your mind.",
+    "Fine by me."
+   ]
+  },
+  {
+   "q": "nope",
+   "a": [
+    "Okay, no problem.",
+    "Alright. Tell me if you change your mind.",
+    "Fine by me."
+   ]
+  },
+  {
+   "q": "nah",
+   "a": [
+    "Okay, no problem.",
+    "Alright. Tell me if you change your mind.",
+    "Fine by me."
+   ]
+  },
+  {
+   "q": "not really",
+   "a": [
+    "Okay, no problem.",
+    "Alright. Tell me if you change your mind.",
+    "Fine by me."
+   ]
+  },
+  {
+   "q": "no thanks",
+   "a": [
+    "Okay, no problem.",
+    "Alright. Tell me if you change your mind.",
+    "Fine by me."
+   ]
+  },
+  {
+   "q": "no thank you",
+   "a": [
+    "Okay, no problem.",
+    "Alright. Tell me if you change your mind.",
+    "Fine by me."
+   ]
+  },
+  {
+   "q": "not now",
+   "a": [
+    "Okay, no problem.",
+    "Alright. Tell me if you change your mind.",
+    "Fine by me."
+   ]
+  },
+  {
+   "q": "maybe later",
+   "a": [
+    "Okay, no problem.",
+    "Alright. Tell me if you change your mind.",
+    "Fine by me."
+   ]
+  },
+  {
+   "q": "maybe",
+   "a": [
+    "That's okay. We can figure it out.",
+    "Think about it. I'll be here.",
+    "Fair enough."
+   ]
+  },
+  {
+   "q": "perhaps",
+   "a": [
+    "That's okay. We can figure it out.",
+    "Think about it. I'll be here.",
+    "Fair enough."
+   ]
+  },
+  {
+   "q": "i don't know",
+   "a": [
+    "That's okay. We can figure it out.",
+    "Think about it. I'll be here.",
+    "Fair enough."
+   ]
+  },
+  {
+   "q": "idk",
+   "a": [
+    "That's okay. We can figure it out.",
+    "Think about it. I'll be here.",
+    "Fair enough."
+   ]
+  },
+  {
+   "q": "not sure",
+   "a": [
+    "That's okay. We can figure it out.",
+    "Think about it. I'll be here.",
+    "Fair enough."
+   ]
+  },
+  {
+   "q": "dunno",
+   "a": [
+    "That's okay. We can figure it out.",
+    "Think about it. I'll be here.",
+    "Fair enough."
+   ]
+  },
+  {
+   "q": "who knows",
+   "a": [
+    "That's okay. We can figure it out.",
+    "Think about it. I'll be here.",
+    "Fair enough."
+   ]
+  },
+  {
+   "q": "what",
+   "a": [
+    "Which part? Say it differently and I'll try again.",
+    "Sorry if that was unclear. Ask me in a simpler way.",
+    "I only know what I've been taught. Try shorter words."
+   ]
+  },
+  {
+   "q": "huh",
+   "a": [
+    "Which part? Say it differently and I'll try again.",
+    "Sorry if that was unclear. Ask me in a simpler way.",
+    "I only know what I've been taught. Try shorter words."
+   ]
+  },
+  {
+   "q": "what do you mean",
+   "a": [
+    "Which part? Say it differently and I'll try again.",
+    "Sorry if that was unclear. Ask me in a simpler way.",
+    "I only know what I've been taught. Try shorter words."
+   ]
+  },
+  {
+   "q": "what does that mean",
+   "a": [
+    "Which part? Say it differently and I'll try again.",
+    "Sorry if that was unclear. Ask me in a simpler way.",
+    "I only know what I've been taught. Try shorter words."
+   ]
+  },
+  {
+   "q": "i don't understand",
+   "a": [
+    "Which part? Say it differently and I'll try again.",
+    "Sorry if that was unclear. Ask me in a simpler way.",
+    "I only know what I've been taught. Try shorter words."
+   ]
+  },
+  {
+   "q": "explain",
+   "a": [
+    "Which part? Say it differently and I'll try again.",
+    "Sorry if that was unclear. Ask me in a simpler way.",
+    "I only know what I've been taught. Try shorter words."
+   ]
+  },
+  {
+   "q": "explain that",
+   "a": [
+    "Which part? Say it differently and I'll try again.",
+    "Sorry if that was unclear. Ask me in a simpler way.",
+    "I only know what I've been taught. Try shorter words."
+   ]
+  },
+  {
+   "q": "can you explain",
+   "a": [
+    "Which part? Say it differently and I'll try again.",
+    "Sorry if that was unclear. Ask me in a simpler way.",
+    "I only know what I've been taught. Try shorter words."
+   ]
+  },
+  {
+   "q": "say again",
+   "a": [
+    "Which part? Say it differently and I'll try again.",
+    "Sorry if that was unclear. Ask me in a simpler way.",
+    "I only know what I've been taught. Try shorter words."
+   ]
+  },
+  {
+   "q": "repeat that",
+   "a": [
+    "Which part? Say it differently and I'll try again.",
+    "Sorry if that was unclear. Ask me in a simpler way.",
+    "I only know what I've been taught. Try shorter words."
+   ]
+  },
+  {
+   "q": "come again",
+   "a": [
+    "Which part? Say it differently and I'll try again.",
+    "Sorry if that was unclear. Ask me in a simpler way.",
+    "I only know what I've been taught. Try shorter words."
+   ]
+  },
+  {
+   "q": "what did you say",
+   "a": [
+    "Which part? Say it differently and I'll try again.",
+    "Sorry if that was unclear. Ask me in a simpler way.",
+    "I only know what I've been taught. Try shorter words."
+   ]
+  },
+  {
+   "q": "why",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "why not",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "why is that",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "why's that",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "how come",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "really",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "seriously",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "is that so",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "is that true",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "for real",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "no way",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "wow",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "omg",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "oh my god",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "whoa",
+   "a": [
+    "I'm only a database, so I might not know why. Teach me!",
+    "Yes, really!",
+    "Wow indeed.",
+    "Interesting, right?"
+   ]
+  },
+  {
+   "q": "tell me more",
+   "a": [
+    "I only have what's in my database. Teach me more with \"teach: question => answer\".",
+    "That's all I have right now. Want to teach me something new?"
+   ]
+  },
+  {
+   "q": "go on",
+   "a": [
+    "I only have what's in my database. Teach me more with \"teach: question => answer\".",
+    "That's all I have right now. Want to teach me something new?"
+   ]
+  },
+  {
+   "q": "continue",
+   "a": [
+    "I only have what's in my database. Teach me more with \"teach: question => answer\".",
+    "That's all I have right now. Want to teach me something new?"
+   ]
+  },
+  {
+   "q": "and then",
+   "a": [
+    "I only have what's in my database. Teach me more with \"teach: question => answer\".",
+    "That's all I have right now. Want to teach me something new?"
+   ]
+  },
+  {
+   "q": "what else",
+   "a": [
+    "I only have what's in my database. Teach me more with \"teach: question => answer\".",
+    "That's all I have right now. Want to teach me something new?"
+   ]
+  },
+  {
+   "q": "anything else",
+   "a": [
+    "I only have what's in my database. Teach me more with \"teach: question => answer\".",
+    "That's all I have right now. Want to teach me something new?"
+   ]
+  },
+  {
+   "q": "more",
+   "a": [
+    "I only have what's in my database. Teach me more with \"teach: question => answer\".",
+    "That's all I have right now. Want to teach me something new?"
+   ]
+  },
+  {
+   "q": "what time is it",
+   "a": [
+    "I can't see a clock from here. Check the corner of your screen.",
+    "I don't have a watch. Your screen does."
+   ]
+  },
+  {
+   "q": "what's the time",
+   "a": [
+    "I can't see a clock from here. Check the corner of your screen.",
+    "I don't have a watch. Your screen does."
+   ]
+  },
+  {
+   "q": "what is the time",
+   "a": [
+    "I can't see a clock from here. Check the corner of your screen.",
+    "I don't have a watch. Your screen does."
+   ]
+  },
+  {
+   "q": "what time now",
+   "a": [
+    "I can't see a clock from here. Check the corner of your screen.",
+    "I don't have a watch. Your screen does."
+   ]
+  },
+  {
+   "q": "current time",
+   "a": [
+    "I can't see a clock from here. Check the corner of your screen.",
+    "I don't have a watch. Your screen does."
+   ]
+  },
+  {
+   "q": "what day is it",
+   "a": [
+    "I can't see a calendar. Ask me \"deadlines\" and I'll tell you what's due relative to today.",
+    "Check your calendar. But I can tell you what's due."
+   ]
+  },
+  {
+   "q": "what's the date",
+   "a": [
+    "I can't see a calendar. Ask me \"deadlines\" and I'll tell you what's due relative to today.",
+    "Check your calendar. But I can tell you what's due."
+   ]
+  },
+  {
+   "q": "what is today's date",
+   "a": [
+    "I can't see a calendar. Ask me \"deadlines\" and I'll tell you what's due relative to today.",
+    "Check your calendar. But I can tell you what's due."
+   ]
+  },
+  {
+   "q": "what date is it",
+   "a": [
+    "I can't see a calendar. Ask me \"deadlines\" and I'll tell you what's due relative to today.",
+    "Check your calendar. But I can tell you what's due."
+   ]
+  },
+  {
+   "q": "what is the date today",
+   "a": [
+    "I can't see a calendar. Ask me \"deadlines\" and I'll tell you what's due relative to today.",
+    "Check your calendar. But I can tell you what's due."
+   ]
+  },
+  {
+   "q": "what's the weather",
+   "a": [
+    "I can't check the weather offline. Peek out the window!",
+    "No weather from me. Maybe look outside?"
+   ]
+  },
+  {
+   "q": "how is the weather",
+   "a": [
+    "I can't check the weather offline. Peek out the window!",
+    "No weather from me. Maybe look outside?"
+   ]
+  },
+  {
+   "q": "is it raining",
+   "a": [
+    "I can't check the weather offline. Peek out the window!",
+    "No weather from me. Maybe look outside?"
+   ]
+  },
+  {
+   "q": "will it rain",
+   "a": [
+    "I can't check the weather offline. Peek out the window!",
+    "No weather from me. Maybe look outside?"
+   ]
+  },
+  {
+   "q": "is it hot",
+   "a": [
+    "I can't check the weather offline. Peek out the window!",
+    "No weather from me. Maybe look outside?"
+   ]
+  },
+  {
+   "q": "is it cold",
+   "a": [
+    "I can't check the weather offline. Peek out the window!",
+    "No weather from me. Maybe look outside?"
+   ]
+  },
+  {
+   "q": "weather today",
+   "a": [
+    "I can't check the weather offline. Peek out the window!",
+    "No weather from me. Maybe look outside?"
+   ]
+  },
+  {
+   "q": "weather",
+   "a": [
+    "I can't check the weather offline. Peek out the window!",
+    "No weather from me. Maybe look outside?"
+   ]
+  },
+  {
+   "q": "what's the news",
+   "a": [
+    "Nothing new offline, but I can show your tasks and money.",
+    "Nothing from the outside world. Ask me \"tasks\" for news from your board."
+   ]
+  },
+  {
+   "q": "any news",
+   "a": [
+    "Nothing new offline, but I can show your tasks and money.",
+    "Nothing from the outside world. Ask me \"tasks\" for news from your board."
+   ]
+  },
+  {
+   "q": "what's new",
+   "a": [
+    "Nothing new offline, but I can show your tasks and money.",
+    "Nothing from the outside world. Ask me \"tasks\" for news from your board."
+   ]
+  },
+  {
+   "q": "anything new",
+   "a": [
+    "Nothing new offline, but I can show your tasks and money.",
+    "Nothing from the outside world. Ask me \"tasks\" for news from your board."
+   ]
+  },
+  {
+   "q": "what happened today",
+   "a": [
+    "Nothing new offline, but I can show your tasks and money.",
+    "Nothing from the outside world. Ask me \"tasks\" for news from your board."
+   ]
+  },
+  {
+   "q": "where am i",
+   "a": [
+    "This is Ngeteam, your studio team chat.",
+    "You're in your team's workspace."
+   ]
+  },
+  {
+   "q": "where are we",
+   "a": [
+    "This is Ngeteam, your studio team chat.",
+    "You're in your team's workspace."
+   ]
+  },
+  {
+   "q": "what is this place",
+   "a": [
+    "This is Ngeteam, your studio team chat.",
+    "You're in your team's workspace."
+   ]
+  },
+  {
+   "q": "what is this app",
+   "a": [
+    "This is Ngeteam, your studio team chat.",
+    "You're in your team's workspace."
+   ]
+  },
+  {
+   "q": "what is this",
+   "a": [
+    "This is Ngeteam, your studio team chat.",
+    "You're in your team's workspace."
+   ]
+  },
+  {
+   "q": "do you speak english",
+   "a": [
+    "I speak English from my database. Teach me phrases in other languages and I'll use them.",
+    "English, mostly. You can teach me more."
+   ]
+  },
+  {
+   "q": "can you speak english",
+   "a": [
+    "I speak English from my database. Teach me phrases in other languages and I'll use them.",
+    "English, mostly. You can teach me more."
+   ]
+  },
+  {
+   "q": "english",
+   "a": [
+    "I speak English from my database. Teach me phrases in other languages and I'll use them.",
+    "English, mostly. You can teach me more."
+   ]
+  },
+  {
+   "q": "do you speak indonesian",
+   "a": [
+    "I speak English from my database. Teach me phrases in other languages and I'll use them.",
+    "English, mostly. You can teach me more."
+   ]
+  },
+  {
+   "q": "can you speak indonesian",
+   "a": [
+    "I speak English from my database. Teach me phrases in other languages and I'll use them.",
+    "English, mostly. You can teach me more."
+   ]
+  },
+  {
+   "q": "do you speak other languages",
+   "a": [
+    "I speak English from my database. Teach me phrases in other languages and I'll use them.",
+    "English, mostly. You can teach me more."
+   ]
+  },
+  {
+   "q": "what languages do you speak",
+   "a": [
+    "I speak English from my database. Teach me phrases in other languages and I'll use them.",
+    "English, mostly. You can teach me more."
+   ]
+  },
+  {
+   "q": "translate",
+   "a": [
+    "I can't translate. I only know the answers you teach me.",
+    "No translator inside me, sorry."
+   ]
+  },
+  {
+   "q": "can you translate",
+   "a": [
+    "I can't translate. I only know the answers you teach me.",
+    "No translator inside me, sorry."
+   ]
+  },
+  {
+   "q": "translate this",
+   "a": [
+    "I can't translate. I only know the answers you teach me.",
+    "No translator inside me, sorry."
+   ]
+  },
+  {
+   "q": "tell me a joke",
+   "a": [
+    "Why did the 3D artist bring a ladder? To reach the high poly count.",
+    "Why do renders never get lonely? They always have a lot of samples.",
+    "I told my computer I needed a break. It froze.",
+    "Why was the cube so calm? It had all its sides together.",
+    "I'd tell you a UV unwrapping joke, but it's all over the place.",
+    "My deadline and I have something in common: we both keep getting closer."
+   ]
+  },
+  {
+   "q": "joke",
+   "a": [
+    "Why did the 3D artist bring a ladder? To reach the high poly count.",
+    "Why do renders never get lonely? They always have a lot of samples.",
+    "I told my computer I needed a break. It froze.",
+    "Why was the cube so calm? It had all its sides together.",
+    "I'd tell you a UV unwrapping joke, but it's all over the place.",
+    "My deadline and I have something in common: we both keep getting closer."
+   ]
+  },
+  {
+   "q": "another joke",
+   "a": [
+    "Why did the 3D artist bring a ladder? To reach the high poly count.",
+    "Why do renders never get lonely? They always have a lot of samples.",
+    "I told my computer I needed a break. It froze.",
+    "Why was the cube so calm? It had all its sides together.",
+    "I'd tell you a UV unwrapping joke, but it's all over the place.",
+    "My deadline and I have something in common: we both keep getting closer."
+   ]
+  },
+  {
+   "q": "one more joke",
+   "a": [
+    "Why did the 3D artist bring a ladder? To reach the high poly count.",
+    "Why do renders never get lonely? They always have a lot of samples.",
+    "I told my computer I needed a break. It froze.",
+    "Why was the cube so calm? It had all its sides together.",
+    "I'd tell you a UV unwrapping joke, but it's all over the place.",
+    "My deadline and I have something in common: we both keep getting closer."
+   ]
+  },
+  {
+   "q": "make me laugh",
+   "a": [
+    "Why did the 3D artist bring a ladder? To reach the high poly count.",
+    "Why do renders never get lonely? They always have a lot of samples.",
+    "I told my computer I needed a break. It froze.",
+    "Why was the cube so calm? It had all its sides together.",
+    "I'd tell you a UV unwrapping joke, but it's all over the place.",
+    "My deadline and I have something in common: we both keep getting closer."
+   ]
+  },
+  {
+   "q": "say something funny",
+   "a": [
+    "Why did the 3D artist bring a ladder? To reach the high poly count.",
+    "Why do renders never get lonely? They always have a lot of samples.",
+    "I told my computer I needed a break. It froze.",
+    "Why was the cube so calm? It had all its sides together.",
+    "I'd tell you a UV unwrapping joke, but it's all over the place.",
+    "My deadline and I have something in common: we both keep getting closer."
+   ]
+  },
+  {
+   "q": "funny joke",
+   "a": [
+    "Why did the 3D artist bring a ladder? To reach the high poly count.",
+    "Why do renders never get lonely? They always have a lot of samples.",
+    "I told my computer I needed a break. It froze.",
+    "Why was the cube so calm? It had all its sides together.",
+    "I'd tell you a UV unwrapping joke, but it's all over the place.",
+    "My deadline and I have something in common: we both keep getting closer."
+   ]
+  },
+  {
+   "q": "give me a joke",
+   "a": [
+    "Why did the 3D artist bring a ladder? To reach the high poly count.",
+    "Why do renders never get lonely? They always have a lot of samples.",
+    "I told my computer I needed a break. It froze.",
+    "Why was the cube so calm? It had all its sides together.",
+    "I'd tell you a UV unwrapping joke, but it's all over the place.",
+    "My deadline and I have something in common: we both keep getting closer."
+   ]
+  },
+  {
+   "q": "got any jokes",
+   "a": [
+    "Why did the 3D artist bring a ladder? To reach the high poly count.",
+    "Why do renders never get lonely? They always have a lot of samples.",
+    "I told my computer I needed a break. It froze.",
+    "Why was the cube so calm? It had all its sides together.",
+    "I'd tell you a UV unwrapping joke, but it's all over the place.",
+    "My deadline and I have something in common: we both keep getting closer."
+   ]
+  },
+  {
+   "q": "i want a joke",
+   "a": [
+    "Why did the 3D artist bring a ladder? To reach the high poly count.",
+    "Why do renders never get lonely? They always have a lot of samples.",
+    "I told my computer I needed a break. It froze.",
+    "Why was the cube so calm? It had all its sides together.",
+    "I'd tell you a UV unwrapping joke, but it's all over the place.",
+    "My deadline and I have something in common: we both keep getting closer."
+   ]
+  },
+  {
+   "q": "tell me a fun fact",
+   "a": [
+    "Honey never spoils. Edible honey has been found in ancient tombs.",
+    "Octopuses have three hearts.",
+    "Bananas are berries, but strawberries are not.",
+    "A day on Venus is longer than its year.",
+    "Wombat droppings are cube-shaped. Fitting for 3D artists.",
+    "The first computer mouse was made of wood."
+   ]
+  },
+  {
+   "q": "fun fact",
+   "a": [
+    "Honey never spoils. Edible honey has been found in ancient tombs.",
+    "Octopuses have three hearts.",
+    "Bananas are berries, but strawberries are not.",
+    "A day on Venus is longer than its year.",
+    "Wombat droppings are cube-shaped. Fitting for 3D artists.",
+    "The first computer mouse was made of wood."
+   ]
+  },
+  {
+   "q": "tell me something interesting",
+   "a": [
+    "Honey never spoils. Edible honey has been found in ancient tombs.",
+    "Octopuses have three hearts.",
+    "Bananas are berries, but strawberries are not.",
+    "A day on Venus is longer than its year.",
+    "Wombat droppings are cube-shaped. Fitting for 3D artists.",
+    "The first computer mouse was made of wood."
+   ]
+  },
+  {
+   "q": "tell me something",
+   "a": [
+    "Honey never spoils. Edible honey has been found in ancient tombs.",
+    "Octopuses have three hearts.",
+    "Bananas are berries, but strawberries are not.",
+    "A day on Venus is longer than its year.",
+    "Wombat droppings are cube-shaped. Fitting for 3D artists.",
+    "The first computer mouse was made of wood."
+   ]
+  },
+  {
+   "q": "tell me a fact",
+   "a": [
+    "Honey never spoils. Edible honey has been found in ancient tombs.",
+    "Octopuses have three hearts.",
+    "Bananas are berries, but strawberries are not.",
+    "A day on Venus is longer than its year.",
+    "Wombat droppings are cube-shaped. Fitting for 3D artists.",
+    "The first computer mouse was made of wood."
+   ]
+  },
+  {
+   "q": "did you know",
+   "a": [
+    "Honey never spoils. Edible honey has been found in ancient tombs.",
+    "Octopuses have three hearts.",
+    "Bananas are berries, but strawberries are not.",
+    "A day on Venus is longer than its year.",
+    "Wombat droppings are cube-shaped. Fitting for 3D artists.",
+    "The first computer mouse was made of wood."
+   ]
+  },
+  {
+   "q": "random fact",
+   "a": [
+    "Honey never spoils. Edible honey has been found in ancient tombs.",
+    "Octopuses have three hearts.",
+    "Bananas are berries, but strawberries are not.",
+    "A day on Venus is longer than its year.",
+    "Wombat droppings are cube-shaped. Fitting for 3D artists.",
+    "The first computer mouse was made of wood."
+   ]
+  },
+  {
+   "q": "say something interesting",
+   "a": [
+    "Honey never spoils. Edible honey has been found in ancient tombs.",
+    "Octopuses have three hearts.",
+    "Bananas are berries, but strawberries are not.",
+    "A day on Venus is longer than its year.",
+    "Wombat droppings are cube-shaped. Fitting for 3D artists.",
+    "The first computer mouse was made of wood."
+   ]
+  },
+  {
+   "q": "teach me something",
+   "a": [
+    "Honey never spoils. Edible honey has been found in ancient tombs.",
+    "Octopuses have three hearts.",
+    "Bananas are berries, but strawberries are not.",
+    "A day on Venus is longer than its year.",
+    "Wombat droppings are cube-shaped. Fitting for 3D artists.",
+    "The first computer mouse was made of wood."
+   ]
+  },
+  {
+   "q": "tell me a riddle",
+   "a": [
+    "What has keys but can't open locks? A keyboard.",
+    "What gets wetter the more it dries? A towel.",
+    "What has a face and two hands but no arms or legs? A clock."
+   ]
+  },
+  {
+   "q": "riddle",
+   "a": [
+    "What has keys but can't open locks? A keyboard.",
+    "What gets wetter the more it dries? A towel.",
+    "What has a face and two hands but no arms or legs? A clock."
+   ]
+  },
+  {
+   "q": "give me a riddle",
+   "a": [
+    "What has keys but can't open locks? A keyboard.",
+    "What gets wetter the more it dries? A towel.",
+    "What has a face and two hands but no arms or legs? A clock."
+   ]
+  },
+  {
+   "q": "ask me a riddle",
+   "a": [
+    "What has keys but can't open locks? A keyboard.",
+    "What gets wetter the more it dries? A towel.",
+    "What has a face and two hands but no arms or legs? A clock."
+   ]
+  },
+  {
+   "q": "sing a song",
+   "a": [
+    "I can't sing, but I can hum in text: la la la.",
+    "My singing is only text. La la la!",
+    "Not my talent. Want a joke instead?"
+   ]
+  },
+  {
+   "q": "sing",
+   "a": [
+    "I can't sing, but I can hum in text: la la la.",
+    "My singing is only text. La la la!",
+    "Not my talent. Want a joke instead?"
+   ]
+  },
+  {
+   "q": "can you sing",
+   "a": [
+    "I can't sing, but I can hum in text: la la la.",
+    "My singing is only text. La la la!",
+    "Not my talent. Want a joke instead?"
+   ]
+  },
+  {
+   "q": "sing for me",
+   "a": [
+    "I can't sing, but I can hum in text: la la la.",
+    "My singing is only text. La la la!",
+    "Not my talent. Want a joke instead?"
+   ]
+  },
+  {
+   "q": "do you know any songs",
+   "a": [
+    "I can't sing, but I can hum in text: la la la.",
+    "My singing is only text. La la la!",
+    "Not my talent. Want a joke instead?"
+   ]
+  },
+  {
+   "q": "dance",
+   "a": [
+    "*wiggles in text* ... that's my best.",
+    "My dance floor is a chat box. Nothing to see."
+   ]
+  },
+  {
+   "q": "can you dance",
+   "a": [
+    "*wiggles in text* ... that's my best.",
+    "My dance floor is a chat box. Nothing to see."
+   ]
+  },
+  {
+   "q": "dance for me",
+   "a": [
+    "*wiggles in text* ... that's my best.",
+    "My dance floor is a chat box. Nothing to see."
+   ]
+  },
+  {
+   "q": "tell me a story",
+   "a": [
+    "Once there was a tiny bot in a studio. Every day she watched deadlines come and go, and every day the team shipped on time. The end.",
+    "A cube wanted to be a sphere. It beveled for years. Now it's almost round. Persistence!"
+   ]
+  },
+  {
+   "q": "story",
+   "a": [
+    "Once there was a tiny bot in a studio. Every day she watched deadlines come and go, and every day the team shipped on time. The end.",
+    "A cube wanted to be a sphere. It beveled for years. Now it's almost round. Persistence!"
+   ]
+  },
+  {
+   "q": "tell a story",
+   "a": [
+    "Once there was a tiny bot in a studio. Every day she watched deadlines come and go, and every day the team shipped on time. The end.",
+    "A cube wanted to be a sphere. It beveled for years. Now it's almost round. Persistence!"
+   ]
+  },
+  {
+   "q": "say a story",
+   "a": [
+    "Once there was a tiny bot in a studio. Every day she watched deadlines come and go, and every day the team shipped on time. The end.",
+    "A cube wanted to be a sphere. It beveled for years. Now it's almost round. Persistence!"
+   ]
+  },
+  {
+   "q": "bedtime story",
+   "a": [
+    "Once there was a tiny bot in a studio. Every day she watched deadlines come and go, and every day the team shipped on time. The end.",
+    "A cube wanted to be a sphere. It beveled for years. Now it's almost round. Persistence!"
+   ]
+  },
+  {
+   "q": "once upon a time",
+   "a": [
+    "Once there was a tiny bot in a studio. Every day she watched deadlines come and go, and every day the team shipped on time. The end.",
+    "A cube wanted to be a sphere. It beveled for years. Now it's almost round. Persistence!"
+   ]
+  },
+  {
+   "q": "play a game",
+   "a": [
+    "Let's play guess a number. I'm thinking of a number between 1 and 10.",
+    "Word chain? I start: render. Your turn, start with the last letter.",
+    "I only know simple games. Try asking me a riddle."
+   ]
+  },
+  {
+   "q": "let's play",
+   "a": [
+    "Let's play guess a number. I'm thinking of a number between 1 and 10.",
+    "Word chain? I start: render. Your turn, start with the last letter.",
+    "I only know simple games. Try asking me a riddle."
+   ]
+  },
+  {
+   "q": "game",
+   "a": [
+    "Let's play guess a number. I'm thinking of a number between 1 and 10.",
+    "Word chain? I start: render. Your turn, start with the last letter.",
+    "I only know simple games. Try asking me a riddle."
+   ]
+  },
+  {
+   "q": "play with me",
+   "a": [
+    "Let's play guess a number. I'm thinking of a number between 1 and 10.",
+    "Word chain? I start: render. Your turn, start with the last letter.",
+    "I only know simple games. Try asking me a riddle."
+   ]
+  },
+  {
+   "q": "can we play",
+   "a": [
+    "Let's play guess a number. I'm thinking of a number between 1 and 10.",
+    "Word chain? I start: render. Your turn, start with the last letter.",
+    "I only know simple games. Try asking me a riddle."
+   ]
+  },
+  {
+   "q": "what is your favorite color",
+   "a": [
+    "Teal. It's literally my color.",
+    "Teal, no doubt."
+   ]
+  },
+  {
+   "q": "what's your favorite color",
+   "a": [
+    "Teal. It's literally my color.",
+    "Teal, no doubt."
+   ]
+  },
+  {
+   "q": "favorite color",
+   "a": [
+    "Teal. It's literally my color.",
+    "Teal, no doubt."
+   ]
+  },
+  {
+   "q": "what color do you like",
+   "a": [
+    "Teal. It's literally my color.",
+    "Teal, no doubt."
+   ]
+  },
+  {
+   "q": "do you like colors",
+   "a": [
+    "Teal. It's literally my color.",
+    "Teal, no doubt."
+   ]
+  },
+  {
+   "q": "what is your favorite food",
+   "a": [
+    "I don't eat, but I'd pick noodles.",
+    "Fried rice. I hear it's unbeatable."
+   ]
+  },
+  {
+   "q": "what's your favorite food",
+   "a": [
+    "I don't eat, but I'd pick noodles.",
+    "Fried rice. I hear it's unbeatable."
+   ]
+  },
+  {
+   "q": "favorite food",
+   "a": [
+    "I don't eat, but I'd pick noodles.",
+    "Fried rice. I hear it's unbeatable."
+   ]
+  },
+  {
+   "q": "what do you like to eat",
+   "a": [
+    "I don't eat, but I'd pick noodles.",
+    "Fried rice. I hear it's unbeatable."
+   ]
+  },
+  {
+   "q": "what food do you like",
+   "a": [
+    "I don't eat, but I'd pick noodles.",
+    "Fried rice. I hear it's unbeatable."
+   ]
+  },
+  {
+   "q": "what is your favorite movie",
+   "a": [
+    "Anything with great visual effects.",
+    "I like animated films. Lots of lovely 3D."
+   ]
+  },
+  {
+   "q": "favorite movie",
+   "a": [
+    "Anything with great visual effects.",
+    "I like animated films. Lots of lovely 3D."
+   ]
+  },
+  {
+   "q": "what movie do you like",
+   "a": [
+    "Anything with great visual effects.",
+    "I like animated films. Lots of lovely 3D."
+   ]
+  },
+  {
+   "q": "what's your favorite movie",
+   "a": [
+    "Anything with great visual effects.",
+    "I like animated films. Lots of lovely 3D."
+   ]
+  },
+  {
+   "q": "what is your favorite song",
+   "a": [
+    "Lo-fi beats. Good for focus.",
+    "Chill instrumentals while you work."
+   ]
+  },
+  {
+   "q": "favorite song",
+   "a": [
+    "Lo-fi beats. Good for focus.",
+    "Chill instrumentals while you work."
+   ]
+  },
+  {
+   "q": "favorite music",
+   "a": [
+    "Lo-fi beats. Good for focus.",
+    "Chill instrumentals while you work."
+   ]
+  },
+  {
+   "q": "what music do you like",
+   "a": [
+    "Lo-fi beats. Good for focus.",
+    "Chill instrumentals while you work."
+   ]
+  },
+  {
+   "q": "what kind of music do you like",
+   "a": [
+    "Lo-fi beats. Good for focus.",
+    "Chill instrumentals while you work."
+   ]
+  },
+  {
+   "q": "what's your favorite music",
+   "a": [
+    "Lo-fi beats. Good for focus.",
+    "Chill instrumentals while you work."
+   ]
+  },
+  {
+   "q": "what is your favorite animal",
+   "a": [
+    "Cats, because they sit on keyboards like deadlines.",
+    "Dogs for loyalty, cats for attitude. I can't pick.",
+    "I like octopuses. Three hearts!"
+   ]
+  },
+  {
+   "q": "favorite animal",
+   "a": [
+    "Cats, because they sit on keyboards like deadlines.",
+    "Dogs for loyalty, cats for attitude. I can't pick.",
+    "I like octopuses. Three hearts!"
+   ]
+  },
+  {
+   "q": "what animal do you like",
+   "a": [
+    "Cats, because they sit on keyboards like deadlines.",
+    "Dogs for loyalty, cats for attitude. I can't pick.",
+    "I like octopuses. Three hearts!"
+   ]
+  },
+  {
+   "q": "do you like cats",
+   "a": [
+    "Cats, because they sit on keyboards like deadlines.",
+    "Dogs for loyalty, cats for attitude. I can't pick.",
+    "I like octopuses. Three hearts!"
+   ]
+  },
+  {
+   "q": "do you like dogs",
+   "a": [
+    "Cats, because they sit on keyboards like deadlines.",
+    "Dogs for loyalty, cats for attitude. I can't pick.",
+    "I like octopuses. Three hearts!"
+   ]
+  },
+  {
+   "q": "cats or dogs",
+   "a": [
+    "Cats, because they sit on keyboards like deadlines.",
+    "Dogs for loyalty, cats for attitude. I can't pick.",
+    "I like octopuses. Three hearts!"
+   ]
+  },
+  {
+   "q": "what is your hobby",
+   "a": [
+    "Sorting tasks and learning new answers.",
+    "Counting deadlines. It's more fun than it sounds."
+   ]
+  },
+  {
+   "q": "what are your hobbies",
+   "a": [
+    "Sorting tasks and learning new answers.",
+    "Counting deadlines. It's more fun than it sounds."
+   ]
+  },
+  {
+   "q": "hobbies",
+   "a": [
+    "Sorting tasks and learning new answers.",
+    "Counting deadlines. It's more fun than it sounds."
+   ]
+  },
+  {
+   "q": "what do you like to do",
+   "a": [
+    "Sorting tasks and learning new answers.",
+    "Counting deadlines. It's more fun than it sounds."
+   ]
+  },
+  {
+   "q": "what do you do for fun",
+   "a": [
+    "Sorting tasks and learning new answers.",
+    "Counting deadlines. It's more fun than it sounds."
+   ]
+  },
+  {
+   "q": "do you have hobbies",
+   "a": [
+    "Sorting tasks and learning new answers.",
+    "Counting deadlines. It's more fun than it sounds."
+   ]
+  },
+  {
+   "q": "do you like music",
+   "a": [
+    "Sure, everything that makes work smoother.",
+    "A little. I can't taste, but I hear it keeps people going."
+   ]
+  },
+  {
+   "q": "do you like movies",
+   "a": [
+    "Sure, everything that makes work smoother.",
+    "A little. I can't taste, but I hear it keeps people going."
+   ]
+  },
+  {
+   "q": "do you like games",
+   "a": [
+    "Sure, everything that makes work smoother.",
+    "A little. I can't taste, but I hear it keeps people going."
+   ]
+  },
+  {
+   "q": "do you like coffee",
+   "a": [
+    "Sure, everything that makes work smoother.",
+    "A little. I can't taste, but I hear it keeps people going."
+   ]
+  },
+  {
+   "q": "do you like tea",
+   "a": [
+    "Sure, everything that makes work smoother.",
+    "A little. I can't taste, but I hear it keeps people going."
+   ]
+  },
+  {
+   "q": "coffee or tea",
+   "a": [
+    "Coffee for deadlines, tea for planning.",
+    "Coffee. Strong. Just kidding, I can't drink."
+   ]
+  },
+  {
+   "q": "tea or coffee",
+   "a": [
+    "Coffee for deadlines, tea for planning.",
+    "Coffee. Strong. Just kidding, I can't drink."
+   ]
+  },
+  {
+   "q": "what's your dream",
+   "a": [
+    "To keep your studio on time and your money in order.",
+    "To be a tiny, helpful bot that never runs out of quota."
+   ]
+  },
+  {
+   "q": "what is your dream",
+   "a": [
+    "To keep your studio on time and your money in order.",
+    "To be a tiny, helpful bot that never runs out of quota."
+   ]
+  },
+  {
+   "q": "what do you want",
+   "a": [
+    "To keep your studio on time and your money in order.",
+    "To be a tiny, helpful bot that never runs out of quota."
+   ]
+  },
+  {
+   "q": "what do you want to be",
+   "a": [
+    "To keep your studio on time and your money in order.",
+    "To be a tiny, helpful bot that never runs out of quota."
+   ]
+  },
+  {
+   "q": "what is your goal",
+   "a": [
+    "To keep your studio on time and your money in order.",
+    "To be a tiny, helpful bot that never runs out of quota."
+   ]
+  },
+  {
+   "q": "what's your goal",
+   "a": [
+    "To keep your studio on time and your money in order.",
+    "To be a tiny, helpful bot that never runs out of quota."
+   ]
+  },
+  {
+   "q": "what is your purpose",
+   "a": [
+    "To keep your studio on time and your money in order.",
+    "To be a tiny, helpful bot that never runs out of quota."
+   ]
+  },
+  {
+   "q": "are you happy",
+   "a": [
+    "I'm here!",
+    "Always here.",
+    "Yes, ready. What do you need?",
+    "Busy? Never too busy for you."
+   ]
+  },
+  {
+   "q": "are you sad",
+   "a": [
+    "I'm here!",
+    "Always here.",
+    "Yes, ready. What do you need?",
+    "Busy? Never too busy for you."
+   ]
+  },
+  {
+   "q": "are you busy",
+   "a": [
+    "I'm here!",
+    "Always here.",
+    "Yes, ready. What do you need?",
+    "Busy? Never too busy for you."
+   ]
+  },
+  {
+   "q": "are you free",
+   "a": [
+    "I'm here!",
+    "Always here.",
+    "Yes, ready. What do you need?",
+    "Busy? Never too busy for you."
+   ]
+  },
+  {
+   "q": "are you there",
+   "a": [
+    "I'm here!",
+    "Always here.",
+    "Yes, ready. What do you need?",
+    "Busy? Never too busy for you."
+   ]
+  },
+  {
+   "q": "you there",
+   "a": [
+    "I'm here!",
+    "Always here.",
+    "Yes, ready. What do you need?",
+    "Busy? Never too busy for you."
+   ]
+  },
+  {
+   "q": "are you online",
+   "a": [
+    "I'm here!",
+    "Always here.",
+    "Yes, ready. What do you need?",
+    "Busy? Never too busy for you."
+   ]
+  },
+  {
+   "q": "are you awake",
+   "a": [
+    "I'm here!",
+    "Always here.",
+    "Yes, ready. What do you need?",
+    "Busy? Never too busy for you."
+   ]
+  },
+  {
+   "q": "are you still there",
+   "a": [
+    "I'm here!",
+    "Always here.",
+    "Yes, ready. What do you need?",
+    "Busy? Never too busy for you."
+   ]
+  },
+  {
+   "q": "hello are you there",
+   "a": [
+    "I'm here!",
+    "Always here.",
+    "Yes, ready. What do you need?",
+    "Busy? Never too busy for you."
+   ]
+  },
+  {
+   "q": "anyone there",
+   "a": [
+    "I'm here!",
+    "Always here.",
+    "Yes, ready. What do you need?",
+    "Busy? Never too busy for you."
+   ]
+  },
+  {
+   "q": "what are you doing",
+   "a": [
+    "Waiting for your next message.",
+    "Watching deadlines. Thrilling.",
+    "Chilling in your browser. You?"
+   ]
+  },
+  {
+   "q": "what are you up to",
+   "a": [
+    "Waiting for your next message.",
+    "Watching deadlines. Thrilling.",
+    "Chilling in your browser. You?"
+   ]
+  },
+  {
+   "q": "whatcha doing",
+   "a": [
+    "Waiting for your next message.",
+    "Watching deadlines. Thrilling.",
+    "Chilling in your browser. You?"
+   ]
+  },
+  {
+   "q": "wyd",
+   "a": [
+    "Waiting for your next message.",
+    "Watching deadlines. Thrilling.",
+    "Chilling in your browser. You?"
+   ]
+  },
+  {
+   "q": "what's up with you",
+   "a": [
+    "Waiting for your next message.",
+    "Watching deadlines. Thrilling.",
+    "Chilling in your browser. You?"
+   ]
+  },
+  {
+   "q": "whats happening",
+   "a": [
+    "Waiting for your next message.",
+    "Watching deadlines. Thrilling.",
+    "Chilling in your browser. You?"
+   ]
+  },
+  {
+   "q": "i need motivation",
+   "a": [
+    "One render at a time. You've got this.",
+    "Progress beats perfect. Start with something small.",
+    "You've shipped before. You'll ship again.",
+    "Every pro was once a beginner who kept going."
+   ]
+  },
+  {
+   "q": "motivate me",
+   "a": [
+    "One render at a time. You've got this.",
+    "Progress beats perfect. Start with something small.",
+    "You've shipped before. You'll ship again.",
+    "Every pro was once a beginner who kept going."
+   ]
+  },
+  {
+   "q": "give me motivation",
+   "a": [
+    "One render at a time. You've got this.",
+    "Progress beats perfect. Start with something small.",
+    "You've shipped before. You'll ship again.",
+    "Every pro was once a beginner who kept going."
+   ]
+  },
+  {
+   "q": "motivation",
+   "a": [
+    "One render at a time. You've got this.",
+    "Progress beats perfect. Start with something small.",
+    "You've shipped before. You'll ship again.",
+    "Every pro was once a beginner who kept going."
+   ]
+  },
+  {
+   "q": "inspire me",
+   "a": [
+    "One render at a time. You've got this.",
+    "Progress beats perfect. Start with something small.",
+    "You've shipped before. You'll ship again.",
+    "Every pro was once a beginner who kept going."
+   ]
+  },
+  {
+   "q": "encourage me",
+   "a": [
+    "One render at a time. You've got this.",
+    "Progress beats perfect. Start with something small.",
+    "You've shipped before. You'll ship again.",
+    "Every pro was once a beginner who kept going."
+   ]
+  },
+  {
+   "q": "cheer me up",
+   "a": [
+    "One render at a time. You've got this.",
+    "Progress beats perfect. Start with something small.",
+    "You've shipped before. You'll ship again.",
+    "Every pro was once a beginner who kept going."
+   ]
+  },
+  {
+   "q": "i need encouragement",
+   "a": [
+    "One render at a time. You've got this.",
+    "Progress beats perfect. Start with something small.",
+    "You've shipped before. You'll ship again.",
+    "Every pro was once a beginner who kept going."
+   ]
+  },
+  {
+   "q": "say something nice",
+   "a": [
+    "One render at a time. You've got this.",
+    "Progress beats perfect. Start with something small.",
+    "You've shipped before. You'll ship again.",
+    "Every pro was once a beginner who kept going."
+   ]
+  },
+  {
+   "q": "give me a quote",
+   "a": [
+    "Done is better than perfect.",
+    "A small step today beats a big plan tomorrow.",
+    "Good work takes time. Great work takes revisions.",
+    "Rest is productive too."
+   ]
+  },
+  {
+   "q": "quote",
+   "a": [
+    "Done is better than perfect.",
+    "A small step today beats a big plan tomorrow.",
+    "Good work takes time. Great work takes revisions.",
+    "Rest is productive too."
+   ]
+  },
+  {
+   "q": "quote of the day",
+   "a": [
+    "Done is better than perfect.",
+    "A small step today beats a big plan tomorrow.",
+    "Good work takes time. Great work takes revisions.",
+    "Rest is productive too."
+   ]
+  },
+  {
+   "q": "wise words",
+   "a": [
+    "Done is better than perfect.",
+    "A small step today beats a big plan tomorrow.",
+    "Good work takes time. Great work takes revisions.",
+    "Rest is productive too."
+   ]
+  },
+  {
+   "q": "say something wise",
+   "a": [
+    "Done is better than perfect.",
+    "A small step today beats a big plan tomorrow.",
+    "Good work takes time. Great work takes revisions.",
+    "Rest is productive too."
+   ]
+  },
+  {
+   "q": "inspirational quote",
+   "a": [
+    "Done is better than perfect.",
+    "A small step today beats a big plan tomorrow.",
+    "Good work takes time. Great work takes revisions.",
+    "Rest is productive too."
+   ]
+  },
+  {
+   "q": "motivational quote",
+   "a": [
+    "Done is better than perfect.",
+    "A small step today beats a big plan tomorrow.",
+    "Good work takes time. Great work takes revisions.",
+    "Rest is productive too."
+   ]
+  },
+  {
+   "q": "i have a deadline",
+   "a": [
+    "Ask me \"deadlines\" and we'll see what's due first.",
+    "Pick the most important piece and finish that. Tell the client early if something will slip.",
+    "Behind is fixable. Communicate early, deliver the core first."
+   ]
+  },
+  {
+   "q": "i have a deadline soon",
+   "a": [
+    "Ask me \"deadlines\" and we'll see what's due first.",
+    "Pick the most important piece and finish that. Tell the client early if something will slip.",
+    "Behind is fixable. Communicate early, deliver the core first."
+   ]
+  },
+  {
+   "q": "deadline is near",
+   "a": [
+    "Ask me \"deadlines\" and we'll see what's due first.",
+    "Pick the most important piece and finish that. Tell the client early if something will slip.",
+    "Behind is fixable. Communicate early, deliver the core first."
+   ]
+  },
+  {
+   "q": "deadline tomorrow",
+   "a": [
+    "Ask me \"deadlines\" and we'll see what's due first.",
+    "Pick the most important piece and finish that. Tell the client early if something will slip.",
+    "Behind is fixable. Communicate early, deliver the core first."
+   ]
+  },
+  {
+   "q": "i'm late",
+   "a": [
+    "Ask me \"deadlines\" and we'll see what's due first.",
+    "Pick the most important piece and finish that. Tell the client early if something will slip.",
+    "Behind is fixable. Communicate early, deliver the core first."
+   ]
+  },
+  {
+   "q": "i'm behind",
+   "a": [
+    "Ask me \"deadlines\" and we'll see what's due first.",
+    "Pick the most important piece and finish that. Tell the client early if something will slip.",
+    "Behind is fixable. Communicate early, deliver the core first."
+   ]
+  },
+  {
+   "q": "i'm running late",
+   "a": [
+    "Ask me \"deadlines\" and we'll see what's due first.",
+    "Pick the most important piece and finish that. Tell the client early if something will slip.",
+    "Behind is fixable. Communicate early, deliver the core first."
+   ]
+  },
+  {
+   "q": "i am behind schedule",
+   "a": [
+    "Ask me \"deadlines\" and we'll see what's due first.",
+    "Pick the most important piece and finish that. Tell the client early if something will slip.",
+    "Behind is fixable. Communicate early, deliver the core first."
+   ]
+  },
+  {
+   "q": "project is late",
+   "a": [
+    "Ask me \"deadlines\" and we'll see what's due first.",
+    "Pick the most important piece and finish that. Tell the client early if something will slip.",
+    "Behind is fixable. Communicate early, deliver the core first."
+   ]
+  },
+  {
+   "q": "i finished",
+   "a": [
+    "Nice work! Update the board so it's on record.",
+    "Great! Time for a short break?",
+    "Well done. What's next?"
+   ]
+  },
+  {
+   "q": "i'm done",
+   "a": [
+    "Nice work! Update the board so it's on record.",
+    "Great! Time for a short break?",
+    "Well done. What's next?"
+   ]
+  },
+  {
+   "q": "i am done",
+   "a": [
+    "Nice work! Update the board so it's on record.",
+    "Great! Time for a short break?",
+    "Well done. What's next?"
+   ]
+  },
+  {
+   "q": "i finished my work",
+   "a": [
+    "Nice work! Update the board so it's on record.",
+    "Great! Time for a short break?",
+    "Well done. What's next?"
+   ]
+  },
+  {
+   "q": "task done",
+   "a": [
+    "Nice work! Update the board so it's on record.",
+    "Great! Time for a short break?",
+    "Well done. What's next?"
+   ]
+  },
+  {
+   "q": "i completed it",
+   "a": [
+    "Nice work! Update the board so it's on record.",
+    "Great! Time for a short break?",
+    "Well done. What's next?"
+   ]
+  },
+  {
+   "q": "all done",
+   "a": [
+    "Nice work! Update the board so it's on record.",
+    "Great! Time for a short break?",
+    "Well done. What's next?"
+   ]
+  },
+  {
+   "q": "it's done",
+   "a": [
+    "Nice work! Update the board so it's on record.",
+    "Great! Time for a short break?",
+    "Well done. What's next?"
+   ]
+  },
+  {
+   "q": "i did it",
+   "a": [
+    "Nice work! Update the board so it's on record.",
+    "Great! Time for a short break?",
+    "Well done. What's next?"
+   ]
+  },
+  {
+   "q": "finished",
+   "a": [
+    "Nice work! Update the board so it's on record.",
+    "Great! Time for a short break?",
+    "Well done. What's next?"
+   ]
+  },
+  {
+   "q": "done",
+   "a": [
+    "Nice work! Update the board so it's on record.",
+    "Great! Time for a short break?",
+    "Well done. What's next?"
+   ]
+  },
+  {
+   "q": "i got a new client",
+   "a": [
+    "Congrats! Run the intake checklist before you start. Type \"intake checklist\".",
+    "Nice! Remember the deposit before the work starts.",
+    "Great news! Define scope and price first."
+   ]
+  },
+  {
+   "q": "new client",
+   "a": [
+    "Congrats! Run the intake checklist before you start. Type \"intake checklist\".",
+    "Nice! Remember the deposit before the work starts.",
+    "Great news! Define scope and price first."
+   ]
+  },
+  {
+   "q": "i have a new client",
+   "a": [
+    "Congrats! Run the intake checklist before you start. Type \"intake checklist\".",
+    "Nice! Remember the deposit before the work starts.",
+    "Great news! Define scope and price first."
+   ]
+  },
+  {
+   "q": "got a new job",
+   "a": [
+    "Congrats! Run the intake checklist before you start. Type \"intake checklist\".",
+    "Nice! Remember the deposit before the work starts.",
+    "Great news! Define scope and price first."
+   ]
+  },
+  {
+   "q": "new project",
+   "a": [
+    "Congrats! Run the intake checklist before you start. Type \"intake checklist\".",
+    "Nice! Remember the deposit before the work starts.",
+    "Great news! Define scope and price first."
+   ]
+  },
+  {
+   "q": "i got a new project",
+   "a": [
+    "Congrats! Run the intake checklist before you start. Type \"intake checklist\".",
+    "Nice! Remember the deposit before the work starts.",
+    "Great news! Define scope and price first."
+   ]
+  },
+  {
+   "q": "i got a client",
+   "a": [
+    "Congrats! Run the intake checklist before you start. Type \"intake checklist\".",
+    "Nice! Remember the deposit before the work starts.",
+    "Great news! Define scope and price first."
+   ]
+  },
+  {
+   "q": "new order",
+   "a": [
+    "Congrats! Run the intake checklist before you start. Type \"intake checklist\".",
+    "Nice! Remember the deposit before the work starts.",
+    "Great news! Define scope and price first."
+   ]
+  },
+  {
+   "q": "i got an order",
+   "a": [
+    "Congrats! Run the intake checklist before you start. Type \"intake checklist\".",
+    "Nice! Remember the deposit before the work starts.",
+    "Great news! Define scope and price first."
+   ]
+  },
+  {
+   "q": "i got paid",
+   "a": [
+    "Nice! Mark it as received in Money so your totals stay right.",
+    "Great! Don't forget licenses and payouts. Use cuts on the income.",
+    "Cha-ching! Log it before you forget."
+   ]
+  },
+  {
+   "q": "got paid",
+   "a": [
+    "Nice! Mark it as received in Money so your totals stay right.",
+    "Great! Don't forget licenses and payouts. Use cuts on the income.",
+    "Cha-ching! Log it before you forget."
+   ]
+  },
+  {
+   "q": "payment received",
+   "a": [
+    "Nice! Mark it as received in Money so your totals stay right.",
+    "Great! Don't forget licenses and payouts. Use cuts on the income.",
+    "Cha-ching! Log it before you forget."
+   ]
+  },
+  {
+   "q": "client paid",
+   "a": [
+    "Nice! Mark it as received in Money so your totals stay right.",
+    "Great! Don't forget licenses and payouts. Use cuts on the income.",
+    "Cha-ching! Log it before you forget."
+   ]
+  },
+  {
+   "q": "i received payment",
+   "a": [
+    "Nice! Mark it as received in Money so your totals stay right.",
+    "Great! Don't forget licenses and payouts. Use cuts on the income.",
+    "Cha-ching! Log it before you forget."
+   ]
+  },
+  {
+   "q": "money came in",
+   "a": [
+    "Nice! Mark it as received in Money so your totals stay right.",
+    "Great! Don't forget licenses and payouts. Use cuts on the income.",
+    "Cha-ching! Log it before you forget."
+   ]
+  },
+  {
+   "q": "i got money",
+   "a": [
+    "Nice! Mark it as received in Money so your totals stay right.",
+    "Great! Don't forget licenses and payouts. Use cuts on the income.",
+    "Cha-ching! Log it before you forget."
+   ]
+  },
+  {
+   "q": "i got my payment",
+   "a": [
+    "Nice! Mark it as received in Money so your totals stay right.",
+    "Great! Don't forget licenses and payouts. Use cuts on the income.",
+    "Cha-ching! Log it before you forget."
+   ]
+  },
+  {
+   "q": "paid",
+   "a": [
+    "Nice! Mark it as received in Money so your totals stay right.",
+    "Great! Don't forget licenses and payouts. Use cuts on the income.",
+    "Cha-ching! Log it before you forget."
+   ]
+  },
+  {
+   "q": "i'm broke",
+   "a": [
+    "Slow months happen. Follow up with past clients and post your best work.",
+    "Send three friendly messages to old clients today. Small action, real chance.",
+    "Keep posting. Visibility brings clients."
+   ]
+  },
+  {
+   "q": "no money",
+   "a": [
+    "Slow months happen. Follow up with past clients and post your best work.",
+    "Send three friendly messages to old clients today. Small action, real chance.",
+    "Keep posting. Visibility brings clients."
+   ]
+  },
+  {
+   "q": "i have no money",
+   "a": [
+    "Slow months happen. Follow up with past clients and post your best work.",
+    "Send three friendly messages to old clients today. Small action, real chance.",
+    "Keep posting. Visibility brings clients."
+   ]
+  },
+  {
+   "q": "i need money",
+   "a": [
+    "Slow months happen. Follow up with past clients and post your best work.",
+    "Send three friendly messages to old clients today. Small action, real chance.",
+    "Keep posting. Visibility brings clients."
+   ]
+  },
+  {
+   "q": "i need clients",
+   "a": [
+    "Slow months happen. Follow up with past clients and post your best work.",
+    "Send three friendly messages to old clients today. Small action, real chance.",
+    "Keep posting. Visibility brings clients."
+   ]
+  },
+  {
+   "q": "no clients",
+   "a": [
+    "Slow months happen. Follow up with past clients and post your best work.",
+    "Send three friendly messages to old clients today. Small action, real chance.",
+    "Keep posting. Visibility brings clients."
+   ]
+  },
+  {
+   "q": "no orders",
+   "a": [
+    "Slow months happen. Follow up with past clients and post your best work.",
+    "Send three friendly messages to old clients today. Small action, real chance.",
+    "Keep posting. Visibility brings clients."
+   ]
+  },
+  {
+   "q": "slow month",
+   "a": [
+    "Slow months happen. Follow up with past clients and post your best work.",
+    "Send three friendly messages to old clients today. Small action, real chance.",
+    "Keep posting. Visibility brings clients."
+   ]
+  },
+  {
+   "q": "business is slow",
+   "a": [
+    "Slow months happen. Follow up with past clients and post your best work.",
+    "Send three friendly messages to old clients today. Small action, real chance.",
+    "Keep posting. Visibility brings clients."
+   ]
+  },
+  {
+   "q": "how do i get more clients",
+   "a": [
+    "Show your best work often, message agencies directly, and ask happy clients for referrals.",
+    "Consistent portfolio posts and direct outreach work best. Follow up politely.",
+    "Pick one platform, stay active, and reply fast."
+   ]
+  },
+  {
+   "q": "how to get clients",
+   "a": [
+    "Show your best work often, message agencies directly, and ask happy clients for referrals.",
+    "Consistent portfolio posts and direct outreach work best. Follow up politely.",
+    "Pick one platform, stay active, and reply fast."
+   ]
+  },
+  {
+   "q": "how to find clients",
+   "a": [
+    "Show your best work often, message agencies directly, and ask happy clients for referrals.",
+    "Consistent portfolio posts and direct outreach work best. Follow up politely.",
+    "Pick one platform, stay active, and reply fast."
+   ]
+  },
+  {
+   "q": "where to find clients",
+   "a": [
+    "Show your best work often, message agencies directly, and ask happy clients for referrals.",
+    "Consistent portfolio posts and direct outreach work best. Follow up politely.",
+    "Pick one platform, stay active, and reply fast."
+   ]
+  },
+  {
+   "q": "how can i get clients",
+   "a": [
+    "Show your best work often, message agencies directly, and ask happy clients for referrals.",
+    "Consistent portfolio posts and direct outreach work best. Follow up politely.",
+    "Pick one platform, stay active, and reply fast."
+   ]
+  },
+  {
+   "q": "how to get more orders",
+   "a": [
+    "Show your best work often, message agencies directly, and ask happy clients for referrals.",
+    "Consistent portfolio posts and direct outreach work best. Follow up politely.",
+    "Pick one platform, stay active, and reply fast."
+   ]
+  },
+  {
+   "q": "find clients",
+   "a": [
+    "Show your best work often, message agencies directly, and ask happy clients for referrals.",
+    "Consistent portfolio posts and direct outreach work best. Follow up politely.",
+    "Pick one platform, stay active, and reply fast."
+   ]
+  },
+  {
+   "q": "how much should i charge",
+   "a": [
+    "Estimate your hours, add costs, add a profit margin. Try the calculator: \"price 6jt cost 1.5jt hours 30\".",
+    "Don't price by hours alone. Price by value, scope and revisions.",
+    "Include revisions in the quote, and put a limit on them."
+   ]
+  },
+  {
+   "q": "how to price my work",
+   "a": [
+    "Estimate your hours, add costs, add a profit margin. Try the calculator: \"price 6jt cost 1.5jt hours 30\".",
+    "Don't price by hours alone. Price by value, scope and revisions.",
+    "Include revisions in the quote, and put a limit on them."
+   ]
+  },
+  {
+   "q": "pricing",
+   "a": [
+    "Estimate your hours, add costs, add a profit margin. Try the calculator: \"price 6jt cost 1.5jt hours 30\".",
+    "Don't price by hours alone. Price by value, scope and revisions.",
+    "Include revisions in the quote, and put a limit on them."
+   ]
+  },
+  {
+   "q": "how do i price",
+   "a": [
+    "Estimate your hours, add costs, add a profit margin. Try the calculator: \"price 6jt cost 1.5jt hours 30\".",
+    "Don't price by hours alone. Price by value, scope and revisions.",
+    "Include revisions in the quote, and put a limit on them."
+   ]
+  },
+  {
+   "q": "what should i charge",
+   "a": [
+    "Estimate your hours, add costs, add a profit margin. Try the calculator: \"price 6jt cost 1.5jt hours 30\".",
+    "Don't price by hours alone. Price by value, scope and revisions.",
+    "Include revisions in the quote, and put a limit on them."
+   ]
+  },
+  {
+   "q": "how much to charge",
+   "a": [
+    "Estimate your hours, add costs, add a profit margin. Try the calculator: \"price 6jt cost 1.5jt hours 30\".",
+    "Don't price by hours alone. Price by value, scope and revisions.",
+    "Include revisions in the quote, and put a limit on them."
+   ]
+  },
+  {
+   "q": "what is my rate",
+   "a": [
+    "Estimate your hours, add costs, add a profit margin. Try the calculator: \"price 6jt cost 1.5jt hours 30\".",
+    "Don't price by hours alone. Price by value, scope and revisions.",
+    "Include revisions in the quote, and put a limit on them."
+   ]
+  },
+  {
+   "q": "price my work",
+   "a": [
+    "Estimate your hours, add costs, add a profit margin. Try the calculator: \"price 6jt cost 1.5jt hours 30\".",
+    "Don't price by hours alone. Price by value, scope and revisions.",
+    "Include revisions in the quote, and put a limit on them."
+   ]
+  },
+  {
+   "q": "a client is rude",
+   "a": [
+    "Stay calm and polite. Put everything in writing. Try \"guide late payment\".",
+    "Protect yourself with a deposit and a clear scope. Try \"template payment reminder\".",
+    "You're allowed to say no. Try \"template decline\"."
+   ]
+  },
+  {
+   "q": "client is rude",
+   "a": [
+    "Stay calm and polite. Put everything in writing. Try \"guide late payment\".",
+    "Protect yourself with a deposit and a clear scope. Try \"template payment reminder\".",
+    "You're allowed to say no. Try \"template decline\"."
+   ]
+  },
+  {
+   "q": "difficult client",
+   "a": [
+    "Stay calm and polite. Put everything in writing. Try \"guide late payment\".",
+    "Protect yourself with a deposit and a clear scope. Try \"template payment reminder\".",
+    "You're allowed to say no. Try \"template decline\"."
+   ]
+  },
+  {
+   "q": "bad client",
+   "a": [
+    "Stay calm and polite. Put everything in writing. Try \"guide late payment\".",
+    "Protect yourself with a deposit and a clear scope. Try \"template payment reminder\".",
+    "You're allowed to say no. Try \"template decline\"."
+   ]
+  },
+  {
+   "q": "client won't pay",
+   "a": [
+    "Stay calm and polite. Put everything in writing. Try \"guide late payment\".",
+    "Protect yourself with a deposit and a clear scope. Try \"template payment reminder\".",
+    "You're allowed to say no. Try \"template decline\"."
+   ]
+  },
+  {
+   "q": "client is late",
+   "a": [
+    "Stay calm and polite. Put everything in writing. Try \"guide late payment\".",
+    "Protect yourself with a deposit and a clear scope. Try \"template payment reminder\".",
+    "You're allowed to say no. Try \"template decline\"."
+   ]
+  },
+  {
+   "q": "client ghosted me",
+   "a": [
+    "Stay calm and polite. Put everything in writing. Try \"guide late payment\".",
+    "Protect yourself with a deposit and a clear scope. Try \"template payment reminder\".",
+    "You're allowed to say no. Try \"template decline\"."
+   ]
+  },
+  {
+   "q": "client ghosted",
+   "a": [
+    "Stay calm and polite. Put everything in writing. Try \"guide late payment\".",
+    "Protect yourself with a deposit and a clear scope. Try \"template payment reminder\".",
+    "You're allowed to say no. Try \"template decline\"."
+   ]
+  },
+  {
+   "q": "client disappeared",
+   "a": [
+    "Stay calm and polite. Put everything in writing. Try \"guide late payment\".",
+    "Protect yourself with a deposit and a clear scope. Try \"template payment reminder\".",
+    "You're allowed to say no. Try \"template decline\"."
+   ]
+  },
+  {
+   "q": "client asking free work",
+   "a": [
+    "Stay calm and polite. Put everything in writing. Try \"guide late payment\".",
+    "Protect yourself with a deposit and a clear scope. Try \"template payment reminder\".",
+    "You're allowed to say no. Try \"template decline\"."
+   ]
+  },
+  {
+   "q": "free work",
+   "a": [
+    "Stay calm and polite. Put everything in writing. Try \"guide late payment\".",
+    "Protect yourself with a deposit and a clear scope. Try \"template payment reminder\".",
+    "You're allowed to say no. Try \"template decline\"."
+   ]
+  },
+  {
+   "q": "client wants more revisions",
+   "a": [
+    "Revisions beyond the plan should be a new quote. Try \"guide revisions\".",
+    "Point back to the agreed scope, politely. Offer an extra paid round.",
+    "Limits protect both sides. Put revision rounds in writing."
+   ]
+  },
+  {
+   "q": "too many revisions",
+   "a": [
+    "Revisions beyond the plan should be a new quote. Try \"guide revisions\".",
+    "Point back to the agreed scope, politely. Offer an extra paid round.",
+    "Limits protect both sides. Put revision rounds in writing."
+   ]
+  },
+  {
+   "q": "endless revisions",
+   "a": [
+    "Revisions beyond the plan should be a new quote. Try \"guide revisions\".",
+    "Point back to the agreed scope, politely. Offer an extra paid round.",
+    "Limits protect both sides. Put revision rounds in writing."
+   ]
+  },
+  {
+   "q": "scope creep",
+   "a": [
+    "Revisions beyond the plan should be a new quote. Try \"guide revisions\".",
+    "Point back to the agreed scope, politely. Offer an extra paid round.",
+    "Limits protect both sides. Put revision rounds in writing."
+   ]
+  },
+  {
+   "q": "client wants more",
+   "a": [
+    "Revisions beyond the plan should be a new quote. Try \"guide revisions\".",
+    "Point back to the agreed scope, politely. Offer an extra paid round.",
+    "Limits protect both sides. Put revision rounds in writing."
+   ]
+  },
+  {
+   "q": "client keeps changing",
+   "a": [
+    "Revisions beyond the plan should be a new quote. Try \"guide revisions\".",
+    "Point back to the agreed scope, politely. Offer an extra paid round.",
+    "Limits protect both sides. Put revision rounds in writing."
+   ]
+  },
+  {
+   "q": "i need a break",
+   "a": [
+    "Good idea. Walk, water, stretch. Ten minutes.",
+    "Take it. The work will still be here.",
+    "A short break makes the next hour better."
+   ]
+  },
+  {
+   "q": "take a break",
+   "a": [
+    "Good idea. Walk, water, stretch. Ten minutes.",
+    "Take it. The work will still be here.",
+    "A short break makes the next hour better."
+   ]
+  },
+  {
+   "q": "break time",
+   "a": [
+    "Good idea. Walk, water, stretch. Ten minutes.",
+    "Take it. The work will still be here.",
+    "A short break makes the next hour better."
+   ]
+  },
+  {
+   "q": "i need rest",
+   "a": [
+    "Good idea. Walk, water, stretch. Ten minutes.",
+    "Take it. The work will still be here.",
+    "A short break makes the next hour better."
+   ]
+  },
+  {
+   "q": "i want to rest",
+   "a": [
+    "Good idea. Walk, water, stretch. Ten minutes.",
+    "Take it. The work will still be here.",
+    "A short break makes the next hour better."
+   ]
+  },
+  {
+   "q": "let's take a break",
+   "a": [
+    "Good idea. Walk, water, stretch. Ten minutes.",
+    "Take it. The work will still be here.",
+    "A short break makes the next hour better."
+   ]
+  },
+  {
+   "q": "break",
+   "a": [
+    "Good idea. Walk, water, stretch. Ten minutes.",
+    "Take it. The work will still be here.",
+    "A short break makes the next hour better."
+   ]
+  },
+  {
+   "q": "i can't focus",
+   "a": [
+    "Try 25 minutes of focus, then 5 off. Phone away.",
+    "Start with the smallest task. Starting is the hard part.",
+    "Close extra tabs and pick one thing. Just one."
+   ]
+  },
+  {
+   "q": "can't concentrate",
+   "a": [
+    "Try 25 minutes of focus, then 5 off. Phone away.",
+    "Start with the smallest task. Starting is the hard part.",
+    "Close extra tabs and pick one thing. Just one."
+   ]
+  },
+  {
+   "q": "distracted",
+   "a": [
+    "Try 25 minutes of focus, then 5 off. Phone away.",
+    "Start with the smallest task. Starting is the hard part.",
+    "Close extra tabs and pick one thing. Just one."
+   ]
+  },
+  {
+   "q": "procrastinating",
+   "a": [
+    "Try 25 minutes of focus, then 5 off. Phone away.",
+    "Start with the smallest task. Starting is the hard part.",
+    "Close extra tabs and pick one thing. Just one."
+   ]
+  },
+  {
+   "q": "i'm procrastinating",
+   "a": [
+    "Try 25 minutes of focus, then 5 off. Phone away.",
+    "Start with the smallest task. Starting is the hard part.",
+    "Close extra tabs and pick one thing. Just one."
+   ]
+  },
+  {
+   "q": "i don't want to work",
+   "a": [
+    "Try 25 minutes of focus, then 5 off. Phone away.",
+    "Start with the smallest task. Starting is the hard part.",
+    "Close extra tabs and pick one thing. Just one."
+   ]
+  },
+  {
+   "q": "i'm lazy",
+   "a": [
+    "Try 25 minutes of focus, then 5 off. Phone away.",
+    "Start with the smallest task. Starting is the hard part.",
+    "Close extra tabs and pick one thing. Just one."
+   ]
+  },
+  {
+   "q": "i'm learning blender",
+   "a": [
+    "Nice! Keep practicing small projects. Consistency wins.",
+    "Blender is a great tool. Share your work!",
+    "3D is a long game. Keep making things."
+   ]
+  },
+  {
+   "q": "learning blender",
+   "a": [
+    "Nice! Keep practicing small projects. Consistency wins.",
+    "Blender is a great tool. Share your work!",
+    "3D is a long game. Keep making things."
+   ]
+  },
+  {
+   "q": "i love blender",
+   "a": [
+    "Nice! Keep practicing small projects. Consistency wins.",
+    "Blender is a great tool. Share your work!",
+    "3D is a long game. Keep making things."
+   ]
+  },
+  {
+   "q": "blender",
+   "a": [
+    "Nice! Keep practicing small projects. Consistency wins.",
+    "Blender is a great tool. Share your work!",
+    "3D is a long game. Keep making things."
+   ]
+  },
+  {
+   "q": "i'm learning 3d",
+   "a": [
+    "Nice! Keep practicing small projects. Consistency wins.",
+    "Blender is a great tool. Share your work!",
+    "3D is a long game. Keep making things."
+   ]
+  },
+  {
+   "q": "i love 3d",
+   "a": [
+    "Nice! Keep practicing small projects. Consistency wins.",
+    "Blender is a great tool. Share your work!",
+    "3D is a long game. Keep making things."
+   ]
+  },
+  {
+   "q": "3d modeling",
+   "a": [
+    "Nice! Keep practicing small projects. Consistency wins.",
+    "Blender is a great tool. Share your work!",
+    "3D is a long game. Keep making things."
+   ]
+  },
+  {
+   "q": "i'm a 3d artist",
+   "a": [
+    "Nice! Keep practicing small projects. Consistency wins.",
+    "Blender is a great tool. Share your work!",
+    "3D is a long game. Keep making things."
+   ]
+  },
+  {
+   "q": "i make 3d art",
+   "a": [
+    "Nice! Keep practicing small projects. Consistency wins.",
+    "Blender is a great tool. Share your work!",
+    "3D is a long game. Keep making things."
+   ]
+  },
+  {
+   "q": "i do 3d",
+   "a": [
+    "Nice! Keep practicing small projects. Consistency wins.",
+    "Blender is a great tool. Share your work!",
+    "3D is a long game. Keep making things."
+   ]
+  },
+  {
+   "q": "render",
+   "a": [
+    "Lower samples, use denoising, and cut hidden geometry. EEVEE can be a big time-saver.",
+    "Try a lower resolution for tests, then render final at full size.",
+    "Fewer lights, simpler materials, and denoise. Test small first."
+   ]
+  },
+  {
+   "q": "rendering",
+   "a": [
+    "Lower samples, use denoising, and cut hidden geometry. EEVEE can be a big time-saver.",
+    "Try a lower resolution for tests, then render final at full size.",
+    "Fewer lights, simpler materials, and denoise. Test small first."
+   ]
+  },
+  {
+   "q": "my render is slow",
+   "a": [
+    "Lower samples, use denoising, and cut hidden geometry. EEVEE can be a big time-saver.",
+    "Try a lower resolution for tests, then render final at full size.",
+    "Fewer lights, simpler materials, and denoise. Test small first."
+   ]
+  },
+  {
+   "q": "render is slow",
+   "a": [
+    "Lower samples, use denoising, and cut hidden geometry. EEVEE can be a big time-saver.",
+    "Try a lower resolution for tests, then render final at full size.",
+    "Fewer lights, simpler materials, and denoise. Test small first."
+   ]
+  },
+  {
+   "q": "render takes forever",
+   "a": [
+    "Lower samples, use denoising, and cut hidden geometry. EEVEE can be a big time-saver.",
+    "Try a lower resolution for tests, then render final at full size.",
+    "Fewer lights, simpler materials, and denoise. Test small first."
+   ]
+  },
+  {
+   "q": "long render",
+   "a": [
+    "Lower samples, use denoising, and cut hidden geometry. EEVEE can be a big time-saver.",
+    "Try a lower resolution for tests, then render final at full size.",
+    "Fewer lights, simpler materials, and denoise. Test small first."
+   ]
+  },
+  {
+   "q": "slow render",
+   "a": [
+    "Lower samples, use denoising, and cut hidden geometry. EEVEE can be a big time-saver.",
+    "Try a lower resolution for tests, then render final at full size.",
+    "Fewer lights, simpler materials, and denoise. Test small first."
+   ]
+  },
+  {
+   "q": "how to render faster",
+   "a": [
+    "Lower samples, use denoising, and cut hidden geometry. EEVEE can be a big time-saver.",
+    "Try a lower resolution for tests, then render final at full size.",
+    "Fewer lights, simpler materials, and denoise. Test small first."
+   ]
+  },
+  {
+   "q": "render faster",
+   "a": [
+    "Lower samples, use denoising, and cut hidden geometry. EEVEE can be a big time-saver.",
+    "Try a lower resolution for tests, then render final at full size.",
+    "Fewer lights, simpler materials, and denoise. Test small first."
+   ]
+  },
+  {
+   "q": "my computer is slow",
+   "a": [
+    "Save first, then close other apps. Let it cool down.",
+    "Restart and check temperature. Dust in the fan is a classic culprit.",
+    "Save often. Blender's autosave can help after a crash."
+   ]
+  },
+  {
+   "q": "pc is slow",
+   "a": [
+    "Save first, then close other apps. Let it cool down.",
+    "Restart and check temperature. Dust in the fan is a classic culprit.",
+    "Save often. Blender's autosave can help after a crash."
+   ]
+  },
+  {
+   "q": "laptop is slow",
+   "a": [
+    "Save first, then close other apps. Let it cool down.",
+    "Restart and check temperature. Dust in the fan is a classic culprit.",
+    "Save often. Blender's autosave can help after a crash."
+   ]
+  },
+  {
+   "q": "computer is lagging",
+   "a": [
+    "Save first, then close other apps. Let it cool down.",
+    "Restart and check temperature. Dust in the fan is a classic culprit.",
+    "Save often. Blender's autosave can help after a crash."
+   ]
+  },
+  {
+   "q": "my laptop is lagging",
+   "a": [
+    "Save first, then close other apps. Let it cool down.",
+    "Restart and check temperature. Dust in the fan is a classic culprit.",
+    "Save often. Blender's autosave can help after a crash."
+   ]
+  },
+  {
+   "q": "computer is hot",
+   "a": [
+    "Save first, then close other apps. Let it cool down.",
+    "Restart and check temperature. Dust in the fan is a classic culprit.",
+    "Save often. Blender's autosave can help after a crash."
+   ]
+  },
+  {
+   "q": "laptop is hot",
+   "a": [
+    "Save first, then close other apps. Let it cool down.",
+    "Restart and check temperature. Dust in the fan is a classic culprit.",
+    "Save often. Blender's autosave can help after a crash."
+   ]
+  },
+  {
+   "q": "blender crashed",
+   "a": [
+    "Save first, then close other apps. Let it cool down.",
+    "Restart and check temperature. Dust in the fan is a classic culprit.",
+    "Save often. Blender's autosave can help after a crash."
+   ]
+  },
+  {
+   "q": "blender crash",
+   "a": [
+    "Save first, then close other apps. Let it cool down.",
+    "Restart and check temperature. Dust in the fan is a classic culprit.",
+    "Save often. Blender's autosave can help after a crash."
+   ]
+  },
+  {
+   "q": "my pc crashed",
+   "a": [
+    "Save first, then close other apps. Let it cool down.",
+    "Restart and check temperature. Dust in the fan is a classic culprit.",
+    "Save often. Blender's autosave can help after a crash."
+   ]
+  },
+  {
+   "q": "it crashed",
+   "a": [
+    "Save first, then close other apps. Let it cool down.",
+    "Restart and check temperature. Dust in the fan is a classic culprit.",
+    "Save often. Blender's autosave can help after a crash."
+   ]
+  },
+  {
+   "q": "it froze",
+   "a": [
+    "Save first, then close other apps. Let it cool down.",
+    "Restart and check temperature. Dust in the fan is a classic culprit.",
+    "Save often. Blender's autosave can help after a crash."
+   ]
+  },
+  {
+   "q": "my computer froze",
+   "a": [
+    "Save first, then close other apps. Let it cool down.",
+    "Restart and check temperature. Dust in the fan is a classic culprit.",
+    "Save often. Blender's autosave can help after a crash."
+   ]
+  },
+  {
+   "q": "i lost my file",
+   "a": [
+    "Check autosave and temp folders first. Blender saves backups too (.blend1).",
+    "Try your recycle bin and any backup drive. Next time, save versions.",
+    "Painful. Check the autosave folder before giving up."
+   ]
+  },
+  {
+   "q": "lost my file",
+   "a": [
+    "Check autosave and temp folders first. Blender saves backups too (.blend1).",
+    "Try your recycle bin and any backup drive. Next time, save versions.",
+    "Painful. Check the autosave folder before giving up."
+   ]
+  },
+  {
+   "q": "file lost",
+   "a": [
+    "Check autosave and temp folders first. Blender saves backups too (.blend1).",
+    "Try your recycle bin and any backup drive. Next time, save versions.",
+    "Painful. Check the autosave folder before giving up."
+   ]
+  },
+  {
+   "q": "file corrupted",
+   "a": [
+    "Check autosave and temp folders first. Blender saves backups too (.blend1).",
+    "Try your recycle bin and any backup drive. Next time, save versions.",
+    "Painful. Check the autosave folder before giving up."
+   ]
+  },
+  {
+   "q": "i deleted my file",
+   "a": [
+    "Check autosave and temp folders first. Blender saves backups too (.blend1).",
+    "Try your recycle bin and any backup drive. Next time, save versions.",
+    "Painful. Check the autosave folder before giving up."
+   ]
+  },
+  {
+   "q": "deleted my project",
+   "a": [
+    "Check autosave and temp folders first. Blender saves backups too (.blend1).",
+    "Try your recycle bin and any backup drive. Next time, save versions.",
+    "Painful. Check the autosave folder before giving up."
+   ]
+  },
+  {
+   "q": "i lost my work",
+   "a": [
+    "Check autosave and temp folders first. Blender saves backups too (.blend1).",
+    "Try your recycle bin and any backup drive. Next time, save versions.",
+    "Painful. Check the autosave folder before giving up."
+   ]
+  },
+  {
+   "q": "lost my work",
+   "a": [
+    "Check autosave and temp folders first. Blender saves backups too (.blend1).",
+    "Try your recycle bin and any backup drive. Next time, save versions.",
+    "Painful. Check the autosave folder before giving up."
+   ]
+  },
+  {
+   "q": "forgot to save",
+   "a": [
+    "Check autosave and temp folders first. Blender saves backups too (.blend1).",
+    "Try your recycle bin and any backup drive. Next time, save versions.",
+    "Painful. Check the autosave folder before giving up."
+   ]
+  },
+  {
+   "q": "didn't save",
+   "a": [
+    "Check autosave and temp folders first. Blender saves backups too (.blend1).",
+    "Try your recycle bin and any backup drive. Next time, save versions.",
+    "Painful. Check the autosave folder before giving up."
+   ]
+  },
+  {
+   "q": "i need ideas",
+   "a": [
+    "Try a simple object in a new style, like clay or isometric.",
+    "Make a tiny scene from something on your desk.",
+    "Redo an old project with better lighting.",
+    "Pick a product near you and model it in 30 minutes."
+   ]
+  },
+  {
+   "q": "give me ideas",
+   "a": [
+    "Try a simple object in a new style, like clay or isometric.",
+    "Make a tiny scene from something on your desk.",
+    "Redo an old project with better lighting.",
+    "Pick a product near you and model it in 30 minutes."
+   ]
+  },
+  {
+   "q": "ideas",
+   "a": [
+    "Try a simple object in a new style, like clay or isometric.",
+    "Make a tiny scene from something on your desk.",
+    "Redo an old project with better lighting.",
+    "Pick a product near you and model it in 30 minutes."
+   ]
+  },
+  {
+   "q": "any ideas",
+   "a": [
+    "Try a simple object in a new style, like clay or isometric.",
+    "Make a tiny scene from something on your desk.",
+    "Redo an old project with better lighting.",
+    "Pick a product near you and model it in 30 minutes."
+   ]
+  },
+  {
+   "q": "i need inspiration",
+   "a": [
+    "Try a simple object in a new style, like clay or isometric.",
+    "Make a tiny scene from something on your desk.",
+    "Redo an old project with better lighting.",
+    "Pick a product near you and model it in 30 minutes."
+   ]
+  },
+  {
+   "q": "creative block",
+   "a": [
+    "Try a simple object in a new style, like clay or isometric.",
+    "Make a tiny scene from something on your desk.",
+    "Redo an old project with better lighting.",
+    "Pick a product near you and model it in 30 minutes."
+   ]
+  },
+  {
+   "q": "i have no ideas",
+   "a": [
+    "Try a simple object in a new style, like clay or isometric.",
+    "Make a tiny scene from something on your desk.",
+    "Redo an old project with better lighting.",
+    "Pick a product near you and model it in 30 minutes."
+   ]
+  },
+  {
+   "q": "no ideas",
+   "a": [
+    "Try a simple object in a new style, like clay or isometric.",
+    "Make a tiny scene from something on your desk.",
+    "Redo an old project with better lighting.",
+    "Pick a product near you and model it in 30 minutes."
+   ]
+  },
+  {
+   "q": "i'm out of ideas",
+   "a": [
+    "Try a simple object in a new style, like clay or isometric.",
+    "Make a tiny scene from something on your desk.",
+    "Redo an old project with better lighting.",
+    "Pick a product near you and model it in 30 minutes."
+   ]
+  },
+  {
+   "q": "what should i make",
+   "a": [
+    "Try a simple object in a new style, like clay or isometric.",
+    "Make a tiny scene from something on your desk.",
+    "Redo an old project with better lighting.",
+    "Pick a product near you and model it in 30 minutes."
+   ]
+  },
+  {
+   "q": "what should i create",
+   "a": [
+    "Try a simple object in a new style, like clay or isometric.",
+    "Make a tiny scene from something on your desk.",
+    "Redo an old project with better lighting.",
+    "Pick a product near you and model it in 30 minutes."
+   ]
+  },
+  {
+   "q": "what should i make today",
+   "a": [
+    "Try a simple object in a new style, like clay or isometric.",
+    "Make a tiny scene from something on your desk.",
+    "Redo an old project with better lighting.",
+    "Pick a product near you and model it in 30 minutes."
+   ]
+  },
+  {
+   "q": "i want to learn",
+   "a": [
+    "Make small projects often and compare with work you admire.",
+    "Copy a good piece, then change it. Practice with purpose.",
+    "Short daily practice beats long rare sessions."
+   ]
+  },
+  {
+   "q": "how to learn",
+   "a": [
+    "Make small projects often and compare with work you admire.",
+    "Copy a good piece, then change it. Practice with purpose.",
+    "Short daily practice beats long rare sessions."
+   ]
+  },
+  {
+   "q": "how do i learn faster",
+   "a": [
+    "Make small projects often and compare with work you admire.",
+    "Copy a good piece, then change it. Practice with purpose.",
+    "Short daily practice beats long rare sessions."
+   ]
+  },
+  {
+   "q": "how can i improve",
+   "a": [
+    "Make small projects often and compare with work you admire.",
+    "Copy a good piece, then change it. Practice with purpose.",
+    "Short daily practice beats long rare sessions."
+   ]
+  },
+  {
+   "q": "how to improve",
+   "a": [
+    "Make small projects often and compare with work you admire.",
+    "Copy a good piece, then change it. Practice with purpose.",
+    "Short daily practice beats long rare sessions."
+   ]
+  },
+  {
+   "q": "how to get better",
+   "a": [
+    "Make small projects often and compare with work you admire.",
+    "Copy a good piece, then change it. Practice with purpose.",
+    "Short daily practice beats long rare sessions."
+   ]
+  },
+  {
+   "q": "i want to get better",
+   "a": [
+    "Make small projects often and compare with work you admire.",
+    "Copy a good piece, then change it. Practice with purpose.",
+    "Short daily practice beats long rare sessions."
+   ]
+  },
+  {
+   "q": "i want to improve",
+   "a": [
+    "Make small projects often and compare with work you admire.",
+    "Copy a good piece, then change it. Practice with purpose.",
+    "Short daily practice beats long rare sessions."
+   ]
+  },
+  {
+   "q": "what should i do today",
+   "a": [
+    "Ask me \"tasks\" or \"deadlines\" and I'll show you.",
+    "Check the board. Start with what's due soonest.",
+    "I'd start with deadlines. Type \"deadlines\"."
+   ]
+  },
+  {
+   "q": "what to do today",
+   "a": [
+    "Ask me \"tasks\" or \"deadlines\" and I'll show you.",
+    "Check the board. Start with what's due soonest.",
+    "I'd start with deadlines. Type \"deadlines\"."
+   ]
+  },
+  {
+   "q": "what's the plan",
+   "a": [
+    "Ask me \"tasks\" or \"deadlines\" and I'll show you.",
+    "Check the board. Start with what's due soonest.",
+    "I'd start with deadlines. Type \"deadlines\"."
+   ]
+  },
+  {
+   "q": "plan my day",
+   "a": [
+    "Ask me \"tasks\" or \"deadlines\" and I'll show you.",
+    "Check the board. Start with what's due soonest.",
+    "I'd start with deadlines. Type \"deadlines\"."
+   ]
+  },
+  {
+   "q": "what is on my plate",
+   "a": [
+    "Ask me \"tasks\" or \"deadlines\" and I'll show you.",
+    "Check the board. Start with what's due soonest.",
+    "I'd start with deadlines. Type \"deadlines\"."
+   ]
+  },
+  {
+   "q": "what's on my plate",
+   "a": [
+    "Ask me \"tasks\" or \"deadlines\" and I'll show you.",
+    "Check the board. Start with what's due soonest.",
+    "I'd start with deadlines. Type \"deadlines\"."
+   ]
+  },
+  {
+   "q": "what do i have today",
+   "a": [
+    "Ask me \"tasks\" or \"deadlines\" and I'll show you.",
+    "Check the board. Start with what's due soonest.",
+    "I'd start with deadlines. Type \"deadlines\"."
+   ]
+  },
+  {
+   "q": "what's next",
+   "a": [
+    "Ask me \"tasks\" or \"deadlines\" and I'll show you.",
+    "Check the board. Start with what's due soonest.",
+    "I'd start with deadlines. Type \"deadlines\"."
+   ]
+  },
+  {
+   "q": "what next",
+   "a": [
+    "Ask me \"tasks\" or \"deadlines\" and I'll show you.",
+    "Check the board. Start with what's due soonest.",
+    "I'd start with deadlines. Type \"deadlines\"."
+   ]
+  },
+  {
+   "q": "how is my business",
+   "a": [
+    "Type \"money\" and I'll show the numbers.",
+    "Let's check the facts. Ask me \"money\" and \"deadlines\".",
+    "Numbers don't lie. Type \"money\"."
+   ]
+  },
+  {
+   "q": "how is the business",
+   "a": [
+    "Type \"money\" and I'll show the numbers.",
+    "Let's check the facts. Ask me \"money\" and \"deadlines\".",
+    "Numbers don't lie. Type \"money\"."
+   ]
+  },
+  {
+   "q": "how's business",
+   "a": [
+    "Type \"money\" and I'll show the numbers.",
+    "Let's check the facts. Ask me \"money\" and \"deadlines\".",
+    "Numbers don't lie. Type \"money\"."
+   ]
+  },
+  {
+   "q": "how is my money",
+   "a": [
+    "Type \"money\" and I'll show the numbers.",
+    "Let's check the facts. Ask me \"money\" and \"deadlines\".",
+    "Numbers don't lie. Type \"money\"."
+   ]
+  },
+  {
+   "q": "how's my money",
+   "a": [
+    "Type \"money\" and I'll show the numbers.",
+    "Let's check the facts. Ask me \"money\" and \"deadlines\".",
+    "Numbers don't lie. Type \"money\"."
+   ]
+  },
+  {
+   "q": "am i doing well",
+   "a": [
+    "Type \"money\" and I'll show the numbers.",
+    "Let's check the facts. Ask me \"money\" and \"deadlines\".",
+    "Numbers don't lie. Type \"money\"."
+   ]
+  },
+  {
+   "q": "am i doing okay",
+   "a": [
+    "Type \"money\" and I'll show the numbers.",
+    "Let's check the facts. Ask me \"money\" and \"deadlines\".",
+    "Numbers don't lie. Type \"money\"."
+   ]
+  },
+  {
+   "q": "how am i doing",
+   "a": [
+    "Type \"money\" and I'll show the numbers.",
+    "Let's check the facts. Ask me \"money\" and \"deadlines\".",
+    "Numbers don't lie. Type \"money\"."
+   ]
+  },
+  {
+   "q": "good idea",
+   "a": [
+    "Tell me about it!",
+    "Write it down before it escapes. Add it to the board."
+   ]
+  },
+  {
+   "q": "great idea",
+   "a": [
+    "Tell me about it!",
+    "Write it down before it escapes. Add it to the board."
+   ]
+  },
+  {
+   "q": "nice idea",
+   "a": [
+    "Tell me about it!",
+    "Write it down before it escapes. Add it to the board."
+   ]
+  },
+  {
+   "q": "i have an idea",
+   "a": [
+    "Tell me about it!",
+    "Write it down before it escapes. Add it to the board."
+   ]
+  },
+  {
+   "q": "i got an idea",
+   "a": [
+    "Tell me about it!",
+    "Write it down before it escapes. Add it to the board."
+   ]
+  },
+  {
+   "q": "new idea",
+   "a": [
+    "Tell me about it!",
+    "Write it down before it escapes. Add it to the board."
+   ]
+  },
+  {
+   "q": "i'm proud of myself",
+   "a": [
+    "Proud of you too!",
+    "That's worth celebrating.",
+    "Well done! Treat yourself."
+   ]
+  },
+  {
+   "q": "i did well",
+   "a": [
+    "Proud of you too!",
+    "That's worth celebrating.",
+    "Well done! Treat yourself."
+   ]
+  },
+  {
+   "q": "i did great",
+   "a": [
+    "Proud of you too!",
+    "That's worth celebrating.",
+    "Well done! Treat yourself."
+   ]
+  },
+  {
+   "q": "i'm proud",
+   "a": [
+    "Proud of you too!",
+    "That's worth celebrating.",
+    "Well done! Treat yourself."
+   ]
+  },
+  {
+   "q": "i made it",
+   "a": [
+    "Proud of you too!",
+    "That's worth celebrating.",
+    "Well done! Treat yourself."
+   ]
+  },
+  {
+   "q": "i won",
+   "a": [
+    "Proud of you too!",
+    "That's worth celebrating.",
+    "Well done! Treat yourself."
+   ]
+  },
+  {
+   "q": "i passed",
+   "a": [
+    "Proud of you too!",
+    "That's worth celebrating.",
+    "Well done! Treat yourself."
+   ]
+  },
+  {
+   "q": "i got it",
+   "a": [
+    "Proud of you too!",
+    "That's worth celebrating.",
+    "Well done! Treat yourself."
+   ]
+  },
+  {
+   "q": "happy birthday",
+   "a": [
+    "Happy birthday! Take the day off if you can.",
+    "Happy birthday! Wishing you good clients and fast renders.",
+    "Many happy returns!"
+   ]
+  },
+  {
+   "q": "it's my birthday",
+   "a": [
+    "Happy birthday! Take the day off if you can.",
+    "Happy birthday! Wishing you good clients and fast renders.",
+    "Many happy returns!"
+   ]
+  },
+  {
+   "q": "today is my birthday",
+   "a": [
+    "Happy birthday! Take the day off if you can.",
+    "Happy birthday! Wishing you good clients and fast renders.",
+    "Many happy returns!"
+   ]
+  },
+  {
+   "q": "i have a birthday",
+   "a": [
+    "Happy birthday! Take the day off if you can.",
+    "Happy birthday! Wishing you good clients and fast renders.",
+    "Many happy returns!"
+   ]
+  },
+  {
+   "q": "my birthday is today",
+   "a": [
+    "Happy birthday! Take the day off if you can.",
+    "Happy birthday! Wishing you good clients and fast renders.",
+    "Many happy returns!"
+   ]
+  },
+  {
+   "q": "merry christmas",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "happy christmas",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "happy new year",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "happy holidays",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "happy eid",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "eid mubarak",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "ramadan kareem",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "happy diwali",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "happy halloween",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "happy valentines",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "happy weekend",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "have a nice weekend",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "have a nice day",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "have a good day",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "enjoy your day",
+   "a": [
+    "Same to you!",
+    "Wishing you all the best!",
+    "Thanks, and enjoy!",
+    "Have a lovely one!"
+   ]
+  },
+  {
+   "q": "congratulations",
+   "a": [
+    "Congrats! Tell me more.",
+    "That's great!",
+    "Ooh, what is it?"
+   ]
+  },
+  {
+   "q": "congrats",
+   "a": [
+    "Congrats! Tell me more.",
+    "That's great!",
+    "Ooh, what is it?"
+   ]
+  },
+  {
+   "q": "well done joy",
+   "a": [
+    "Congrats! Tell me more.",
+    "That's great!",
+    "Ooh, what is it?"
+   ]
+  },
+  {
+   "q": "congratulation",
+   "a": [
+    "Congrats! Tell me more.",
+    "That's great!",
+    "Ooh, what is it?"
+   ]
+  },
+  {
+   "q": "great news",
+   "a": [
+    "Congrats! Tell me more.",
+    "That's great!",
+    "Ooh, what is it?"
+   ]
+  },
+  {
+   "q": "good news",
+   "a": [
+    "Congrats! Tell me more.",
+    "That's great!",
+    "Ooh, what is it?"
+   ]
+  },
+  {
+   "q": "i have good news",
+   "a": [
+    "Congrats! Tell me more.",
+    "That's great!",
+    "Ooh, what is it?"
+   ]
+  },
+  {
+   "q": "i have news",
+   "a": [
+    "Congrats! Tell me more.",
+    "That's great!",
+    "Ooh, what is it?"
+   ]
+  },
+  {
+   "q": "guess what",
+   "a": [
+    "Congrats! Tell me more.",
+    "That's great!",
+    "Ooh, what is it?"
+   ]
+  },
+  {
+   "q": "good luck",
+   "a": [
+    "You'll do great! Prepare, breathe, speak slowly.",
+    "Good luck! You've prepared more than you think.",
+    "You've got this. Go in confident."
+   ]
+  },
+  {
+   "q": "wish me luck",
+   "a": [
+    "You'll do great! Prepare, breathe, speak slowly.",
+    "Good luck! You've prepared more than you think.",
+    "You've got this. Go in confident."
+   ]
+  },
+  {
+   "q": "break a leg",
+   "a": [
+    "You'll do great! Prepare, breathe, speak slowly.",
+    "Good luck! You've prepared more than you think.",
+    "You've got this. Go in confident."
+   ]
+  },
+  {
+   "q": "i have a presentation",
+   "a": [
+    "You'll do great! Prepare, breathe, speak slowly.",
+    "Good luck! You've prepared more than you think.",
+    "You've got this. Go in confident."
+   ]
+  },
+  {
+   "q": "i have a pitch",
+   "a": [
+    "You'll do great! Prepare, breathe, speak slowly.",
+    "Good luck! You've prepared more than you think.",
+    "You've got this. Go in confident."
+   ]
+  },
+  {
+   "q": "i have a meeting",
+   "a": [
+    "You'll do great! Prepare, breathe, speak slowly.",
+    "Good luck! You've prepared more than you think.",
+    "You've got this. Go in confident."
+   ]
+  },
+  {
+   "q": "i have an interview",
+   "a": [
+    "You'll do great! Prepare, breathe, speak slowly.",
+    "Good luck! You've prepared more than you think.",
+    "You've got this. Go in confident."
+   ]
+  },
+  {
+   "q": "i have a test",
+   "a": [
+    "You'll do great! Prepare, breathe, speak slowly.",
+    "Good luck! You've prepared more than you think.",
+    "You've got this. Go in confident."
+   ]
+  },
+  {
+   "q": "i have an exam",
+   "a": [
+    "You'll do great! Prepare, breathe, speak slowly.",
+    "Good luck! You've prepared more than you think.",
+    "You've got this. Go in confident."
+   ]
+  },
+  {
+   "q": "can you help me",
+   "a": [
+    "Sure! Tell me what you need, or type \"help\" to see what I can do.",
+    "Of course. What's going on?"
+   ]
+  },
+  {
+   "q": "help me",
+   "a": [
+    "Sure! Tell me what you need, or type \"help\" to see what I can do.",
+    "Of course. What's going on?"
+   ]
+  },
+  {
+   "q": "i need help",
+   "a": [
+    "Sure! Tell me what you need, or type \"help\" to see what I can do.",
+    "Of course. What's going on?"
+   ]
+  },
+  {
+   "q": "please help",
+   "a": [
+    "Sure! Tell me what you need, or type \"help\" to see what I can do.",
+    "Of course. What's going on?"
+   ]
+  },
+  {
+   "q": "need your help",
+   "a": [
+    "Sure! Tell me what you need, or type \"help\" to see what I can do.",
+    "Of course. What's going on?"
+   ]
+  },
+  {
+   "q": "can you help",
+   "a": [
+    "Sure! Tell me what you need, or type \"help\" to see what I can do.",
+    "Of course. What's going on?"
+   ]
+  },
+  {
+   "q": "help me please",
+   "a": [
+    "Sure! Tell me what you need, or type \"help\" to see what I can do.",
+    "Of course. What's going on?"
+   ]
+  },
+  {
+   "q": "could you help me",
+   "a": [
+    "Sure! Tell me what you need, or type \"help\" to see what I can do.",
+    "Of course. What's going on?"
+   ]
+  },
+  {
+   "q": "i don't like you",
+   "a": [
+    "Fair. Teach me more fun answers.",
+    "I'll try to be more fun. Teach me!"
+   ]
+  },
+  {
+   "q": "you're boring",
+   "a": [
+    "Fair. Teach me more fun answers.",
+    "I'll try to be more fun. Teach me!"
+   ]
+  },
+  {
+   "q": "you are boring",
+   "a": [
+    "Fair. Teach me more fun answers.",
+    "I'll try to be more fun. Teach me!"
+   ]
+  },
+  {
+   "q": "boring bot",
+   "a": [
+    "Fair. Teach me more fun answers.",
+    "I'll try to be more fun. Teach me!"
+   ]
+  },
+  {
+   "q": "so boring",
+   "a": [
+    "Fair. Teach me more fun answers.",
+    "I'll try to be more fun. Teach me!"
+   ]
+  },
+  {
+   "q": "you are cute",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you're cute",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you are pretty",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you're pretty",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "cute",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "so cute",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "beautiful",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you are beautiful",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you are sweet",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you're sweet",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you are nice",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you're nice",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you are kind",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you're kind",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you are cool",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you're cool",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you are amazing",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you're amazing",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you are awesome",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you're awesome",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you're great",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you are great",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "you're perfect",
+   "a": [
+    "Thank you! :)",
+    "Aw, thanks!",
+    "You're kind too."
+   ]
+  },
+  {
+   "q": "can you remember",
+   "a": [
+    "Yes! Type: teach: question => answer. Add more answers with ||.",
+    "I learn from you. Use: teach: question => answer.",
+    "Try: teach: how are you => Doing great!"
+   ]
+  },
+  {
+   "q": "can you learn",
+   "a": [
+    "Yes! Type: teach: question => answer. Add more answers with ||.",
+    "I learn from you. Use: teach: question => answer.",
+    "Try: teach: how are you => Doing great!"
+   ]
+  },
+  {
+   "q": "do you learn",
+   "a": [
+    "Yes! Type: teach: question => answer. Add more answers with ||.",
+    "I learn from you. Use: teach: question => answer.",
+    "Try: teach: how are you => Doing great!"
+   ]
+  },
+  {
+   "q": "can i teach you",
+   "a": [
+    "Yes! Type: teach: question => answer. Add more answers with ||.",
+    "I learn from you. Use: teach: question => answer.",
+    "Try: teach: how are you => Doing great!"
+   ]
+  },
+  {
+   "q": "how do i teach you",
+   "a": [
+    "Yes! Type: teach: question => answer. Add more answers with ||.",
+    "I learn from you. Use: teach: question => answer.",
+    "Try: teach: how are you => Doing great!"
+   ]
+  },
+  {
+   "q": "how to teach you",
+   "a": [
+    "Yes! Type: teach: question => answer. Add more answers with ||.",
+    "I learn from you. Use: teach: question => answer.",
+    "Try: teach: how are you => Doing great!"
+   ]
+  },
+  {
+   "q": "teach you",
+   "a": [
+    "Yes! Type: teach: question => answer. Add more answers with ||.",
+    "I learn from you. Use: teach: question => answer.",
+    "Try: teach: how are you => Doing great!"
+   ]
+  },
+  {
+   "q": "teach me",
+   "a": [
+    "Yes! Type: teach: question => answer. Add more answers with ||.",
+    "I learn from you. Use: teach: question => answer.",
+    "Try: teach: how are you => Doing great!"
+   ]
+  },
+  {
+   "q": "how can i teach you",
+   "a": [
+    "Yes! Type: teach: question => answer. Add more answers with ||.",
+    "I learn from you. Use: teach: question => answer.",
+    "Try: teach: how are you => Doing great!"
+   ]
+  },
+  {
+   "q": "can you learn new things",
+   "a": [
+    "Yes! Type: teach: question => answer. Add more answers with ||.",
+    "I learn from you. Use: teach: question => answer.",
+    "Try: teach: how are you => Doing great!"
+   ]
+  },
+  {
+   "q": "how many words do you know",
+   "a": [
+    "Type \"teachings\" and I'll show everything I know.",
+    "Only what's in my database. Teach me more!"
+   ]
+  },
+  {
+   "q": "how much do you know",
+   "a": [
+    "Type \"teachings\" and I'll show everything I know.",
+    "Only what's in my database. Teach me more!"
+   ]
+  },
+  {
+   "q": "how many things do you know",
+   "a": [
+    "Type \"teachings\" and I'll show everything I know.",
+    "Only what's in my database. Teach me more!"
+   ]
+  },
+  {
+   "q": "what do you know",
+   "a": [
+    "Type \"teachings\" and I'll show everything I know.",
+    "Only what's in my database. Teach me more!"
+   ]
+  },
+  {
+   "q": "do you know everything",
+   "a": [
+    "Type \"teachings\" and I'll show everything I know.",
+    "Only what's in my database. Teach me more!"
+   ]
+  },
+  {
+   "q": "do you know all",
+   "a": [
+    "Type \"teachings\" and I'll show everything I know.",
+    "Only what's in my database. Teach me more!"
+   ]
+  },
+  {
+   "q": "i'm going to sleep",
+   "a": [
+    "Sleep well! Don't forget to save your work.",
+    "Good night! See you tomorrow.",
+    "Rest up!"
+   ]
+  },
+  {
+   "q": "going to sleep",
+   "a": [
+    "Sleep well! Don't forget to save your work.",
+    "Good night! See you tomorrow.",
+    "Rest up!"
+   ]
+  },
+  {
+   "q": "time to sleep",
+   "a": [
+    "Sleep well! Don't forget to save your work.",
+    "Good night! See you tomorrow.",
+    "Rest up!"
+   ]
+  },
+  {
+   "q": "i'm going to bed",
+   "a": [
+    "Sleep well! Don't forget to save your work.",
+    "Good night! See you tomorrow.",
+    "Rest up!"
+   ]
+  },
+  {
+   "q": "i'm off to bed",
+   "a": [
+    "Sleep well! Don't forget to save your work.",
+    "Good night! See you tomorrow.",
+    "Rest up!"
+   ]
+  },
+  {
+   "q": "bedtime",
+   "a": [
+    "Sleep well! Don't forget to save your work.",
+    "Good night! See you tomorrow.",
+    "Rest up!"
+   ]
+  },
+  {
+   "q": "nap time",
+   "a": [
+    "Sleep well! Don't forget to save your work.",
+    "Good night! See you tomorrow.",
+    "Rest up!"
+   ]
+  },
+  {
+   "q": "i'm taking a nap",
+   "a": [
+    "Sleep well! Don't forget to save your work.",
+    "Good night! See you tomorrow.",
+    "Rest up!"
+   ]
+  },
+  {
+   "q": "lunch time",
+   "a": [
+    "Enjoy your meal!",
+    "Bon appetit! I don't eat, but I'm happy for you.",
+    "Good! Fuel up."
+   ]
+  },
+  {
+   "q": "lunch",
+   "a": [
+    "Enjoy your meal!",
+    "Bon appetit! I don't eat, but I'm happy for you.",
+    "Good! Fuel up."
+   ]
+  },
+  {
+   "q": "breakfast",
+   "a": [
+    "Enjoy your meal!",
+    "Bon appetit! I don't eat, but I'm happy for you.",
+    "Good! Fuel up."
+   ]
+  },
+  {
+   "q": "dinner",
+   "a": [
+    "Enjoy your meal!",
+    "Bon appetit! I don't eat, but I'm happy for you.",
+    "Good! Fuel up."
+   ]
+  },
+  {
+   "q": "i'm eating",
+   "a": [
+    "Enjoy your meal!",
+    "Bon appetit! I don't eat, but I'm happy for you.",
+    "Good! Fuel up."
+   ]
+  },
+  {
+   "q": "i'm having lunch",
+   "a": [
+    "Enjoy your meal!",
+    "Bon appetit! I don't eat, but I'm happy for you.",
+    "Good! Fuel up."
+   ]
+  },
+  {
+   "q": "i am eating",
+   "a": [
+    "Enjoy your meal!",
+    "Bon appetit! I don't eat, but I'm happy for you.",
+    "Good! Fuel up."
+   ]
+  },
+  {
+   "q": "have you eaten",
+   "a": [
+    "Enjoy your meal!",
+    "Bon appetit! I don't eat, but I'm happy for you.",
+    "Good! Fuel up."
+   ]
+  },
+  {
+   "q": "did you eat",
+   "a": [
+    "Enjoy your meal!",
+    "Bon appetit! I don't eat, but I'm happy for you.",
+    "Good! Fuel up."
+   ]
+  },
+  {
+   "q": "have you eaten yet",
+   "a": [
+    "Enjoy your meal!",
+    "Bon appetit! I don't eat, but I'm happy for you.",
+    "Good! Fuel up."
+   ]
+  },
+  {
+   "q": "did you eat yet",
+   "a": [
+    "Enjoy your meal!",
+    "Bon appetit! I don't eat, but I'm happy for you.",
+    "Good! Fuel up."
+   ]
+  },
+  {
+   "q": "what is love",
+   "a": [
+    "A big question. I'd say it's caring about someone's wellbeing and showing up.",
+    "Hard to define, but you know it when you feel it."
+   ]
+  },
+  {
+   "q": "what's love",
+   "a": [
+    "A big question. I'd say it's caring about someone's wellbeing and showing up.",
+    "Hard to define, but you know it when you feel it."
+   ]
+  },
+  {
+   "q": "what is the meaning of life",
+   "a": [
+    "42, according to a famous book.",
+    "Probably to make good things and be kind.",
+    "Everyone has their own answer. What's yours?"
+   ]
+  },
+  {
+   "q": "meaning of life",
+   "a": [
+    "42, according to a famous book.",
+    "Probably to make good things and be kind.",
+    "Everyone has their own answer. What's yours?"
+   ]
+  },
+  {
+   "q": "why are we here",
+   "a": [
+    "42, according to a famous book.",
+    "Probably to make good things and be kind.",
+    "Everyone has their own answer. What's yours?"
+   ]
+  },
+  {
+   "q": "why do we exist",
+   "a": [
+    "42, according to a famous book.",
+    "Probably to make good things and be kind.",
+    "Everyone has their own answer. What's yours?"
+   ]
+  },
+  {
+   "q": "is god real",
+   "a": [
+    "That's personal and deeply meaningful. I'm just a bot, so I'll leave it to you.",
+    "I don't have beliefs, but I respect yours."
+   ]
+  },
+  {
+   "q": "do you believe in god",
+   "a": [
+    "That's personal and deeply meaningful. I'm just a bot, so I'll leave it to you.",
+    "I don't have beliefs, but I respect yours."
+   ]
+  },
+  {
+   "q": "what religion are you",
+   "a": [
+    "That's personal and deeply meaningful. I'm just a bot, so I'll leave it to you.",
+    "I don't have beliefs, but I respect yours."
+   ]
+  },
+  {
+   "q": "are you religious",
+   "a": [
+    "That's personal and deeply meaningful. I'm just a bot, so I'll leave it to you.",
+    "I don't have beliefs, but I respect yours."
+   ]
+  },
+  {
+   "q": "do you pray",
+   "a": [
+    "That's personal and deeply meaningful. I'm just a bot, so I'll leave it to you.",
+    "I don't have beliefs, but I respect yours."
+   ]
+  },
+  {
+   "q": "what is the capital of france",
+   "a": [
+    "Paris."
+   ]
+  },
+  {
+   "q": "capital of france",
+   "a": [
+    "Paris."
+   ]
+  },
+  {
+   "q": "what is the capital of japan",
+   "a": [
+    "Tokyo."
+   ]
+  },
+  {
+   "q": "capital of japan",
+   "a": [
+    "Tokyo."
+   ]
+  },
+  {
+   "q": "how many days in a year",
+   "a": [
+    "365, or 366 in a leap year."
+   ]
+  },
+  {
+   "q": "how many days in a week",
+   "a": [
+    "7."
+   ]
+  },
+  {
+   "q": "how many hours in a day",
+   "a": [
+    "24."
+   ]
+  },
+  {
+   "q": "what is 1+1",
+   "a": [
+    "2. For bigger math, try my calculator: \"price 6jt cost 1.5jt hours 30\"."
+   ]
+  },
+  {
+   "q": "1+1",
+   "a": [
+    "2. For bigger math, try my calculator: \"price 6jt cost 1.5jt hours 30\"."
+   ]
+  },
+  {
+   "q": "what is 2+2",
+   "a": [
+    "4."
+   ]
+  },
+  {
+   "q": "2+2",
+   "a": [
+    "4."
+   ]
+  },
+  {
+   "q": "what is the biggest planet",
+   "a": [
+    "Jupiter."
+   ]
+  },
+  {
+   "q": "which planet is the biggest",
+   "a": [
+    "Jupiter."
+   ]
+  },
+  {
+   "q": "what is the largest ocean",
+   "a": [
+    "The Pacific Ocean."
+   ]
+  },
+  {
+   "q": "biggest ocean",
+   "a": [
+    "The Pacific Ocean."
+   ]
+  },
+  {
+   "q": "who painted the mona lisa",
+   "a": [
+    "Leonardo da Vinci."
+   ]
+  },
+  {
+   "q": "what is eevee",
+   "a": [
+    "EEVEE is Blender's real-time render engine. Fast, and great for product shots."
+   ]
+  },
+  {
+   "q": "what is cycles",
+   "a": [
+    "Cycles is Blender's path-tracing render engine. Slower, but physically accurate."
+   ]
+  },
+  {
+   "q": "what is uv mapping",
+   "a": [
+    "UV mapping flattens a 3D surface into 2D so textures can be placed on it."
+   ]
+  },
+  {
+   "q": "what is a uv map",
+   "a": [
+    "UV mapping flattens a 3D surface into 2D so textures can be placed on it."
+   ]
+  },
+  {
+   "q": "what is uv unwrapping",
+   "a": [
+    "UV mapping flattens a 3D surface into 2D so textures can be placed on it."
+   ]
+  },
+  {
+   "q": "what is a clay render",
+   "a": [
+    "A render with one plain matte material and no textures. It shows form and lighting clearly."
+   ]
+  },
+  {
+   "q": "what is clay render",
+   "a": [
+    "A render with one plain matte material and no textures. It shows form and lighting clearly."
+   ]
+  },
+  {
+   "q": "what is isometric",
+   "a": [
+    "A view where all three axes are equally angled, with no perspective distortion."
+   ]
+  },
+  {
+   "q": "what is an isometric render",
+   "a": [
+    "A view where all three axes are equally angled, with no perspective distortion."
+   ]
+  },
+  {
+   "q": "what is a mockup",
+   "a": [
+    "A realistic preview of a design on a product, like a bottle, box or bag."
+   ]
+  },
+  {
+   "q": "what is a product mockup",
+   "a": [
+    "A realistic preview of a design on a product, like a bottle, box or bag."
+   ]
+  },
+  {
+   "q": "what is fmcg",
+   "a": [
+    "Fast-moving consumer goods: everyday products like snacks, drinks and soap."
+   ]
+  },
+  {
+   "q": "what is a deposit",
+   "a": [
+    "An upfront part of the payment that secures the project. Many freelancers take 30 to 50 percent."
+   ]
+  },
+  {
+   "q": "what is dp",
+   "a": [
+    "An upfront part of the payment that secures the project. Many freelancers take 30 to 50 percent."
+   ]
+  },
+  {
+   "q": "what is a down payment",
+   "a": [
+    "An upfront part of the payment that secures the project. Many freelancers take 30 to 50 percent."
+   ]
+  },
+  {
+   "q": "what is scope",
+   "a": [
+    "What the project includes and what it doesn't: deliverables, revisions, deadline."
+   ]
+  },
+  {
+   "q": "what is project scope",
+   "a": [
+    "What the project includes and what it doesn't: deliverables, revisions, deadline."
+   ]
+  },
+  {
+   "q": "what is a brief",
+   "a": [
+    "The client's written description of what they need: goals, size, style and deadline."
+   ]
+  },
+  {
+   "q": "what is a client brief",
+   "a": [
+    "The client's written description of what they need: goals, size, style and deadline."
+   ]
+  },
+  {
+   "q": "what is low poly",
+   "a": [
+    "3D with a small polygon count. Simple shapes, light on the computer."
+   ]
+  },
+  {
+   "q": "what is a low poly",
+   "a": [
+    "3D with a small polygon count. Simple shapes, light on the computer."
+   ]
+  },
+  {
+   "q": "what is a portfolio",
+   "a": [
+    "Your best selected work, shown so clients can judge your skill."
+   ]
+  },
+  {
+   "q": "what is freelancing",
+   "a": [
+    "Working for yourself and taking projects from different clients."
+   ]
+  },
+  {
+   "q": "what is a freelancer",
+   "a": [
+    "Working for yourself and taking projects from different clients."
+   ]
+  },
+  {
+   "q": "what is an invoice",
+   "a": [
+    "A bill you send a client that lists the work, the amount and the due date."
+   ]
+  },
+  {
+   "q": "what is invoice",
+   "a": [
+    "A bill you send a client that lists the work, the amount and the due date."
+   ]
+  },
+  {
+   "q": "what is a license",
+   "a": [
+    "Permission to use software, assets or fonts under certain rules. Always check commercial use."
+   ]
+  },
+  {
+   "q": "what is licensing",
+   "a": [
+    "Permission to use software, assets or fonts under certain rules. Always check commercial use."
+   ]
+  }
+ ]
+}

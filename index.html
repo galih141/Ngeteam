@@ -499,7 +499,7 @@ const roleById = id => ROLES.find(r => r.id === id);
 /* ---------- state ---------- */
 function blank() {
   return {
-    division: 'all', view: 'overview', sample: false, people: [{ id: 'p_dim', name: 'Dim', note: '' }, { id: 'p_ken', name: 'Ken', note: '' }],
+    division: 'all', view: 'overview', sample: false, joyDb: null, joyLearn: '', joyDbFile: 0, people: [{ id: 'p_dim', name: 'Dim', note: '' }, { id: 'p_ken', name: 'Ken', note: '' }],
     brain: { goals: '', brand: '', open: '' },
     tasks: [], money: [], decisions: [],
     steps: defaultSteps(), threads: {},
@@ -1631,6 +1631,7 @@ const JOY = (() => {
       '- "guide revisions", "guide late payment"',
       '- "template decline", "template payment reminder"',
       '- any word, and I search everything: "halloween", "client a"',
+      '- chat with me: I answer from a database you can teach: "teach: question => answer", "teachings", "forget 3"',
       'Add "agency", "creative" or "both" to choose a division.']);
   }
   const MONEYW = /\b(money|invoice|income|expenses?|payment|paid|owe|owes|owed|profit|revenue|payout|cash|earn(?:ed|ings)?|received|balance|cuts?)\b/i;
@@ -1666,7 +1667,7 @@ const JOY = (() => {
     if (/\b(deadlines?|due|overdue|late|today|tomorrow|this week|next week|upcoming|behind|urgent|terlambat|jatuh tempo)\b/.test(t)) return 'deadlines';
     if (/\b(tasks?|board|status|progress|review|in progress|todo|to do|backlog|approved|proposed|completed|who has|owns)\b/.test(t)) return 'tasks';
     if (/\b(decisions?|decided|revisit|why did we)\b/.test(t)) return 'decisions';
-    if (typeof ROLES !== 'undefined' && ROLES.some(r => new RegExp('\\b' + r.name + '\\b', 'i').test(text))) return 'tasks';
+    if (typeof ROLES !== 'undefined' && ROLES.some(r => r.id !== 'joy' && new RegExp('\\b' + r.name + '\\b', 'i').test(text))) return 'tasks';
     if (/\b(brain|goals?|brand|open questions?|budget|studio style)\b/.test(t)) return 'brain';
     return 'find';
   }
@@ -2050,11 +2051,124 @@ async function runQueue(key, msgId) {
     }
   } finally { running[key] = false; queued[key].clear(); }
 }
+/* ---------- Joy's teachable database (SimSimi style, works offline) ---------- */
+const JOYDB = (() => {
+  const TH = 0.6, MAXN = 5000;
+  const SEED = [
+    ['hi|hello|hey|halo|hai', ['Hi! I am Joy. Ask me about your tasks, money or deadlines, or type "help".', 'Hello! Type "help" to see what I can do.']],
+    ['how are you|apa kabar|gimana kabarmu', ['I am fine and I never run out of quota.', 'Doing good! What are we working on?']],
+    ['who are you|siapa kamu', ['I am Joy. I work offline, track your board and money, and learn what you teach me.']],
+    ['thanks|thank you|makasih|terima kasih', ['Anytime!', 'You are welcome.', 'Sama-sama!']],
+    ['good morning|selamat pagi', ['Good morning! Want to see the deadlines?']],
+    ['good night|selamat malam', ['Good night! Rest well.']]
+  ];
+  const norm = s => { const t = String(s || '').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim(); const u = t.replace(/\b(joy|dong|deh|sih|nih|tuh|lah|kok|ya|yah)\b/g, ' ').replace(/\s+/g, ' ').trim(); return u || t; };
+  const sq = s => s.replace(/(.)\1+/g, '$1');
+  const bg = s => { const p = ' ' + s + ' ', o = new Set(); for (let i = 0; i < p.length - 1; i++) o.add(p.slice(i, i + 2)); return o; };
+  function sim(a, b) {
+    if (a === b) return 1;
+    if (sq(a) === sq(b)) return 0.95;
+    if (Math.min(a.length, b.length) < 4) return 0;
+    const A = bg(a), B = bg(b); let n = 0; A.forEach(x => { if (B.has(x)) n++; });
+    const dice = 2 * n / (A.size + B.size);
+    const ta = new Set(a.split(' ')), tb = new Set(b.split(' ')); let k = 0; ta.forEach(x => { if (tb.has(x)) k++; });
+    const jac = k / (ta.size + tb.size - k);
+    const sh = a.length < b.length ? a : b, lo = a.length < b.length ? b : a;
+    const cont = sh.split(' ').length >= 2 && (' ' + lo + ' ').includes(' ' + sh + ' ') ? 0.8 : 0;
+    return Math.max(dice, jac * 0.9, cont);
+  }
+  function ensure(st) {
+    if (!Array.isArray(st.joyDb)) { st.joyDb = []; SEED.forEach(([qs, a]) => qs.split('|').forEach(q => st.joyDb.push({ id: uid(), q, n: norm(q), a: a.slice(), hits: 0, seed: true }))); }
+  }
+  function addEntry(st, q, answers) {
+    ensure(st); const n = norm(q); answers = answers.map(x => String(x).trim().slice(0, 600)).filter(Boolean);
+    if (!n || !answers.length) return null;
+    let e = st.joyDb.find(x => x.n === n);
+    if (e) { answers.forEach(x => { if (!e.a.includes(x)) e.a.push(x); }); e.seed = false; return e; }
+    if (st.joyDb.length >= MAXN) st.joyDb.shift();
+    e = { id: uid(), q: String(q).trim().slice(0, 200), n, a: answers, hits: 0 }; st.joyDb.push(e); return e;
+  }
+  function match(st, nq) {
+    let bs = 0; const sc = st.joyDb.map(e => { const s = sim(nq, e.n || norm(e.q)); if (s > bs) bs = s; return s; });
+    if (bs < TH) return null;
+    const best = st.joyDb.filter((e, i) => sc[i] >= bs - 0.03);
+    return { e: best[Math.floor(Math.random() * best.length)], score: bs };
+  }
+  function pick(e) {
+    let i = Math.floor(Math.random() * e.a.length); if (e.a.length > 1 && i === e.last) i = (i + 1) % e.a.length;
+    e.last = i; e.hits = (e.hits || 0) + 1; return e.a[i];
+  }
+  function list(st) {
+    ensure(st); const L = st.joyDb.slice(0, 40).map((e, i) => `${i + 1}. ${e.q} -> ${e.a.join(' / ').slice(0, 90)}${e.hits ? ' (used ' + e.hits + 'x)' : ''}`);
+    return `I know ${st.joyDb.length} things.\n` + L.join('\n') + (st.joyDb.length > 40 ? `\n...and ${st.joyDb.length - 40} more (Export shows all).` : '') + '\nRemove one with: forget 3';
+  }
+  function handle(st, text, skill, ctx) {
+    if (skill) return null;
+    const raw = String(text || '').trim(); if (!raw) return null;
+    if (ctx && /^(chk|pq):/.test(ctx.lastKind || '')) return null;
+    ensure(st); let m;
+    const out = (t, via) => ({ text: t, kind: '', via });
+    if ((m = raw.match(/^(?:teach|ajari|ajar|learn)\b\s*:?\s*([\s\S]+?)\s*(?:=>|->|\|\||=)\s*([\s\S]+)$/i))) {
+      st.joyLearn = ''; const e = addEntry(st, m[1], m[2].split('||'));
+      return e ? out(`Learned! When you write "${e.q}" I will say "${e.a[e.a.length - 1]}". I now know ${st.joyDb.length} things.`) : out('Write it like: teach: question => answer');
+    }
+    if (/^(?:teach|ajari|ajar)\s*:?\s*$/i.test(raw)) return out('Write it like: teach: question => answer\nSeveral answers: teach: hi => Hello! || Hey there!');
+    if ((m = raw.match(/^(?:forget|lupa|hapus)\s+(\d+)$/i))) {
+      const i = Number(m[1]) - 1; if (!st.joyDb[i]) return out('There is no number ' + m[1] + '. Type "teachings" to see the list.');
+      const g = st.joyDb.splice(i, 1)[0]; return out(`Forgotten: "${g.q}".`);
+    }
+    if (/^(?:teachings|list teachings|what did i teach you|ajaran|database)$/i.test(raw)) return out(list(st));
+    if (st.joyLearn) {
+      const r0 = JOY.route(raw, '');
+      if (/^(skip|cancel|batal|no|nope|stop)$/i.test(raw)) { st.joyLearn = ''; return out('Okay, skipped.'); }
+      if ((r0 === 'find' || r0 === 'help') || raw.split(/\s+/).length > 5) {
+        const q = st.joyLearn; st.joyLearn = ''; const e = addEntry(st, q, raw.split('||'));
+        return e ? out(`Got it! Next time you write "${e.q}" I will say "${e.a[e.a.length - 1]}".`) : null;
+      }
+      st.joyLearn = '';
+    }
+    if (/^help$/i.test(raw)) return null;
+    const nq = norm(raw), mm = match(st, nq), r = JOY.route(raw, '');
+    const KEEP = ['set', 'reset', 'data', 'pricing', 'packages', 'costs'];
+    if (mm && !KEEP.includes(r) && (mm.score >= 0.9 || r === 'find' || r === 'help')) return out(pick(mm.e), 'Joy, from her database');
+    return null;
+  }
+  function fallback(st, text, skill, r) {
+    if (skill || !r || !/^Nothing in your tasks/.test(r.text)) return r;
+    const raw = String(text || '').trim(); if (JOY.route(raw, '') !== 'find') return r;
+    st.joyLearn = raw;
+    return { text: `I do not know that yet. What should I say when you write "${raw.slice(0, 80)}"?\nJust reply with the answer (use || between several answers), or reply "skip".`, kind: '', via: 'Joy, learning' };
+  }
+  function merge(st, arr) {
+    ensure(st); let n = 0;
+    (arr || []).forEach(e => {
+      if (!e || !e.q || !e.a) return;
+      const ans = [].concat(e.a).map(x => String(x).trim().slice(0, 600)).filter(Boolean), k = norm(e.q); if (!k || !ans.length) return;
+      const ex = st.joyDb.find(x => x.n === k);
+      if (ex) { if (ex.seed) { ex.a = ans; ex.seed = false; n++; } else { const b = ex.a.length; ans.forEach(x => { if (!ex.a.includes(x)) ex.a.push(x); }); if (ex.a.length > b) n++; } }
+      else if (st.joyDb.length < MAXN) { st.joyDb.push({ id: uid(), q: String(e.q).trim().slice(0, 200), n: k, a: ans, hits: 0 }); n++; }
+    });
+    return n;
+  }
+  function autoload() {
+    try {
+      fetch('joy-database-en.json', { cache: 'no-store' }).then(r => (r.ok ? r.json() : null)).then(o => {
+        if (!o || !Array.isArray(o.joyDb)) return; const v = o.version || 1; if ((state.joyDbFile || 0) >= v) return;
+        merge(state, o.joyDb); state.joyDbFile = v; save();
+      }).catch(() => {});
+    } catch (e) { /* ignore */ }
+  }
+  return { handle, fallback, addEntry, ensure, list, merge, autoload };
+})();
+JOYDB.autoload();
+
 /* Joy answers instantly from the page itself: no key, no request, no quota */
 function joyAnswer(th, msg) {
   const before = th.msgs[th.msgs.length - 2];
-  const r = JOY.reply(state, msg.text, msg.skill, { lastKind: before && before.from === 'joy' ? before.joyKind : '' });
-  th.msgs.push({ id: uid(), from: 'joy', to: 'me', t: Date.now(), text: r.text, via: 'Joy, no AI', joyKind: r.kind || '' });
+  const ctx = { lastKind: before && before.from === 'joy' ? before.joyKind : '' };
+  let r = JOYDB.handle(state, msg.text, msg.skill, ctx);
+  if (!r) { r = JOY.reply(state, msg.text, msg.skill, ctx); r = JOYDB.fallback(state, msg.text, msg.skill, r); }
+  th.msgs.push({ id: uid(), from: 'joy', to: 'me', t: Date.now(), text: r.text, via: r.via || 'Joy, no AI', joyKind: r.kind || '' });
 }
 function sendMessage(text) {
   text = (text || '').trim(); if (!text && !atts.length) { toast('Write a message first.'); return; } if (!text) text = 'See the attached file.';
@@ -2143,7 +2257,7 @@ function viewRefresh(key) {
   else { const cl = $('.clist'); if (cl) cl.innerHTML = clistInner(); }
   renderTree();
 }
-const JOY_ASKS = [['Pricing', 'pricing'], ['Price list', 'price list'], ['My costs', 'my costs'], ['Deadlines', 'deadlines'], ['Tasks', 'tasks'], ['Money', 'money'], ['Decisions', 'decisions'], ['Calculator', 'calculator'], ['Go / No-Go', 'go no-go checklist'], ['Delivery check', 'delivery checklist'], ['Guides', 'guide'], ['Templates', 'template'], ['Help', 'help'], ['Export data', '@export'], ['Import data', '@import']];
+const JOY_ASKS = [['Pricing', 'pricing'], ['Price list', 'price list'], ['My costs', 'my costs'], ['Deadlines', 'deadlines'], ['Tasks', 'tasks'], ['Money', 'money'], ['Decisions', 'decisions'], ['Calculator', 'calculator'], ['Go / No-Go', 'go no-go checklist'], ['Delivery check', 'delivery checklist'], ['Guides', 'guide'], ['Templates', 'template'], ['Help', 'help'], ['Export data', '@export'], ['Import data', '@import'], ['Teach her', '@teach'], ['Export chat DB', '@dbexport'], ['Import chat DB', '@dbimport']];
 function threadHtml() {
   const d = chatDiv(), th = getThread(), ms = chatMembers(), dm = isDM(), to = curTo(), skill = curSkill(), c = state.chat;
   const steps = stepsFor(d), idx = dm ? -1 : steps.findIndex(x => 'step:' + x.id === curSel());
@@ -2635,6 +2749,17 @@ Object.assign(act, {
   'att-pick'() { $('#cFile').click(); },
   'joy-ask'(el) {
     const q = el.dataset.q;
+    if (q === '@teach') { const t = $('#cText'); if (t) { t.value = 'teach: question => answer'; t.focus(); t.setSelectionRange(7, 15); drafts['c:' + threadKey()] = t.value; } return; }
+    if (q === '@dbexport') {
+      JOYDB.ensure(state); const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: 1, joyDb: state.joyDb.map(e => ({ q: e.q, a: e.a })) }, null, 1)], { type: 'application/json' }));
+      a.download = 'joy-database-en.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast('Chat database downloaded'); return;
+    }
+    if (q === '@dbimport') {
+      const i = document.createElement('input'); i.type = 'file'; i.accept = '.json,application/json';
+      i.onchange = () => { const f = i.files && i.files[0]; if (!f) return; f.text().then(t => { let o; try { o = JSON.parse(t); } catch (e) { toast('That file is not valid JSON.'); return; } const arr = Array.isArray(o) ? o : o.joyDb; if (!Array.isArray(arr)) { toast('That is not a Joy chat database.'); return; } const n = JOYDB.merge(state, arr); save(); render(); toast(`Imported ${n} entries.`); }); };
+      i.click(); return;
+    }
     if (q === '@export') {
       const blob = new Blob([JSON.stringify(JOY.exportData(state), null, 2)], { type: 'application/json' }), a = document.createElement('a');
       a.href = URL.createObjectURL(blob); a.download = 'joy-data.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);

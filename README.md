@@ -8,6 +8,7 @@ A one-person studio dashboard for a 3D business with two divisions: **3D Agency*
 |---|---|
 | `index.html` | The whole app |
 | `joy-data.json` | Joy's costs, settings and price list. Edit it freely |
+| `joy-database-en.json` | Joy's chat database: questions and answers she knows. Edit it freely |
 | `assets/` | Optional role pictures, named `mira.png`, `rico.png`, `dewi.png`, `sasha.png`, `bima.png`, `nadia.png`, `arga.png`, `joy.png` (`.webp`, `.jpg` and `.jpeg` also work) |
 
 ## The tabs
@@ -70,6 +71,8 @@ Joy reads your Board, Money, Decisions and Studio brain, plus her own data in `j
 | `checklist`, `delivery checklist`, `intake checklist`, `launch checklist`, `scope checklist` | Questions to answer with y or n, then a score and what to fix |
 | `guide revisions`, `guide late payment`, `guide pricing` | Step by step playbooks |
 | `template decline`, `template payment reminder` | A message with `[brackets]` to fill in |
+| `hi`, `i am tired`, `tell me a joke` | A chat answer from her database (below) |
+| `teach: question => answer`, `teachings`, `forget 3` | Teach Joy a new answer, list what she knows, or remove one |
 | any other word, such as `halloween` | A search across tasks, money, decisions, costs, brain and chats |
 
 Numbers can be written `6jt`, `6.000.000`, `500k`, `7.5M` or `Rp 1,500,000`. Add `agency`, `creative` or `both` to choose a division. For a checklist, answer in one line, for example `y n y y n y y y`.
@@ -113,6 +116,18 @@ Quick changes without editing the file:
 
 The prices in the file are starting points from a web check and your own costs. The 3D modelling prices are estimates with no market data behind them.
 
+## Joy's chat database
+
+Joy can chat without an AI. Her answers come from a list of questions and answers saved in your browser. She matches what you write even with typos or small wording changes. Her tracker commands (`pricing`, `set cost`, `price list`, `my costs`) always run first.
+
+- **Teach her:** `teach: how much is a logo => 25 dollars || around 400k`. Use `||` for several answers; she picks one at random.
+- **When she does not know:** she asks what she should say. Reply with the answer, or `skip`.
+- **See and remove:** `teachings` lists everything. `forget 3` removes number 3.
+- **Hosted:** keep `joy-database-en.json` next to `index.html`. The page loads it once and saves it in your browser.
+- **Opened as a local file:** use **Import chat DB** in Joy's chat. **Export chat DB** downloads your current list, including what you taught.
+- Format: `{"version": 1, "joyDb": [{"q": "hi", "a": ["Hello!", "Hey there!"]}]}`
+- Your chat database is saved with the rest of the app and is included in backups.
+
 ## Your data
 
 - Saved in this browser's local storage. Clearing site data erases it, so export a backup now and then. Backups include Joy's data and exclude AI keys.
@@ -121,7 +136,7 @@ The prices in the file are starting points from a web check and your own costs. 
 
 ## Running it
 
-No build step. Open `index.html`, or put the files on any static host. The page contacts only the AI providers you add (Anthropic, Google, xAI, Groq, OpenRouter), and its own `joy-data.json`. These are allowed by the Content-Security-Policy tag at the top of the file.
+No build step. Open `index.html`, or put the files on any static host. The page contacts only the AI providers you add (Anthropic, Google, xAI, Groq, OpenRouter), and its own `joy-data.json` and `joy-database-en.json`. These are allowed by the Content-Security-Policy tag at the top of the file.
 
 ## Editing Joy's wording
 
