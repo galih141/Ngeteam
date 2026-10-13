@@ -342,6 +342,19 @@ td.num,th.num{text-align:right}
 .cal .dnum:hover{background:#e6e8ec}
 .chipt{border:0;border-left:3px solid var(--creative);background:#eef3f8;border-radius:4px;font-size:11px;text-align:left;padding:2px 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
 .chipt.agency{border-left-color:var(--agency);background:#fbf0e8}.chipt.done{text-decoration:line-through;opacity:.6}
+
+.planes{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;align-items:start}
+.plane{border-radius:16px;padding:12px;display:grid;gap:10px}
+.plane h3{margin:0;display:flex;justify-content:space-between;align-items:center;font-size:17px}
+.pcard{background:#f3f4f6;border-radius:14px;border-left:5px solid var(--creative);padding:12px 14px;display:grid;gap:8px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.pcard.agency{border-left-color:var(--agency)}
+.pmeta{font-size:13px;color:#6b7280}.pmeta .late{color:#b42318;font-weight:600}
+.ptitle{font-size:16px;line-height:1.35}.ptags{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.spill{display:inline-flex;align-items:center;gap:6px;border:1.5px solid currentColor;border-radius:99px;padding:2px 8px;font-size:13px;background:#fff}
+.spill i{width:9px;height:9px;border-radius:50%;background:currentColor;flex:none}
+.spill select{border:0;background:transparent;font:inherit;color:inherit;cursor:pointer;padding:2px 0}
+.s-proposed{color:#5b6068}.s-approved{color:#17639f}.s-inprogress{color:#1a8a2a}.s-review{color:#7a4fc4}.s-completed{color:#d9480f}
+.pcard .ctl{display:flex;gap:8px}
 </style>
 </head>
 <body>
@@ -870,6 +883,7 @@ function aiModalHtml() {
     <div class="opts">
       <label class="chk"><input type="checkbox" data-ai-opt="auto" ${ai.auto ? 'checked' : ''}> Send replies automatically when a role has a key</label>
       <label class="chk"><input type="checkbox" data-ai-opt="actions" ${ai.actions ? 'checked' : ''}> Let the AIs propose board changes (added to a prompt only when your message is about tasks, money or decisions; nothing is saved until you approve it)</label>
+      <label class="chk"><input type="checkbox" data-ai-opt="autoApply" ${ai.autoApply ? 'checked' : ''}> Apply the team's board changes right away. Undo stays on the message, and deleting a task always asks first.</label>
       <label class="chk"><input type="checkbox" data-ai-opt="fallback" ${ai.fallback ? 'checked' : ''}> If an AI fails or runs out of messages, try another connected AI</label>
       <p class="small muted" style="margin-left:24px">That last option can send the same prompt to a different company, with a different data policy.</p>
     </div>
@@ -965,11 +979,11 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && aiOpen) cl
 document.addEventListener('mousedown', e => { if (aiOpen && e.target === $('#overlay')) closeAI(); });
 
 /* ---------- board actions (the AI proposes, you approve) ---------- */
-const ACTION_TYPES = ['add_task', 'update_task', 'add_money', 'log_decision'];
+const ACTION_TYPES = ['add_task', 'update_task', 'delete_task', 'add_money', 'log_decision'];
 const PERMS = {
-  mira: ['add_task', 'log_decision'], rico: ['add_task', 'log_decision'], dewi: ['add_task', 'update_task', 'log_decision'],
-  sasha: ['add_task', 'log_decision'], bima: ['add_task', 'log_decision'], nadia: ['add_task', 'log_decision'],
-  arga: ['add_money', 'add_task', 'log_decision']
+  mira: ['add_task', 'update_task', 'delete_task', 'log_decision'], rico: ['add_task', 'update_task', 'delete_task', 'log_decision'], dewi: ['add_task', 'update_task', 'delete_task', 'log_decision'],
+  sasha: ['add_task', 'update_task', 'delete_task', 'log_decision'], bima: ['add_task', 'update_task', 'delete_task', 'log_decision'], nadia: ['add_task', 'update_task', 'delete_task', 'log_decision'],
+  arga: ['add_money', 'add_task', 'update_task', 'delete_task', 'log_decision']
 };
 const validDate = s => /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(new Date(s + 'T00:00:00'));
 function sanitizeAction(a, roleId, stepLabel) {
@@ -982,9 +996,18 @@ function sanitizeAction(a, roleId, stepLabel) {
     out.due = validDate(clip(a.due, 10)) ? clip(a.due, 10) : '';
     out.owner = roleById(clip(a.owner, 12).toLowerCase()) ? clip(a.owner, 12).toLowerCase() : roleId;
     out.status = STATUSES.includes(clip(a.status, 20)) ? clip(a.status, 20) : 'Proposed';
+    out.project = clip(a.project, 40);
   } else if (out.type === 'update_task') {
-    out.match = clip(a.match, 140); out.status = clip(a.status, 20);
-    if (!out.match || !STATUSES.includes(out.status)) return Object.assign(out, { state: 'invalid', reason: 'Needs a task name and a valid status' });
+    out.match = clip(a.match, 140);
+    if (a.status !== undefined && a.status !== '') { const st = clip(a.status, 20); if (!STATUSES.includes(st)) return Object.assign(out, { state: 'invalid', reason: 'Unknown status' }); out.status = st; }
+    const nt = clip(a.new_title || a.title, 140); if (nt) out.title = nt;
+    if (a.owner) { const o = clip(a.owner, 12).toLowerCase(); if (roleById(o)) out.owner = o; }
+    if (a.due !== undefined) { const d = clip(a.due, 10); if (validDate(d)) out.due = d; else if (/^(none|clear|no date)$/i.test(clip(a.due, 10))) out.due = ''; }
+    if (a.note !== undefined) out.note = clip(a.note, 400);
+    if (a.project !== undefined) out.project = /^none$/i.test(clip(a.project, 40)) ? '' : clip(a.project, 40);
+    if (!out.match || !['status', 'title', 'owner', 'due', 'note', 'project'].some(k => out[k] !== undefined)) return Object.assign(out, { state: 'invalid', reason: 'Needs a task name and something to change' });
+  } else if (out.type === 'delete_task') {
+    out.match = clip(a.match, 140); if (!out.match) return Object.assign(out, { state: 'invalid', reason: 'Needs a task name' });
   } else if (out.type === 'add_money') {
     const n = typeof a.amount === 'number' ? a.amount : (/^\d+(\.\d+)?$/.test(String(a.amount)) ? Number(a.amount) : NaN);
     out.desc = clip(a.desc, 120); out.amount = n;
@@ -1037,8 +1060,9 @@ function parseActions(text, roleId, stepLabel) {
 }
 function actDesc(a) {
   const own = a.owner && roleById(a.owner) ? roleById(a.owner).name : '';
-  if (a.type === 'add_task') return `Add task: ${esc(a.title)}${own ? ', owner ' + esc(own) : ''}${a.due ? ', due ' + esc(a.due) : ''}${a.status && a.status !== 'Proposed' ? ', ' + esc(a.status) : ''}`;
-  if (a.type === 'update_task') return `Move task "${esc(a.match)}" to ${esc(a.status)}`;
+  if (a.type === 'add_task') return `Add task: ${esc(a.title)}${own ? ', owner ' + esc(own) : ''}${a.project ? ', project ' + esc(a.project) : ''}${a.due ? ', due ' + esc(a.due) : ''}${a.status && a.status !== 'Proposed' ? ', ' + esc(a.status) : ''}`;
+  if (a.type === 'update_task') { const ch = []; if (a.status !== undefined) ch.push('status: ' + a.status); if (a.title !== undefined) ch.push('new name: ' + a.title); if (a.owner !== undefined) ch.push('owner: ' + (roleById(a.owner) ? roleById(a.owner).name : a.owner)); if (a.due !== undefined) ch.push('due: ' + (a.due || 'none')); if (a.project !== undefined) ch.push('project: ' + (a.project || 'none')); if (a.note !== undefined) ch.push('note'); return `Change task "${esc(a.match)}": ${esc(ch.join(', '))}`; }
+  if (a.type === 'delete_task') return `Delete task "${esc(a.match)}"`;
   if (a.type === 'add_money') return `Add ${a.mtype === 'expense' ? 'expense' : 'income'} ${esc(rp(a.amount))}: ${esc(a.desc)} (${esc(a.status)}, ${esc(a.date)})`;
   if (a.type === 'log_decision') return `Log decision: ${esc(a.topic)}: ${esc(a.decision)}`;
   return esc(a.type);
@@ -1048,7 +1072,7 @@ function actionsHtml(m) {
   const open = list.some(a => a.state === 'proposed'), done = list.some(a => a.state === 'applied');
   const rows = list.map((a, i) => {
     if (a.state === 'proposed') return `<li><label class="chk"><input type="checkbox" data-act-sel="${m.id}:${i}" ${a.skip ? '' : 'checked'}><span>${actDesc(a)}</span></label></li>`;
-    if (a.state === 'applied') return `<li><span>${actDesc(a)}</span> <span class="tag okay">Added</span></li>`;
+    if (a.state === 'applied') return `<li><span>${actDesc(a)}</span> <span class="tag okay">Done</span></li>`;
     if (a.state === 'dismissed') return `<li class="muted"><span>Not added: ${actDesc(a)}</span></li>`;
     if (a.state === 'undone') return `<li class="muted"><span>Undone: ${actDesc(a)}</span></li>`;
     if (a.state === 'failed') return `<li><span>${actDesc(a)}</span> <span class="warn small">Could not add: ${esc(a.reason)}</span></li>`;
@@ -1058,12 +1082,15 @@ function actionsHtml(m) {
     <div class="acts-f">${open ? `<button class="btn sm primary" data-act="msg-apply" data-id="${m.id}">Add selected to the board</button><button class="btn sm" data-act="msg-dismiss" data-id="${m.id}">Dismiss</button>` : ''}${done ? `<button class="btn sm" data-act="msg-undo" data-id="${m.id}">Undo what was added</button>` : ''}</div></div>`;
 }
 function applyOne(a, D, roleId) {
-  if (a.type === 'add_task') { const t = { id: uid(), title: a.title, division: D, status: a.status, owner: a.owner, due: a.due }; state.tasks.push(t); return { ok: true, undo: { kind: 'task', id: t.id } }; }
-  if (a.type === 'update_task') {
-    const q = a.match.toLowerCase(), pool = state.tasks.filter(t => t.division === D);
-    let hit = pool.filter(t => t.title.toLowerCase() === q); if (!hit.length) hit = pool.filter(t => t.title.toLowerCase().includes(q));
+  if (a.type === 'add_task') { const t = { id: uid(), title: a.title, division: D, status: a.status, owner: a.owner, due: a.due, project: a.project || '' }; state.tasks.push(t); return { ok: true, undo: { kind: 'task', id: t.id } }; }
+  if (a.type === 'update_task' || a.type === 'delete_task') {
+    const q = a.match.toLowerCase(), find = pool => { let h = pool.filter(t => t.title.toLowerCase() === q); if (!h.length) h = pool.filter(t => t.title.toLowerCase().includes(q)); return h; };
+    let hit = find(state.tasks.filter(t => t.division === D)); if (!hit.length) hit = find(state.tasks);
     if (hit.length !== 1) return { ok: false, reason: hit.length ? 'More than one task matches' : 'No task matches that name' };
-    const prev = hit[0].status; hit[0].status = a.status; return { ok: true, undo: { kind: 'status', id: hit[0].id, prev } };
+    const t = hit[0];
+    if (a.type === 'delete_task') { state.tasks = state.tasks.filter(x => x.id !== t.id); return { ok: true, undo: { kind: 'task-restore', task: t } }; }
+    const prev = {}; ['status', 'title', 'owner', 'due', 'note', 'project'].forEach(k => { if (a[k] !== undefined) { prev[k] = t[k]; t[k] = a[k]; } });
+    return { ok: true, undo: { kind: 'task-edit', id: t.id, prev } };
   }
   if (a.type === 'add_money') { const m = { id: uid(), division: D, type: a.mtype, desc: a.desc, amount: a.amount, status: a.status, date: a.date }; state.money.push(m); return { ok: true, undo: { kind: 'money', id: m.id } }; }
   if (a.type === 'log_decision') { const d = { id: uid(), date: todayISO(), division: D, role: roleId, topic: a.topic, decision: a.decision, why: a.why, dissent: a.dissent, revisit: a.revisit }; state.decisions.push(d); return { ok: true, undo: { kind: 'decision', id: d.id } }; }
@@ -1074,9 +1101,11 @@ function undoOne(u) {
   if (u.kind === 'task') state.tasks = state.tasks.filter(x => x.id !== u.id);
   else if (u.kind === 'money') state.money = state.money.filter(x => x.id !== u.id);
   else if (u.kind === 'decision') state.decisions = state.decisions.filter(x => x.id !== u.id);
+  else if (u.kind === 'task-restore') { if (u.task && !state.tasks.some(x => x.id === u.task.id)) state.tasks.push(u.task); }
+  else if (u.kind === 'task-edit') { const t = state.tasks.find(x => x.id === u.id); if (t) Object.assign(t, u.prev); }
   else if (u.kind === 'status') { const t = state.tasks.find(x => x.id === u.id); if (t) t.status = u.prev; }
 }
-const ACTION_HINT = /\b(tasks?|to-?dos?|plan|schedule|split|break ?down|breakdown|create|add|assign|deadlines?|due|milestones?|calendar|update|move|mark|status|log|decisions?|decide|expenses?|income|invoice|payments?|budget|track|roadmap)\b/i;
+const ACTION_HINT = /\b(tasks?|to-?dos?|plan|schedule|split|break ?down|breakdown|create|add|assign|deadlines?|due|milestones?|calendar|update|move|mark|status|log|decisions?|decide|expenses?|income|invoice|payments?|budget|track|roadmap|delete|remove|rename|edit|change|finish|finished|done|complete|completed|reschedule|postpone)\b/i;
 function actionRules(r, D, text) {
   if (ai.actions === false) return [];
   if (text !== undefined && !ACTION_HINT.test(text)) return [];
@@ -1084,8 +1113,10 @@ function actionRules(r, D, text) {
   const L = ['', 'BOARD ACTIONS (optional): when I ask you to plan or create work, you may propose changes to my board. Put them in ONE fenced block at the very end of your reply, after your normal text:',
     '```actions', '[{"type":"add_task","title":"Short task name","owner":"dewi","due":"YYYY-MM-DD","status":"Proposed"}]', '```',
     `Types you may use: ${allowed.join(', ')}.`];
-  if (allowed.includes('add_task')) L.push('- add_task: title, owner (mira, rico, dewi, sasha, bima, nadia or arga), due (YYYY-MM-DD), status (Proposed, Approved, In Progress, Review or Completed).');
-  if (allowed.includes('update_task')) L.push('- update_task: match (words from an existing task title), status.');
+  if (allowed.includes('add_task')) L.push('- add_task: title, owner (mira, rico, dewi, sasha, bima, nadia or arga), due (YYYY-MM-DD), status (Proposed, Approved, In Progress, Review or Completed), project (short project name such as "iPhone Duo").');
+  if (allowed.includes('update_task')) L.push('- update_task: match (words from an existing task title), then only the fields that change: status, new_title, owner, due (YYYY-MM-DD, or "none" to clear), note, project. Example: {"type":"update_task","match":"Create 15 car models","status":"Completed"}.');
+  if (allowed.includes('delete_task')) L.push('- delete_task: match (words from an existing task title). Only when I ask you to remove a task.');
+  if (allowed.includes('update_task') || allowed.includes('delete_task')) { const tl = state.tasks.filter(t => t.division === D).sort((a, b) => (a.status === 'Completed') - (b.status === 'Completed')).slice(0, 30); if (tl.length) { L.push('CURRENT TASKS (copy the title into match):'); tl.forEach(t => L.push(`- ${t.title} | project: ${t.project || 'none'} | ${t.status} | owner: ${t.owner} | due: ${t.due || 'none'}`)); } }
   if (allowed.includes('add_money')) L.push('- add_money: desc, amount (a plain number in rupiah, only a figure I gave you), money_type ("income" or "expense"), status (Expected, Due or Received), date (YYYY-MM-DD).');
   if (allowed.includes('log_decision')) L.push('- log_decision: topic, decision, why, dissent, revisit.');
   L.push(`Today is ${todayISO()}. The division (${DIVS[D].short}) is set automatically. Nothing is saved until I approve it, so never say that it is saved.`);
@@ -1876,6 +1907,7 @@ function addReply(th, roleId, raw, via, stepLabel) {
   const m = { id: uid(), from: roleId, to: 'me', t: Date.now(), text: text || (actions.length ? 'Here are the board changes I propose.' : '') };
   if (via) m.via = `${via.label || PROVS[via.provider].name}, ${via.model}`;
   if (actions.length) m.actions = actions;
+  if (actions.length && ai.autoApply) { const D = chatDiv(); actions.forEach(a => { if (a.state !== 'proposed' || a.type === 'delete_task') return; const r = applyOne(a, D, roleId); if (r.ok) { a.state = 'applied'; a.undo = r.undo; } else { a.state = 'failed'; a.reason = r.reason; } }); save(); }
   th.msgs.push(m); return m;
 }
 
@@ -2530,6 +2562,7 @@ function taskEditForm(x) {
     <label class="field"><span>Status</span><select name="status">${STATUSES.map(v => `<option ${v === x.status ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
     <label class="field"><span>Division</span><select name="division">${Object.entries(DIVS).map(([k, v]) => `<option value="${k}" ${k === x.division ? 'selected' : ''}>${v.label}</option>`).join('')}</select></label>
     <label class="field"><span>Owner</span><select name="owner">${ROLES.map(r => `<option value="${r.id}" ${r.id === x.owner ? 'selected' : ''}>${esc(r.name)}</option>`).join('')}</select></label>
+    <label class="field"><span>Project</span><input name="project" list="projList" maxlength="40" value="${esc(x.project || '')}" placeholder="e.g. iPhone Duo"></label>
     <label class="field"><span>Due</span><input type="date" name="due" value="${esc(x.due || '')}"></label>
     <label class="field"><span>Note</span><textarea name="note" rows="2" maxlength="400" placeholder="Details, links, what is blocking it">${esc(x.note || '')}</textarea></label>
     <div class="ctl"><button class="btn primary sm" type="submit">Save</button><button class="btn sm" type="button" data-act="task-cancel">Cancel</button><button class="btn sm danger spacer" type="button" data-act="task-del" data-id="${x.id}">Delete</button></div></form>`;
@@ -2549,21 +2582,43 @@ function calendarHtml() {
   }
   return h + '</div></section>';
 }
+const PROJ_COLORS = ['#cfdcf2', '#eaf1c8', '#f7dcc9', '#ddd2f2', '#cdebe2', '#f4d3dc'];
+const slugS = v => String(v).toLowerCase().replace(/[^a-z]/g, '');
+const projectNames = () => [...new Set(state.tasks.map(t => t.project || ''))].filter(Boolean);
+const projectDatalist = () => `<datalist id="projList">${projectNames().map(n => `<option value="${esc(n)}">`).join('')}</datalist>`;
+function projColor(n) { let h = 0; for (const c of n) h = (h * 31 + c.charCodeAt(0)) >>> 0; return PROJ_COLORS[h % PROJ_COLORS.length]; }
+function cardHtml(x) {
+  if (editingTask === x.id) return `<div class="pcard ${x.division}">${taskEditForm(x)}</div>`;
+  const w = whenText(x.due), r = roleById(x.owner), showWhen = x.due && x.status !== 'Completed';
+  return `<div class="pcard ${x.division}"><div class="pmeta">${r ? esc(r.name) : ''}${showWhen ? ` <span class="${w.late ? 'late' : ''}">${w.t}</span>` : ''}</div>
+    <div class="ptitle">${esc(x.title)}</div>${x.note ? `<div class="small muted">${esc(x.note.slice(0, 160))}</div>` : ''}
+    <div class="ptags">${divTag(x.division)}<label class="spill s-${slugS(x.status)}"><i></i><select data-taskstatus="${x.id}" aria-label="Status">${STATUSES.map(v => `<option ${v === x.status ? 'selected' : ''}>${v}</option>`).join('')}</select></label></div>
+    <div class="ctl"><button class="btn sm" data-act="task-edit" data-id="${x.id}">Edit</button><button class="btn sm danger" data-act="task-del" data-id="${x.id}">Delete</button></div></div>`;
+}
+function projectsHtml() {
+  const tasks = tasksF(); if (!tasks.length) return '<p class="small muted">No tasks yet. Add one above.</p>';
+  const names = [...new Set(tasks.map(t => t.project || ''))].sort((a, b) => (a === '') - (b === '') || a.localeCompare(b));
+  return `<div class="planes">${names.map(n => {
+    const items = tasks.filter(t => (t.project || '') === n).sort((a, b) => (a.status === 'Completed') - (b.status === 'Completed') || (a.due || '9').localeCompare(b.due || '9'));
+    return `<section class="plane" style="background:${n ? projColor(n) : '#e3e5e9'}"><h3><span>${esc(n || 'No project')}</span>${n ? `<button class="btn sm" data-act="proj-rename" data-p="${esc(n)}">Rename</button>` : ''}</h3>${items.map(cardHtml).join('')}<button class="btn sm" data-act="proj-add" data-p="${esc(n)}">+ Add task</button></section>`;
+  }).join('')}</div>`;
+}
 function vBoard() {
   const t = tasksF();
   const defDiv = state.division === 'all' ? 'agency' : state.division;
   return `
   <header class="vh"><h1>Project board</h1><p>A task is Completed when the work is finished. Whether you were paid is tracked separately on the Money tab.</p></header>
-  <div class="attrow" style="margin-bottom:10px"><button class="btn sm ${state.boardMode === 'calendar' ? '' : 'primary'}" data-act="board-mode" data-mode="board">Board</button><button class="btn sm ${state.boardMode === 'calendar' ? 'primary' : ''}" data-act="board-mode" data-mode="calendar">Calendar</button><span class="small muted">Today is ${esc(new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }))}</span></div>
+  <div class="attrow" style="margin-bottom:10px"><button class="btn sm ${(state.boardMode || 'projects') === 'projects' ? 'primary' : ''}" data-act="board-mode" data-mode="projects">Projects</button><button class="btn sm ${state.boardMode === 'status' ? 'primary' : ''}" data-act="board-mode" data-mode="status">Status</button><button class="btn sm ${state.boardMode === 'calendar' ? 'primary' : ''}" data-act="board-mode" data-mode="calendar">Calendar</button><span class="small muted">Today is ${esc(new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }))}</span></div>
   <form class="panel form-row" data-form="task" autocomplete="off">
     <label class="field wide"><span>New task</span><input name="title" required maxlength="140" placeholder="What needs doing?"></label>
     <label class="field"><span>Division</span><select name="division">${Object.entries(DIVS).map(([k, v]) => `<option value="${k}" ${k === defDiv ? 'selected' : ''}>${v.label}</option>`).join('')}</select></label>
     <label class="field"><span>Owner</span><select name="owner">${ROLES.map(r => `<option value="${r.id}">${esc(r.name)}, ${esc(r.title)}</option>`).join('')}</select></label>
+    <label class="field"><span>Project</span><input name="project" list="projList" maxlength="40" placeholder="e.g. iPhone Duo"></label>${projectDatalist()}
     <label class="field"><span>Due</span><input type="date" name="due"></label>
     <button class="btn primary" type="submit">Add task</button>
   </form>
-  ${state.boardMode === 'calendar' ? calendarHtml() : ''}
-  <div class="kanban"${state.boardMode === 'calendar' ? ' style="display:none"' : ''}>${STATUSES.map((s, i) => {
+  ${state.boardMode === 'calendar' ? calendarHtml() : ((state.boardMode || 'projects') === 'projects' ? projectsHtml() : '')}
+  <div class="kanban"${state.boardMode === 'status' ? '' : ' style="display:none"'}>${STATUSES.map((s, i) => {
     const items = t.filter(x => x.status === s);
     return `<section class="col" aria-label="${s}"><h3>${s}<span>${items.length}</span></h3>${items.map(x => {
       const w = whenText(x.due), r = roleById(x.owner);
@@ -2814,12 +2869,14 @@ Object.assign(act, {
     }
     sendMessage(q);
   },
-  'board-mode'(el) { state.boardMode = el.dataset.mode === 'calendar' ? 'calendar' : 'board'; editingTask = ''; save(); render(); },
+  'board-mode'(el) { state.boardMode = ['calendar', 'status'].includes(el.dataset.mode) ? el.dataset.mode : 'projects'; editingTask = ''; save(); render(); },
   'cal-nav'(el) { const [y, m] = calMonth().split('-').map(Number), d = new Date(y, m - 1 + Number(el.dataset.dir), 1); state.calMonth = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`; save(); render(); },
   'cal-today'() { state.calMonth = ''; save(); render(); },
   'cal-day'(el) { const f = document.querySelector('[data-form="task"]'); if (!f) return; f.querySelector('[name="due"]').value = el.dataset.date; f.querySelector('[name="title"]').focus(); toast('Due date set to ' + el.dataset.date + '. Type the task above.'); },
   'task-edit'(el) { editingTask = el.dataset.id; render(); },
   'task-cancel'() { editingTask = ''; render(); },
+  'proj-rename'(el) { const o = el.dataset.p, n = prompt('Rename project', o); if (n === null) return; const v = n.trim().slice(0, 40); state.tasks.forEach(t => { if ((t.project || '') === o) t.project = v; }); save(); render(); },
+  'proj-add'(el) { const f = document.querySelector('[data-form="task"]'); if (!f) return; f.querySelector('[name="project"]').value = el.dataset.p; f.querySelector('[name="title"]').focus(); window.scrollTo(0, 0); },
   'att-del'(el) { atts.splice(Number(el.dataset.i), 1); const s = $('#cAtt'); if (s) s.innerHTML = attHtml(); },
   mention(el) {
     const t = $('#cText'); if (!t) return; const a = t.selectionStart || t.value.length, add = '@' + el.dataset.name + ' ';
@@ -2847,13 +2904,13 @@ const forms = {
   chat(f) { sendMessage(f.querySelector('#cText').value); },
   task(f) {
     const d = new FormData(f), title = (d.get('title') || '').trim(); if (!title) return;
-    state.tasks.push({ id: uid(), title, division: d.get('division'), status: 'Proposed', owner: d.get('owner'), due: d.get('due') || '' });
+    state.tasks.push({ id: uid(), title, division: d.get('division'), status: 'Proposed', owner: d.get('owner'), due: d.get('due') || '', project: (d.get('project') || '').trim().slice(0, 40) });
     save(); render();
   },
   taskEdit(f) {
     const d = new FormData(f), t = state.tasks.find(x => x.id === d.get('id')), title = (d.get('title') || '').trim(); if (!t || !title) return;
     t.title = title.slice(0, 140); if (DIVS[d.get('division')]) t.division = d.get('division'); if (roleById(d.get('owner'))) t.owner = d.get('owner');
-    if (STATUSES.includes(d.get('status'))) t.status = d.get('status'); t.due = validDate(d.get('due') || '') ? d.get('due') : ''; t.note = (d.get('note') || '').trim().slice(0, 400);
+    if (STATUSES.includes(d.get('status'))) t.status = d.get('status'); t.due = validDate(d.get('due') || '') ? d.get('due') : ''; t.note = (d.get('note') || '').trim().slice(0, 400); t.project = (d.get('project') || '').trim().slice(0, 40);
     editingTask = ''; save(); render();
   },
   money(f) {
@@ -2911,6 +2968,7 @@ document.addEventListener('change', e => {
     rd.readAsText(file); return;
   }
   if (t.id === 'cFile') { addFiles([...t.files]); t.value = ''; return; }
+  if (t.dataset && t.dataset.taskstatus) { const tk = state.tasks.find(x => x.id === t.dataset.taskstatus); if (tk && STATUSES.includes(t.value)) { tk.status = t.value; save(); render(); } return; }
   const c = state.chat;
   if (t.id === 'cTo') { c.to = t.value; c.skill = ''; save(); render(); return; }
   if (t.id === 'cSkill') { c.skill = t.value; save(); render(); return; }
