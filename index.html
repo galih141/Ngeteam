@@ -664,12 +664,14 @@ const AI_KEY = 'studioBoard.ai.v1';
 /* Hosts this page may call. To use another one, add it here AND to the connect-src part of the Content-Security-Policy tag at the top. */
 const ALLOWED_HOSTS = ['api.anthropic.com', 'generativelanguage.googleapis.com', 'api.x.ai', 'api.groq.com', 'openrouter.ai'];
 const PROVS = {
-  claude: { name: 'Claude', full: 'Claude (Anthropic)', get: 'https://platform.claude.com/settings/keys', model: 'claude-sonnet-5-5', base: 'https://api.anthropic.com' },
-  gemini: { name: 'Gemini', full: 'Gemini (Google)', get: 'https://aistudio.google.com/apikey', model: 'gemini-3.6-flash', base: 'https://generativelanguage.googleapis.com' },
-  grok:   { name: 'Grok', full: 'Grok (xAI)', get: 'https://console.x.ai', model: '', base: 'https://api.x.ai/v1' },
-  groq:   { name: 'Groq', full: 'Groq (GroqCloud)', get: 'https://console.groq.com/keys', model: '', base: 'https://api.groq.com/openai/v1' },
-  custom: { name: 'Other', full: 'Other (OpenAI-compatible)', get: 'https://openrouter.ai/keys', model: '', base: 'https://openrouter.ai/api/v1' }
+  claude: { name: 'Claude', full: 'Claude (Anthropic)', get: 'https://platform.claude.com/settings/keys', model: 'claude-sonnet-5-5', base: 'https://api.anthropic.com', tier: 'paid', note: 'Paid. Anthropic bills you for each use.' },
+  grok:   { name: 'Grok', full: 'Grok (xAI)', get: 'https://console.x.ai', model: '', base: 'https://api.x.ai/v1', tier: 'paid', note: 'Paid. xAI bills you for each use.' },
+  gemini: { name: 'Gemini', full: 'Gemini (Google)', get: 'https://aistudio.google.com/apikey', model: 'gemini-3.6-flash', base: 'https://generativelanguage.googleapis.com', tier: 'free', note: 'Free tier with small daily limits per model. Billing raises them.' },
+  groq:   { name: 'Groq', full: 'Groq (GroqCloud)', get: 'https://console.groq.com/keys', model: '', base: 'https://api.groq.com/openai/v1', tier: 'free', note: 'Free tier with generous daily limits.' },
+  openrouter: { name: 'OpenRouter', full: 'OpenRouter (free and paid models)', get: 'https://openrouter.ai/keys', model: '', base: 'https://openrouter.ai/api/v1', tier: 'mixed', note: 'Free models have daily limits. Other models are paid with credits.' },
+  custom: { name: 'Other', full: 'Other (OpenAI-compatible)', get: 'https://openrouter.ai/keys', model: '', base: 'https://openrouter.ai/api/v1', tier: 'mixed', note: 'Any OpenAI-compatible service. Free or paid depends on the service.' }
 };
+const TIERS = [['paid', 'Paid'], ['free', 'Free tier'], ['mixed', 'Free and paid']];
 const ROLE_PROV = { Claude: 'claude', Gemini: 'gemini', Grok: 'grok' };
 const blankAI = () => ({ keys: [], assign: {}, auto: true, fallback: false, actions: true, mig3: 1, mig4: 1 });
 function loadAI() {
@@ -807,12 +809,13 @@ function pickDefault(provider, ids) {
     if (pref) return pref;
     pool = ids.filter(i => /llama|gpt-oss|qwen|mixtral/i.test(i) && !/whisper|guard|tts|orpheus|playai/i.test(i));
   }
+  if (provider === 'openrouter') pool = ids.filter(i => /:free$/.test(i));
   return newest(pool && pool.length ? pool : ids);
 }
 function bumpSent(k) {
   const t = todayISO();
   if (k.day !== t) { k.day = t; k.sent = 0; }
-  k.sent = (k.sent || 0) + 1; saveAI();
+  k.sent = (k.sent || 0) + 1; saveAI(); autoCount(k);
 }
 const kStatText = k => {
   const base = k.status === 'idle' ? 'Not tested yet' : (k.status === 'testing' ? 'Testing...' : k.msg);
@@ -845,12 +848,13 @@ function keyCardHtml(k) {
   const P = PROVS[k.provider], adv = k.provider === 'grok' || k.provider === 'custom' || !!k.base;
   return `<div class="kcard" data-kid="${k.id}">
     <div class="krow">
-      <label class="field"><span>Provider</span><select data-ai="${k.id}:provider">${Object.entries(PROVS).map(([id, p]) => `<option value="${id}" ${id === k.provider ? 'selected' : ''}>${esc(p.full)}</option>`).join('')}</select></label>
+      <label class="field"><span>Provider</span><select data-ai="${k.id}:provider">${TIERS.map(([t, lab]) => `<optgroup label="${lab}">${Object.entries(PROVS).filter(([, p]) => p.tier === t).map(([id, p]) => `<option value="${id}" ${id === k.provider ? 'selected' : ''}>${esc(p.full)}</option>`).join('')}</optgroup>`).join('')}</select></label>
       <label class="field"><span>Name</span><input data-ai="${k.id}:label" value="${esc(k.label)}" maxlength="30" placeholder="${esc(P.name)}"></label>
     </div>
+    <div class="small muted" style="margin:-2px 0 6px">${esc(P.note || '')}</div>
     <label class="field"><span>${esc(P.name)} API key</span><span class="keyin"><input type="password" data-ai="${k.id}:key" value="${esc(k.key)}" autocomplete="off" spellcheck="false" placeholder="Paste your key here"><button type="button" class="btn sm" data-act="ai-show" data-id="${k.id}">Show</button></span></label>
     <div class="krow">
-      <label class="field"><span>Model</span><input data-ai="${k.id}:model" list="dl-${k.id}" value="${esc(k.model)}" placeholder="${k.provider === 'grok' || k.provider === 'groq' || k.provider === 'custom' ? 'Test connection to load the list' : esc(P.model)}" autocomplete="off" spellcheck="false"><datalist id="dl-${k.id}">${(k.models || []).map(m => `<option value="${esc(m)}"></option>`).join('')}</datalist></label>
+      <label class="field"><span>Model</span><input data-ai="${k.id}:model" list="dl-${k.id}" value="${esc(k.model)}" placeholder="${!PROVS[k.provider].model ? 'Test connection to load the list' : esc(P.model)}" autocomplete="off" spellcheck="false"><datalist id="dl-${k.id}">${(k.models || []).map(m => `<option value="${esc(m)}"></option>`).join('')}</datalist></label>
       ${adv ? `<label class="field"><span>Address (advanced)</span><input data-ai="${k.id}:base" value="${esc(k.base || '')}" placeholder="${esc(P.base)}" autocomplete="off" spellcheck="false"></label>` : ''}
     </div>
     <div class="kfoot">
@@ -2499,34 +2503,55 @@ function vOverview() {
       <section class="panel"><h2>Latest decisions</h2><ul class="rows">${decHtml}</ul></section>
     </div>
     <section class="panel"><h2>Free-plan message counter</h2>
-      <p class="small muted" style="margin-bottom:8px">Tap +1 each time you send a message. It shows when the window resets. Limits are estimates, not official numbers; set your own.</p>
+      <p class="small muted" style="margin-bottom:8px">Messages sent through a free API key are counted for you. For a free chat app, tap +1 each time you send a message. Limits are estimates, not official numbers; set your own.</p>
       <div id="limits">${limitsHtml()}</div>
     </section>
   </div>`;
 }
 
+const ptParts = () => { const o = {}; new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).formatToParts(new Date()).forEach(x => { o[x.type] = x.value; }); return o; };
+const ptDay = () => { const o = ptParts(); return `${o.year}-${o.month}-${o.day}`; };
+const ptLeftMs = () => { const o = ptParts(); return ((24 - Number(o.hour)) * 3600 - Number(o.minute) * 60 - Number(o.second)) * 1000; };
+const defCap = k => (k.provider === 'gemini' ? (/lite/i.test(k.model || '') ? 500 : 20) : null);
+function autoCount(k) {
+  if (!k || (PROVS[k.provider] || {}).tier !== 'free') return;
+  state.limits = state.limits || {}; const id = 'k:' + k.id; let l = state.limits[id];
+  if (!l) l = state.limits[id] = { name: '', hours: 24, cap: defCap(k), count: 0, start: null, auto: true, pt: k.provider === 'gemini', model: k.model, day: '' };
+  if (l.model !== k.model) { l.model = k.model; l.cap = defCap(k); l.count = 0; l.start = null; l.day = ''; }
+  l.name = `${PROVS[k.provider].name}${k.label ? ' ' + k.label : ''}, ${k.model}`;
+  if (l.pt) { const d = ptDay(); if (l.day !== d) { l.day = d; l.count = 0; } l.count++; }
+  else { const st = limitState(l); if (!st.active) { l.start = Date.now(); l.count = 1; } else l.count = st.count + 1; }
+  save(); if (typeof refreshLimits === 'function') refreshLimits();
+}
 function limitState(l) {
+  if (l.pt) { const act = l.day === ptDay(); return { count: act ? l.count : 0, left: ptLeftMs(), active: act }; }
   const now = Date.now(), span = l.hours * 36e5;
   const active = l.start && now - l.start < span;
   return { count: active ? l.count : 0, left: active ? l.start + span - now : 0, active };
 }
 function fmtLeft(ms) { const m = Math.ceil(ms / 6e4); const h = Math.floor(m / 60); return h ? `${h}h ${m % 60}m` : `${m}m`; }
-function limitsHtml() {
-  return Object.entries(state.limits).map(([id, l]) => {
+function limitRows(entries) {
+  return entries.map(([id, l]) => {
     const s = limitState(l), cap = Number(l.cap) || 0;
     const pct = cap ? Math.min(100, Math.round(s.count / cap * 100)) : 0;
     const status = cap ? `${s.count} of about ${cap} messages` : `${s.count} messages (no limit set)`;
-    const reset = s.active ? `window resets in ${fmtLeft(s.left)}` : 'window not started';
+    const reset = l.pt ? `resets in ${fmtLeft(ptLeftMs())} (midnight Pacific time)` : (s.active ? `window resets in ${fmtLeft(s.left)}` : 'window not started');
     return `<div class="lim">
-      <div class="lim-top"><b>${esc(l.name)}</b><span class="small muted">${status}</span>
-        <span class="push"><button class="btn sm" data-act="lim-inc" data-id="${id}">+1</button><button class="btn sm" data-act="lim-reset" data-id="${id}">Reset</button></span></div>
+      <div class="lim-top"><b>${esc(l.name)}${l.auto ? '' : ' (chat app)'}</b><span class="small muted">${status}</span>
+        <span class="push">${l.auto ? '' : `<button class="btn sm" data-act="lim-inc" data-id="${id}">+1</button>`}<button class="btn sm" data-act="lim-reset" data-id="${id}">Reset</button></span></div>
       <div class="meter" aria-hidden="true"><i class="${pct >= 85 ? 'hot' : ''}" style="width:${pct}%"></i></div>
       <div class="small muted">${reset}</div>
       <div class="lim-set">
         <label>Limit <input type="number" min="0" data-lim="${id}" data-field="cap" value="${l.cap ?? ''}" placeholder="?" aria-label="${esc(l.name)} message limit"></label>
-        <label>Window (hours) <input type="number" min="1" data-lim="${id}" data-field="hours" value="${l.hours}" aria-label="${esc(l.name)} window hours"></label>
+        ${l.pt ? '<span class="small muted">Resets at midnight Pacific time</span>' : `<label>Window (hours) <input type="number" min="1" data-lim="${id}" data-field="hours" value="${l.hours}" aria-label="${esc(l.name)} window hours"></label>`}
       </div></div>`;
   }).join('');
+}
+
+function limitsHtml() {
+  const all = Object.entries(state.limits || {}), auto = all.filter(([, l]) => l.auto), manual = all.filter(([, l]) => !l.auto);
+  return `<h3 class="small" style="margin:8px 0 2px">Free API keys (counted automatically)</h3>${auto.length ? limitRows(auto) : '<p class="small muted">Nothing yet. Every request sent through a free key (Gemini, Groq) is counted here.</p>'}
+  <h3 class="small" style="margin:14px 0 2px">Free chat apps (tap +1 yourself)</h3><p class="small muted">Claude and Grok API keys are paid, so they are not counted here.</p>${limitRows(manual)}`;
 }
 
 function vTeam() {
