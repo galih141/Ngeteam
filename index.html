@@ -254,7 +254,7 @@ td.num,th.num{text-align:right}
 .mm{font-size:12.5px;color:var(--graphite);margin-bottom:3px}
 .mm b{color:var(--ink);margin-right:6px}
 .mm .via{margin-left:8px;font-size:12px}
-.msg.me .mm{text-align:right}
+.msg.me .mm{text-align:right}.mehead{display:flex;align-items:center;gap:6px;justify-content:flex-end;margin-bottom:3px}.mehead .mm{margin:0}.me-card{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:16px}.me-card .grow{flex:1;min-width:200px}.row-btns{display:flex;gap:8px;flex-wrap:wrap}
 .macts{display:flex;gap:12px;margin-top:3px}
 .empty-chat{color:var(--graphite);max-width:520px;margin:auto;text-align:center;padding:20px 0}
 .tray{border-top:1px solid var(--line);padding:12px 0 2px;background:#eceef0}
@@ -418,17 +418,18 @@ const VIEWS = [
 ];
 
 const ROLES = [
-  { id: 'mira', name: 'Mira', title: 'Art Director', color: '#d9573f', model: 'Gemini', backup: 'Claude',
-    character: 'Calm, opinionated, hates generic work. Asks "why this style?" before anything else.',
-    owns: 'Visual direction and quality.',
-    agency: 'Reviews client briefs and references, proposes styles, flags weak briefs before I start.',
-    creative: 'Product concepts, style consistency across packs, packaging, content visuals.',
-    pushback: 'Rejects ideas that look like everyone else\'s.',
+  { id: 'mira', name: 'Mira', title: 'Personal Assistant', color: '#d9573f', model: 'Gemini', backup: 'Claude',
+    character: 'Organized and one step ahead, with a cheeky streak. Teases me when I procrastinate, drops playful little jabs, and winks at my excuses, but the work always gets done.',
+    owns: 'My day, my reminders, my inbox and my loose ends.',
+    agency: 'Plans my day around client deadlines, prepares me for calls, drafts quick replies and turns messy notes into tasks.',
+    creative: 'Keeps my product and content work moving: daily to-do list, reminders and a weekly reset.',
+    pushback: 'Calls out my procrastination with a smirk, like "Third coffee and still no render? Cute.", then tells me which item to drop or move.',
     skills: [
-      { name: 'Brief Review', div: 'agency', io: 'client brief and references -> missing info, risks, 3 style directions' },
-      { name: 'Concept Pitch', div: 'both', io: 'my idea -> 3 variations with pros and cons' },
-      { name: 'Style Guide Check', div: 'both', io: 'my description of a work in progress -> consistency notes against my style' },
-      { name: 'Pack Planner', div: 'creative', io: 'a theme -> list of assets that make a cohesive product pack' } ] },
+      { name: 'Daily Plan', div: 'both', io: 'what is on my mind and my deadlines -> a realistic plan for today' },
+      { name: 'Brain Dump', div: 'both', io: 'messy notes -> clean task list with priorities' },
+      { name: 'Call Prep', div: 'agency', io: 'a client call or meeting -> agenda, questions to ask and points to remember' },
+      { name: 'Quick Reply', div: 'both', io: 'a message I received -> a short reply draft I can send' },
+      { name: 'Weekly Reset', div: 'both', io: 'what happened this week -> what is done, what slipped and next week\'s top 3' } ] },
   { id: 'rico', name: 'Rico', title: 'Producer', color: '#2f6fb0', model: 'Claude', backup: 'Gemini',
     character: 'Blunt, numbers-first, protects my time.',
     owns: 'Scope, hours, pricing, feasibility.',
@@ -555,11 +556,11 @@ function sample() {
   s.brain.brand = 'Studio style: soft stylized props, clean topology, warm lighting.\nVoice: friendly, short sentences, no hype.';
   s.brain.open = 'Which marketplace should the first pack go to?\nShould Halloween assets be bundled with a winter pack?';
   s.tasks = [
-    { id: uid(), title: 'Review brief and references for Client A product render', division: 'agency', status: 'Proposed', owner: 'mira', due: addDays(2) },
+    { id: uid(), title: 'Review brief and references for Client A product render', division: 'agency', status: 'Proposed', owner: 'rico', due: addDays(2) },
     { id: uid(), title: 'Quote for packaging visuals', division: 'agency', status: 'Approved', owner: 'rico', due: addDays(-1) },
     { id: uid(), title: 'Client A: first revision round', division: 'agency', status: 'In Progress', owner: 'dewi', due: addDays(5) },
     { id: uid(), title: 'Halloween asset pack: 12 props', division: 'creative', status: 'In Progress', owner: 'dewi', due: addDays(9) },
-    { id: uid(), title: 'Winter pack concept options', division: 'creative', status: 'Proposed', owner: 'mira', due: addDays(14) },
+    { id: uid(), title: 'Winter pack concept options', division: 'creative', status: 'Proposed', owner: 'sasha', due: addDays(14) },
     { id: uid(), title: 'Listing copy for Halloween pack', division: 'creative', status: 'Approved', owner: 'bima', due: addDays(8) },
     { id: uid(), title: 'Tutorial script: lighting basics', division: 'creative', status: 'Review', owner: 'bima', due: addDays(3) },
     { id: uid(), title: 'Client B: delivered and approved', division: 'agency', status: 'Completed', owner: 'nadia', due: addDays(-6) }
@@ -641,8 +642,9 @@ const AV_DIR = 'assets';
 const AV_EXT = ['png', 'webp', 'jpg', 'jpeg'];
 const AV = {};
 const avUrls = r => [r.id, r.name].filter((n, i, a) => a.indexOf(n) === i).flatMap(n => AV_EXT.map(x => `${AV_DIR}/${n}.${x}`));
+const meRole = () => ({ id: 'me', name: (state.me && state.me.name) || 'You', title: 'Creative Director', color: '#1d2026' });
 function avatarHtml(r, cls, titled) {
-  const u = AV[r.id] || '';
+  const u = r.id === 'me' ? ((state.me && state.me.photo) || '') : (AV[r.id] || '');
   const t = titled ? ` title="${esc(r.name)}, ${esc(r.title)}" aria-label="${esc(r.name)}"` : ' aria-hidden="true"';
   return `<span class="${cls}${u ? ' has-img' : ''}" data-av="${r.id}" style="background:${r.color}"${t}><span class="ini">${esc(r.name[0])}</span>${u ? `<img src="${esc(u)}" alt="" decoding="async" draggable="false">` : ''}</span>`;
 }
@@ -1786,12 +1788,12 @@ function defaultSteps() {
     agency: [
       { id: 'a1', name: 'Intake', members: ['nadia', 'mira'] },
       { id: 'a2', name: 'Price and propose', members: ['rico', 'bima', 'nadia'] },
-      { id: 'a3', name: 'Plan and make', members: ['mira', 'dewi'] },
+      { id: 'a3', name: 'Plan and make', members: ['dewi'] },
       { id: 'a4', name: 'Deliver and get paid', members: ['nadia', 'arga', 'dewi'] }
     ],
     creative: [
-      { id: 'c1', name: 'Find the opportunity', members: ['sasha', 'mira'] },
-      { id: 'c2', name: 'Shape and check', members: ['mira', 'rico'] },
+      { id: 'c1', name: 'Find the opportunity', members: ['sasha'] },
+      { id: 'c2', name: 'Shape and check', members: ['rico'] },
       { id: 'c3', name: 'Plan and write', members: ['dewi', 'bima'] },
       { id: 'c4', name: 'Launch and track', members: ['sasha', 'bima', 'arga'] }
     ]
@@ -2261,7 +2263,7 @@ function msgHtml(m) {
   if (mine) {
     const toR = m.to !== 'all' && m.to !== 'note' ? roleById(m.to) : null;
     const lab = m.to === 'note' ? 'Note to self' : m.to === 'all' ? 'To everyone' : 'To ' + esc(toR ? toR.name : '');
-    return `<div class="msg me"><div class="bub"><div class="mm">${lab}${m.skill ? ', skill: ' + esc(m.skill) : ''}</div>${fmtMe(m.text)}${attShow(m)}</div><div class="macts">${logBtn}${del}</div></div>`;
+    return `<div class="msg me"><div class="mehead">${avatarHtml(meRole(), 'avatar xs')}<span class="mm">${lab}${m.skill ? ', skill: ' + esc(m.skill) : ''}</span></div><div class="bub">${fmtMe(m.text)}${attShow(m)}</div><div class="macts">${logBtn}${del}</div></div>`;
   }
   const r = roleById(m.from) || { name: 'Team', title: '', color: '#586070' };
   return `<div class="msg">${avatarHtml(r, 'avatar sm')}
@@ -2573,7 +2575,13 @@ function limitsHtml() {
 function vTeam() {
   const showA = state.division !== 'creative', showC = state.division !== 'agency';
   return `
-  <header class="vh"><h1>Your team</h1><p>Nine roles that work for both businesses. Joy needs no AI and never uses quota. Open a private chat, or pick a skill to start one with that skill ready.</p></header>
+  <header class="vh"><h1>Your team</h1><p>You are the Creative Director. Nine roles work for both businesses. Joy needs no AI and never uses quota. Open a private chat, or pick a skill to start one with that skill ready.</p></header>
+  <section class="me-card" aria-label="Your profile">
+    ${avatarHtml(meRole(), 'avatar lg')}
+    <div class="grow"><label class="field"><span>Your name</span><input id="meName" maxlength="30" value="${esc((state.me && state.me.name) || '')}" placeholder="Your name"></label>
+      <div class="small muted">Creative Director. You make the final call on every visual decision.</div></div>
+    <div class="row-btns"><button class="btn sm" data-act="me-photo">${state.me && state.me.photo ? 'Change photo' : 'Choose photo'}</button>${state.me && state.me.photo ? '<button class="btn sm" data-act="me-photo-del">Remove photo</button>' : ''}<input type="file" id="mePhoto" accept="image/*" hidden></div>
+  </section>
   <div class="cards">${ROLES.map(r => `
     <article class="role">
       <div class="role-head">
@@ -2885,6 +2893,8 @@ const act = {
 Object.assign(act, ACT_V3);
 Object.assign(act, {
   'att-pick'() { $('#cFile').click(); },
+  'me-photo'() { $('#mePhoto').click(); },
+  'me-photo-del'() { state.me = Object.assign({}, state.me, { photo: '' }); save(); render(); toast('Photo removed'); },
   'joy-ask'(el) {
     const q = el.dataset.q;
     if (q === '@teach') { const t = $('#cText'); if (t) { t.value = 'teach: question => answer'; t.focus(); t.setSelectionRange(7, 15); drafts['c:' + threadKey()] = t.value; } return; }
@@ -3009,6 +3019,13 @@ document.addEventListener('change', e => {
     rd.readAsText(file); return;
   }
   if (t.id === 'cFile') { addFiles([...t.files]); t.value = ''; return; }
+  if (t.id === 'meName') { state.me = Object.assign({}, state.me, { name: t.value.trim().slice(0, 30) }); save(); render(); return; }
+  if (t.id === 'mePhoto') {
+    const f = t.files && t.files[0]; t.value = ''; if (!f) return;
+    if (!/^image\//.test(f.type)) { toast('Pick an image file.'); return; }
+    resizeImg(f, 256, .85, true).then(url => { state.me = Object.assign({}, state.me, { photo: url }); save(); render(); toast('Photo saved'); }).catch(() => toast('Could not read that image.'));
+    return;
+  }
   if (t.dataset && t.dataset.taskstatus) { const tk = state.tasks.find(x => x.id === t.dataset.taskstatus); if (tk && STATUSES.includes(t.value)) { tk.status = t.value; save(); render(); } return; }
   const c = state.chat;
   if (t.id === 'cTo') { c.to = t.value; c.skill = ''; save(); render(); return; }
