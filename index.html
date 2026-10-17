@@ -372,6 +372,10 @@ td.num,th.num{text-align:right}
 .mcol .bars{display:flex;gap:3px;align-items:flex-end;width:100%;height:100%}.mcol .bars i{flex:1;min-height:2px;border-radius:3px 3px 0 0}.bin{background:#1a1d21}.bout{background:#c9cdd3}
 .mcol span{font-size:12px}.mcol .now{font-weight:700}
 .prow{display:grid;gap:3px;padding:6px 0;border-bottom:1px solid #eceef1}.ptop{display:flex;justify-content:space-between}.pbar{height:6px;background:#eceef1;border-radius:3px}.pbar i{display:block;height:100%;background:#1f7a4d;border-radius:3px}
+
+.hbtns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.archbox{margin-top:16px;background:#fff;border:1px solid #dde0e5;border-radius:12px;padding:10px 14px}.archbox summary{cursor:pointer;font-weight:600}
+.archbox .arow{display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #eceef1}.archbox .arow>span{flex:1}
 </style>
 </head>
 <body>
@@ -621,7 +625,7 @@ if (!state.mig3) { state.mig3 = 1; Object.assign(state.chat, { n: 4, incBrain: f
 /* ---------- derived ---------- */
 const inScope = x => state.division === 'all' || x.division === state.division;
 const scopeDivs = () => state.division === 'all' ? ['agency', 'creative'] : [state.division];
-const tasksF = () => state.tasks.filter(inScope);
+const tasksF = () => state.tasks.filter(t => !t.archived && inScope(t));
 const openTasks = () => tasksF().filter(t => t.status !== 'Completed');
 const divTag = d => `<span class="tag ${d}"><i class="dot ${d}"></i>${esc(DIVS[d].short)}</span>`;
 const payLabel = m => m.type === 'expense' && m.status === 'Received' ? 'Paid' : m.status;
@@ -1124,7 +1128,7 @@ function applyOne(a, D, roleId) {
   if (a.type === 'add_task') { const t = { id: uid(), title: a.title, division: D, status: a.status, owner: a.owner, due: a.due, project: a.project || '' }; state.tasks.push(t); return { ok: true, undo: { kind: 'task', id: t.id } }; }
   if (a.type === 'update_task' || a.type === 'delete_task') {
     const q = a.match.toLowerCase(), find = pool => { let h = pool.filter(t => t.title.toLowerCase() === q); if (!h.length) h = pool.filter(t => t.title.toLowerCase().includes(q)); return h; };
-    let hit = find(state.tasks.filter(t => t.division === D)); if (!hit.length) hit = find(state.tasks);
+    let hit = find(state.tasks.filter(t => !t.archived && t.division === D)); if (!hit.length) hit = find(state.tasks.filter(t => !t.archived));
     if (hit.length !== 1) return { ok: false, reason: hit.length ? 'More than one task matches' : 'No task matches that name' };
     const t = hit[0];
     if (a.type === 'delete_task') { state.tasks = state.tasks.filter(x => x.id !== t.id); return { ok: true, undo: { kind: 'task-restore', task: t } }; }
@@ -1155,7 +1159,7 @@ function actionRules(r, D, text) {
   if (allowed.includes('add_task')) L.push('- add_task: title, owner (mira, rico, dewi, sasha, bima, nadia, josh or arga), due (YYYY-MM-DD), status (Proposed, Approved, In Progress, Review or Completed), project (short project name such as "iPhone Duo").');
   if (allowed.includes('update_task')) L.push('- update_task: match (words from an existing task title), then only the fields that change: status, new_title, owner, due (YYYY-MM-DD, or "none" to clear), note, project. Example: {"type":"update_task","match":"Create 15 car models","status":"Completed"}.');
   if (allowed.includes('delete_task')) L.push('- delete_task: match (words from an existing task title). Only when I ask you to remove a task.');
-  if (allowed.includes('update_task') || allowed.includes('delete_task')) { const tl = state.tasks.filter(t => t.division === D).sort((a, b) => (a.status === 'Completed') - (b.status === 'Completed')).slice(0, 30); if (tl.length) { L.push('CURRENT TASKS (copy the title into match):'); tl.forEach(t => L.push(`- ${t.title} | project: ${t.project || 'none'} | ${t.status} | owner: ${t.owner} | due: ${t.due || 'none'}`)); } }
+  if (allowed.includes('update_task') || allowed.includes('delete_task')) { const tl = state.tasks.filter(t => !t.archived && t.division === D).sort((a, b) => (a.status === 'Completed') - (b.status === 'Completed')).slice(0, 30); if (tl.length) { L.push('CURRENT TASKS (copy the title into match):'); tl.forEach(t => L.push(`- ${t.title} | project: ${t.project || 'none'} | ${t.status} | owner: ${t.owner} | due: ${t.due || 'none'}`)); } }
   if (allowed.includes('add_money')) L.push('- add_money: desc, amount (a plain number in rupiah, only a figure I gave you), money_type ("income" or "expense"), status (Expected, Due or Received), date (YYYY-MM-DD).');
   if (allowed.includes('log_decision')) L.push('- log_decision: topic, decision, why, dissent, revisit.');
   L.push(`Today is ${todayISO()}. The division (${DIVS[D].short}) is set automatically. Nothing is saved until I approve it, so never say that it is saved.`);
@@ -1222,7 +1226,7 @@ const JOY = (() => {
     return d < 0 ? `overdue by ${-d} day${d === -1 ? '' : 's'}` : d === 0 ? 'due today' : d === 1 ? 'due tomorrow' : `due in ${d} days`;
   };
   const who = id => { const r = (typeof roleById === 'function') ? roleById(id) : null; return r ? r.name : (id || 'nobody'); };
-  const mine = (st, divs) => st.tasks.filter(t => divs.includes(t.division));
+  const mine = (st, divs) => st.tasks.filter(t => !t.archived && divs.includes(t.division));
 
   /* ---- 1. deadlines ---- */
   function deadlines(st, text, divs) {
@@ -2744,7 +2748,7 @@ function calendarHtml() {
 }
 const PROJ_COLORS = ['#cfdcf2', '#eaf1c8', '#f7dcc9', '#ddd2f2', '#cdebe2', '#f4d3dc'];
 const slugS = v => String(v).toLowerCase().replace(/[^a-z]/g, '');
-const projectNames = () => [...new Set(state.tasks.map(t => t.project || ''))].filter(Boolean);
+const projectNames = () => [...new Set(state.tasks.filter(t => !t.archived).map(t => t.project || ''))].filter(Boolean);
 const projectDatalist = () => `<datalist id="projList">${projectNames().map(n => `<option value="${esc(n)}">`).join('')}</datalist>`;
 function projColor(n) { let h = 0; for (const c of n) h = (h * 31 + c.charCodeAt(0)) >>> 0; return PROJ_COLORS[h % PROJ_COLORS.length]; }
 function cardHtml(x) {
@@ -2755,13 +2759,18 @@ function cardHtml(x) {
     <div class="ptags">${divTag(x.division)}<label class="spill s-${slugS(x.status)}"><i></i><select data-taskstatus="${x.id}" aria-label="Status">${STATUSES.map(v => `<option ${v === x.status ? 'selected' : ''}>${v}</option>`).join('')}</select></label></div>
     <div class="ctl"><button class="btn sm" data-act="task-edit" data-id="${x.id}">Edit</button><button class="btn sm danger" data-act="task-del" data-id="${x.id}">Delete</button></div></div>`;
 }
+function archivedHtml() {
+  const arch = state.tasks.filter(t => t.archived && inScope(t)); if (!arch.length) return '';
+  const groups = {}; arch.forEach(t => { (groups[t.project || ''] = groups[t.project || ''] || []).push(t); });
+  return `<details class="archbox"><summary>Archived projects (${Object.keys(groups).length})</summary>${Object.entries(groups).map(([n, items]) => `<div class="arow"><span><b>${esc(n || 'No project')}</b> <span class="small muted">${items.length} task${items.length === 1 ? '' : 's'}${items[0].archivedAt ? ', archived ' + esc(items[0].archivedAt) : ''}</span><br><span class="small muted">${esc(items.map(t => t.title).join(', ').slice(0, 140))}</span></span><button class="btn sm" data-act="proj-restore" data-p="${esc(n)}">Restore</button><button class="btn sm danger" data-act="proj-purge" data-p="${esc(n)}">Delete</button></div>`).join('')}</details>`;
+}
 function projectsHtml() {
-  const tasks = tasksF(); if (!tasks.length) return '<p class="small muted">No tasks yet. Add one above.</p>';
+  const tasks = tasksF(); if (!tasks.length) return '<p class="small muted">No tasks yet. Add one above.</p>' + archivedHtml();
   const names = [...new Set(tasks.map(t => t.project || ''))].sort((a, b) => (a === '') - (b === '') || a.localeCompare(b));
   return `<div class="planes">${names.map(n => {
     const items = tasks.filter(t => (t.project || '') === n).sort((a, b) => (a.status === 'Completed') - (b.status === 'Completed') || (a.due || '9').localeCompare(b.due || '9'));
-    return `<section class="plane" style="background:${n ? projColor(n) : '#e3e5e9'}"><h3><span>${esc(n || 'No project')}</span>${n ? `<button class="btn sm" data-act="proj-rename" data-p="${esc(n)}">Rename</button>` : ''}</h3>${items.map(cardHtml).join('')}<button class="btn sm" data-act="proj-add" data-p="${esc(n)}">+ Add task</button></section>`;
-  }).join('')}</div>`;
+    return `<section class="plane" style="background:${n ? projColor(n) : '#e3e5e9'}"><h3><span>${esc(n || 'No project')}</span><span class="hbtns">${n ? `<button class="btn sm" data-act="proj-rename" data-p="${esc(n)}">Rename</button>` : ''}${(n ? items.every(t => t.status === 'Completed') : items.some(t => t.status === 'Completed')) ? `<button class="btn sm primary" data-act="proj-archive" data-p="${esc(n)}">${n ? 'Archive project' : 'Archive completed'}</button>` : ''}</span></h3>${items.map(cardHtml).join('')}<button class="btn sm" data-act="proj-add" data-p="${esc(n)}">+ Add task</button></section>`;
+  }).join('')}</div>${archivedHtml()}`;
 }
 function vBoard() {
   const t = tasksF();
@@ -3071,6 +3080,18 @@ Object.assign(act, {
   'task-edit'(el) { editingTask = el.dataset.id; render(); },
   'task-cancel'() { editingTask = ''; render(); },
   'proj-rename'(el) { const o = el.dataset.p, n = prompt('Rename project', o); if (n === null) return; const v = n.trim().slice(0, 40); state.tasks.forEach(t => { if ((t.project || '') === o) t.project = v; }); save(); render(); },
+  'proj-archive'(el) {
+    const p = el.dataset.p, ts = state.tasks.filter(t => !t.archived && inScope(t) && (t.project || '') === p);
+    if (p && ts.some(t => t.status !== 'Completed')) { toast('Finish every task in this project first.'); return; }
+    const target = p ? ts : ts.filter(t => t.status === 'Completed'); if (!target.length) return;
+    target.forEach(t => { t.archived = true; t.archivedAt = todayISO(); }); save(); render(); toast('Archived ' + (p || 'completed tasks') + '. Find it under Archived projects.');
+  },
+  'proj-restore'(el) { const p = el.dataset.p; state.tasks.forEach(t => { if (t.archived && inScope(t) && (t.project || '') === p) { t.archived = false; delete t.archivedAt; } }); save(); render(); },
+  'proj-purge'(el) {
+    const p = el.dataset.p, n = state.tasks.filter(t => t.archived && inScope(t) && (t.project || '') === p).length;
+    if (!n || !confirm(`Permanently delete ${n} archived task${n === 1 ? '' : 's'} from ${p || 'No project'}?`)) return;
+    state.tasks = state.tasks.filter(t => !(t.archived && inScope(t) && (t.project || '') === p)); save(); render();
+  },
   'proj-add'(el) { const f = document.querySelector('[data-form="task"]'); if (!f) return; f.querySelector('[name="project"]').value = el.dataset.p; f.querySelector('[name="title"]').focus(); window.scrollTo(0, 0); },
   'att-del'(el) { atts.splice(Number(el.dataset.i), 1); const s = $('#cAtt'); if (s) s.innerHTML = attHtml(); },
   mention(el) {
