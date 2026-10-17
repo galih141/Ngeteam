@@ -355,6 +355,14 @@ td.num,th.num{text-align:right}
 .spill select{border:0;background:transparent;font:inherit;color:inherit;cursor:pointer;padding:2px 0}
 .s-proposed{color:#5b6068}.s-approved{color:#17639f}.s-inprogress{color:#1a8a2a}.s-review{color:#7a4fc4}.s-completed{color:#d9480f}
 .pcard .ctl{display:flex;gap:8px}
+
+.hud-name{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.hud-name b{font-size:17px}.hud-name select{font-size:13px;padding:2px 6px;width:auto;flex:none}
+.hud-btns{display:flex;gap:8px;align-items:flex-start}
+.hchips{display:flex;flex-wrap:wrap;gap:8px;padding:8px 16px 12px;border-bottom:1px solid #e1e4e8}
+.hchip{display:inline-flex;align-items:center;gap:6px;border:1px solid #cfd3d9;border-radius:99px;padding:3px 12px 3px 8px;background:#fff;font-size:14px;cursor:pointer}
+.hchip.on{border-color:#1a1d21;background:#f0f2f4}
+.hico{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:#1a1d21;color:#fff;font-weight:700;flex:none}
+.arow{display:flex;gap:8px;align-items:center;padding:2px 0}.arow span{flex:1}
 </style>
 </head>
 <body>
@@ -540,7 +548,7 @@ function blank() {
     division: 'all', view: 'overview', sample: false, joyDb: null, joyLearn: '', joyDbFile: 0, people: [{ id: 'p_dim', name: 'Dim', note: '' }, { id: 'p_ken', name: 'Ken', note: '' }],
     brain: { goals: '', brand: '', open: '' },
     tasks: [], money: [], decisions: [],
-    steps: defaultSteps(), threads: {},
+    steps: defaultSteps(), huddles: null, threads: {},
     chat: { div: 'agency', sel: '', to: '', skill: '', n: 4, incBrain: false, incDec: false, incTasks: false, incJoy: false, editing: false, len: 'short' },
     limits: {
       claude: { name: 'Claude', hours: 5,  cap: 30,   count: 0, start: null },
@@ -1803,29 +1811,45 @@ function healPending(s) {
   Object.values(s.threads || {}).forEach(t => { (t.pending || []).forEach(p => { if (p.state === 'loading') delete p.state; }); });
   return s;
 }
-const chatDiv = () => (state.division === 'all' ? state.chat.div : state.division);
+const chatDiv = () => { const h = (state.huddles || []).find(x => 'huddle:' + x.id === state.chat.sel); return h ? h.div : (state.division === 'all' ? state.chat.div : state.division); };
 const stepsFor = d => state.steps[d] || [];
+function hud() {
+  if (!Array.isArray(state.huddles)) {
+    state.huddles = [];
+    ['agency', 'creative'].forEach(d => ((state.steps && state.steps[d]) || []).forEach(st => {
+      const key = d + ':step:' + st.id, th = state.threads[key];
+      if (th && th.msgs && th.msgs.length) { const h = { id: uid(), name: st.name, members: st.members.slice(), div: d, archived: false }; state.huddles.push(h); state.threads['H:' + h.id] = th; delete state.threads[key]; }
+    }));
+    if (!state.huddles.length) state.huddles.push({ id: uid(), name: 'Team huddle', members: ['mira', 'rico', 'dewi'].filter(roleById), div: chatDiv(), archived: false });
+    save();
+  }
+  return state.huddles;
+}
+const huddleOf = sel => (sel.indexOf('huddle:') === 0 ? hud().find(h => h.id === sel.slice(7)) : null);
 function curSel() {
-  const d = chatDiv(), sel = state.chat.sel || '', st = stepsFor(d);
+  const sel = state.chat.sel || '', hs = hud().filter(h => !h.archived);
   if (sel.indexOf('dm:') === 0 && roleById(sel.slice(3))) return sel;
-  if (sel.indexOf('step:') === 0 && st.some(x => x.id === sel.slice(5))) return sel;
-  return st[0] ? 'step:' + st[0].id : 'dm:' + ROLES[0].id;
+  if (sel.indexOf('huddle:') === 0 && hs.some(h => h.id === sel.slice(7))) return sel;
+  const d = hs[0] ? 'huddle:' + hs[0].id : 'dm:' + ROLES[0].id; state.chat.sel = d; return d;
 }
 const isDM = () => curSel().indexOf('dm:') === 0;
-const threadKey = () => chatDiv() + ':' + curSel();
+const threadKey = () => { const s = curSel(); return s.indexOf('huddle:') === 0 ? 'H:' + s.slice(7) : chatDiv() + ':' + s; };
 function getThread() {
   const k = threadKey();
   if (!state.threads[k]) state.threads[k] = { title: '', msgs: [], pending: [] };
+  const h = huddleOf(curSel()); if (h) state.threads[k].title = h.name;
   return state.threads[k];
 }
-function ctxOf(key) { const i = key.indexOf(':'); return { key, d: key.slice(0, i), sel: key.slice(i + 1), th: state.threads[key] }; }
+function ctxOf(key) { if (key.indexOf('H:') === 0) { const h = hud().find(x => x.id === key.slice(2)); return { key, d: h ? h.div : chatDiv(), sel: 'huddle:' + key.slice(2), th: state.threads[key] }; } const i = key.indexOf(':'); return { key, d: key.slice(0, i), sel: key.slice(i + 1), th: state.threads[key] }; }
 function membersOf(d, sel) {
   if (sel.indexOf('dm:') === 0) return [roleById(sel.slice(3))].filter(Boolean);
+  if (sel.indexOf('huddle:') === 0) { const h = huddleOf(sel); return (h ? h.members : []).map(roleById).filter(Boolean); }
   const st = stepsFor(d).find(x => x.id === sel.slice(5));
   return (st ? st.members : []).map(roleById).filter(Boolean);
 }
 function stepNameOf(d, sel) {
   if (sel.indexOf('dm:') === 0) return '';
+  if (sel.indexOf('huddle:') === 0) { const h = huddleOf(sel); return h ? h.name : ''; }
   const st = stepsFor(d).find(x => x.id === sel.slice(5));
   return st ? st.name : '';
 }
@@ -1834,8 +1858,8 @@ const stepName = () => stepNameOf(chatDiv(), curSel());
 function curTo() {
   const ms = chatMembers(), to = state.chat.to;
   if (isDM()) return to === 'note' ? 'note' : ms[0].id;
-  if (to === 'note' || ms.some(m => m.id === to)) return to;
-  return ms.length ? ms[0].id : 'note';
+  if (to === 'note' || to === 'all' || ms.some(m => m.id === to)) return (ms.length || to === 'note') ? to : 'note';
+  return ms.length ? 'all' : 'note';
 }
 function curSkill() {
   const to = curTo();
@@ -1896,7 +1920,7 @@ function chatPrompt(p, ctx) {
   L.push('');
   if (!dm) {
     const others = members.filter(m => m.id !== r.id).map(m => `${m.name} (${m.title})`);
-    L.push(`SETTING: a group chat for the step "${stepNameOf(D, ctx.sel)}". Members: ${others.length ? others.join(', ') + ' and me' : 'only me'}.`);
+    L.push(`SETTING: a group chat (huddle) named "${stepNameOf(D, ctx.sel)}". Members: ${others.length ? others.join(', ') + ' and me' : 'only me'}.`);
     L.push(`Reply only as ${r.name}. Never write replies for your teammates. Build on what they already said, and disagree when you have a reason.`);
   } else {
     L.push('SETTING: a private chat between you and me.');
@@ -2025,7 +2049,7 @@ function histLines(th, msgId, label) {
 function groupPrompt(ps, ctx) {
   const th = ctx.th, D = ctx.d, roles = ps.map(x => roleById(x.role)), L = [];
   L.push(`You play ${roles.length} members of my one-person 3D studio team in a group chat, answering my message in ONE reply. The studio has two divisions: 3D Agency (client work) and 3D Creative (my own products and content). I am the founder and lead 3D artist, and I make every final decision.`);
-  L.push(''); L.push(`GROUP CHAT STEP: "${stepNameOf(D, ctx.sel)}". Division: ${DIVS[D].label}.`);
+  L.push(''); L.push(`HUDDLE: "${stepNameOf(D, ctx.sel)}". Division: ${DIVS[D].label}.`);
   if (th.title.trim()) L.push(`TOPIC OF THIS CHAT: ${th.title.trim()}`);
   L.push(''); L.push('TEAM MEMBERS TO ANSWER, in this order:');
   roles.forEach(r => L.push(`- ${r.name} (${r.title}). Character: ${r.character} Owns: ${r.owns} Here: ${r[D]} Pushes back: ${r.pushback}${r.extra ? ' ' + r.extra : ''}`));
@@ -2246,6 +2270,7 @@ function sendMessage(text) {
   state.chat.skill = '';
   delete drafts['c:' + key];
   save(); render();
+  { const box = $('#cText'); if (box) box.focus(); }
   runQueue(key, msg.id);
 }
 
@@ -2253,7 +2278,7 @@ function sendMessage(text) {
 function hintHtml() {
   const dm = isDM(), ms = chatMembers(), any = ai.keys.some(hasKey) && ai.auto;
   if (curTo() && roleById(curTo()) && roleById(curTo()).local) return `<div class="empty-chat">Joy never uses an AI, so she costs no quota and always answers. She reads your Board, Money, Decisions and Studio brain. Tap a button below, or write a question like "what is overdue", "price 6jt cost 1.5jt hours 30" or "delivery checklist".</div>`;
-  return `<div class="empty-chat">${dm ? `This is your private chat with ${esc(ms[0].name)}.` : `This chat is for ${esc(ms.map(m => m.name).join(', '))}.`}
+  return `<div class="empty-chat">${dm ? `This is your private chat with ${esc(ms[0].name)}.` : (ms.length ? `This huddle is for ${esc(ms.map(m => m.name).join(', '))}.` : 'Tick who takes part above, then write a message.')}
     ${any ? 'Write a message and they reply here.' : 'Write a message and the app builds a prompt for each person you address. Paste it into Claude, Gemini or Grok, then paste the answer back. To get replies automatically, connect an AI with the AI button at the top right.'}</div>`;
 }
 function msgHtml(m) {
@@ -2299,11 +2324,12 @@ function clistInner() {
   const waiting = key => { const t = state.threads[key]; return t ? t.pending.length : 0; };
   const badge = n => n ? `<span class="wait">${n} waiting</span>` : '';
   const seg = state.division === 'all' ? `<div class="seg" role="group" aria-label="Division">${Object.entries(DIVS).map(([k, v]) => `<button data-act="chat-div" data-div="${k}" aria-pressed="${k === d}">${v.short}</button>`).join('')}</div>` : '';
-  return `${seg}
-    <div class="group-title">Group chats, by step</div>
-    ${steps.map((x, i) => `<button class="citem ${sel === 'step:' + x.id ? 'on' : ''}" data-act="chat-sel" data-sel="step:${x.id}"><span class="n">${i + 1}</span>${esc(x.name)}${badge(waiting(d + ':step:' + x.id))}</button>`).join('')}
-    <button class="link small" style="text-align:left;padding:4px 8px" data-act="chat-edit">Edit steps and members</button>
-    <div class="group-title" style="margin-top:8px">Private chats</div>
+  const hs = hud(), live = hs.filter(h => !h.archived), arch = hs.filter(h => h.archived);
+  return `<div class="group-title">Huddles</div>
+    ${live.map(h => `<button class="citem ${sel === 'huddle:' + h.id ? 'on' : ''}" data-act="chat-sel" data-sel="huddle:${h.id}"><span class="hico" aria-hidden="true">${esc((h.name || 'H')[0].toUpperCase())}</span>${esc(h.name)}${badge(waiting('H:' + h.id))}</button>`).join('')}
+    <button class="link small" style="text-align:left;padding:4px 8px" data-act="huddle-new">+ New huddle</button>
+    ${arch.length ? `<details class="small" style="padding:0 8px"><summary>Archived (${arch.length})</summary>${arch.map(h => `<div class="arow"><span>${esc(h.name)}</span><button class="link small" data-act="huddle-restore" data-id="${h.id}">Restore</button><button class="link small" data-act="huddle-del" data-id="${h.id}">Delete</button></div>`).join('')}</details>` : ''}
+    <div class="group-title" style="margin-top:8px">Private chats</div>${seg}
     ${ROLES.map(r => `<button class="citem ${sel === 'dm:' + r.id ? 'on' : ''}" data-act="chat-sel" data-sel="dm:${r.id}">${avatarHtml(r, 'avatar xs')}${esc(r.name)}${badge(waiting(d + ':dm:' + r.id))}</button>`).join('')}`;
 }
 function refreshThread() {
@@ -2322,6 +2348,13 @@ function viewRefresh(key) {
   renderTree();
 }
 const JOY_ASKS = [['Pricing', 'pricing'], ['Price list', 'price list'], ['My costs', 'my costs'], ['Deadlines', 'deadlines'], ['Tasks', 'tasks'], ['Money', 'money'], ['Decisions', 'decisions'], ['Calculator', 'calculator'], ['Go / No-Go', 'go no-go checklist'], ['Delivery check', 'delivery checklist'], ['Guides', 'guide'], ['Templates', 'template'], ['Help', 'help'], ['Export data', '@export'], ['Import data', '@import'], ['Teach her', '@teach'], ['Export chat DB', '@dbexport'], ['Import chat DB', '@dbimport']];
+function huddleHeadHtml(h) {
+  const chips = ROLES.map(r => { const on = h.members.includes(r.id); return `<label class="hchip ${on ? 'on' : ''}"><input type="checkbox" data-huddle-member="${r.id}" ${on ? 'checked' : ''}>${avatarHtml(r, 'avatar xs')}<span>${esc(r.name)}</span></label>`; }).join('');
+  return `<div class="th-head"><div class="titles"><div class="hud-name"><b>${esc(h.name)}</b> <button class="link small" data-act="huddle-rename">Rename</button> <select id="hDiv" aria-label="Division">${Object.entries(DIVS).map(([k, v]) => `<option value="${k}" ${k === h.div ? 'selected' : ''}>${esc(v.short)}</option>`).join('')}</select></div>
+    <div class="small muted">Name it after a project. Tick who takes part. They answer one after another, and later ones see earlier replies.</div></div>
+    <div class="hud-btns"><button class="btn sm" data-act="chat-clear">Clear chat</button><button class="btn sm" data-act="huddle-archive">Archive</button></div></div>
+    <div class="hchips" role="group" aria-label="Who takes part">${chips}</div>`;
+}
 function threadHtml() {
   const d = chatDiv(), th = getThread(), ms = chatMembers(), dm = isDM(), to = curTo(), skill = curSkill(), c = state.chat;
   const steps = stepsFor(d), idx = dm ? -1 : steps.findIndex(x => 'step:' + x.id === curSel());
@@ -2335,14 +2368,14 @@ function threadHtml() {
       .map(x => `<option value="${esc(x.name)}" ${x.name === skill ? 'selected' : ''}>${esc(x.name)}: ${esc(x.io)}</option>`).join('')
     : `<option value="">Pick one person to use a skill</option>`;
   return `<section class="thread" aria-label="Conversation">
-    <div class="th-head"><div class="titles"><input data-thread-title value="${esc(th.title)}" maxlength="80" placeholder="Name this conversation, e.g. Halloween pack" aria-label="Conversation name"><div class="small muted">${sub}</div></div>
-      <div class="faces">${faces}</div><button class="btn sm" data-act="chat-clear">Clear chat</button></div>
+    ${dm ? `<div class="th-head"><div class="titles"><input data-thread-title value="${esc(th.title)}" maxlength="80" placeholder="Name this conversation, e.g. Halloween pack" aria-label="Conversation name"><div class="small muted">${sub}</div></div>
+      <div class="faces">${faces}</div><button class="btn sm" data-act="chat-clear">Clear chat</button></div>` : huddleHeadHtml(huddleOf(curSel()))}
     <div class="msgs" id="msgs" aria-live="polite">${msgsInner()}</div>
     <div class="tray" id="tray">${trayInner()}</div>
     <form class="composer" data-form="chat" autocomplete="off">
       ${rr && rr.local ? `<div class="people small"><span class="muted">Ask Joy:</span>${JOY_ASKS.map(([l, q]) => `<button type="button" class="chipbtn" data-act="joy-ask" data-q="${esc(q)}">${esc(l)}</button>`).join('')}</div>` : ''}
       <div class="comp-row">
-        <label class="field"><span>To</span><select id="cTo">${toOpts}</select></label>
+        <label class="field"><span>To</span><select id="cTo">${dm ? '' : `<option value="all" ${to === 'all' ? 'selected' : ''}>Everyone in this huddle</option>`}${toOpts}</select></label>
         <label class="field"><span>Skill</span><select id="cSkill" ${single ? '' : 'disabled'}>${skillOpts}</select></label>
       </div>
       <label class="field"><span>Your message</span><textarea id="cText" rows="3" placeholder="Say what you want to discuss. Ctrl+Enter sends. Paste an image with Ctrl+V.">${esc(drafts['c:' + threadKey()] || '')}</textarea></label>
@@ -2372,8 +2405,8 @@ function stepEditorHtml() {
 
 function vChat() {
   const live = ai.keys.some(hasKey) && ai.auto;
-  return `<header class="vh"><h1>Team chat</h1><p>${live ? 'Each step has a group chat with the right people, and every role has a private chat. Your connected AIs reply here, and you approve anything they want to put on the board.' : 'Each step has a group chat with the right people, and every role has a private chat. Connect an AI with the button at the top right to get replies here. Until then, this page writes each prompt and keeps the conversation for you.'}</p></header>
-    <div class="chat"><nav class="clist" aria-label="Conversations">${clistInner()}</nav>${state.chat.editing ? stepEditorHtml() : threadHtml()}</div>`;
+  return `<header class="vh"><h1>Team chat</h1><p>${live ? 'A huddle is a group chat you name after a project: tick who takes part. Every role also has a private chat. Your connected AIs reply here, and you approve anything they want to put on the board.' : 'A huddle is a group chat you name after a project: tick who takes part. Every role also has a private chat. Connect an AI with the button at the top right to get replies here. Until then, this page writes each prompt and keeps the conversation for you.'}</p></header>
+    <div class="chat"><nav class="clist" aria-label="Conversations">${clistInner()}</nav>${threadHtml()}</div>`;
 }
 
 /* ---- actions added to the app's click handler ---- */
@@ -2803,6 +2836,11 @@ const act = {
     const c = state.chat; c.sel = el.dataset.sel; c.to = c.sel.indexOf('dm:') === 0 ? c.sel.slice(3) : 'all'; c.skill = ''; c.editing = false; save(); render();
   },
   'chat-div'(el) { const c = state.chat; c.div = el.dataset.div; c.sel = ''; c.to = 'all'; c.skill = ''; c.editing = false; save(); render(); },
+  'huddle-new'() { const n = prompt('Name the huddle (a project name works well)', ''); if (n === null) return; const h = { id: uid(), name: n.trim().slice(0, 40) || 'New huddle', members: [], div: chatDiv(), archived: false }; hud().push(h); const c = state.chat; c.sel = 'huddle:' + h.id; c.to = 'all'; c.skill = ''; save(); render(); },
+  'huddle-rename'() { const h = huddleOf(curSel()); if (!h) return; const n = prompt('Rename huddle', h.name); if (n === null) return; h.name = n.trim().slice(0, 40) || h.name; const t = state.threads['H:' + h.id]; if (t) t.title = h.name; save(); render(); },
+  'huddle-archive'() { const h = huddleOf(curSel()); if (!h) return; if (hud().filter(x => !x.archived).length <= 1) { toast('Keep at least one huddle. Create a new one first.'); return; } h.archived = true; state.chat.sel = ''; save(); render(); },
+  'huddle-restore'(el) { const h = hud().find(x => x.id === el.dataset.id); if (h) { h.archived = false; state.chat.sel = 'huddle:' + h.id; save(); render(); } },
+  'huddle-del'(el) { const h = hud().find(x => x.id === el.dataset.id); if (!h || !confirm('Delete this huddle and all its messages?')) return; state.huddles = state.huddles.filter(x => x !== h); delete state.threads['H:' + h.id]; save(); render(); },
   'chat-edit'() { state.chat.editing = true; render(); },
   'chat-edit-done'() { state.chat.editing = false; state.chat.sel = curSel(); save(); render(); },
   'chat-clear'() {
@@ -3018,6 +3056,8 @@ document.addEventListener('change', e => {
     };
     rd.readAsText(file); return;
   }
+  if (t.dataset && t.dataset.huddleMember) { const h = huddleOf(curSel()); if (h) { const id = t.dataset.huddleMember; h.members = t.checked ? [...new Set([...h.members, id])] : h.members.filter(x => x !== id); save(); render(); } return; }
+  if (t.id === 'hDiv') { const h = huddleOf(curSel()); if (h && DIVS[t.value]) { h.div = t.value; save(); render(); } return; }
   if (t.id === 'cFile') { addFiles([...t.files]); t.value = ''; return; }
   if (t.id === 'meName') { state.me = Object.assign({}, state.me, { name: t.value.trim().slice(0, 30) }); save(); render(); return; }
   if (t.id === 'mePhoto') {
