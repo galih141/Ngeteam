@@ -363,6 +363,15 @@ td.num,th.num{text-align:right}
 .hchip.on{border-color:#1a1d21;background:#f0f2f4}
 .hico{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:#1a1d21;color:#fff;font-weight:700;flex:none}
 .arow{display:flex;gap:8px;align-items:center;padding:2px 0}.arow span{flex:1}
+
+.mcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:14px}
+.mcard{display:grid;gap:4px;padding:14px 16px}.mv{font-size:26px;line-height:1.2}.mv.pos{color:#1f7a4d}.mv.neg,.neg{color:#b42318}.pos{color:#1f7a4d}
+.mform{display:grid;gap:10px;margin-bottom:14px}.mrow{display:flex;gap:10px;flex-wrap:wrap}.mrow .field{min-width:110px}.mrow .grow{flex:1;min-width:200px}
+.mtwo{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;margin-bottom:14px}
+.mchart{display:flex;gap:10px;align-items:flex-end;height:150px;padding-top:8px}.mcol{flex:1;display:grid;gap:4px;justify-items:center;height:100%;grid-template-rows:1fr auto}
+.mcol .bars{display:flex;gap:3px;align-items:flex-end;width:100%;height:100%}.mcol .bars i{flex:1;min-height:2px;border-radius:3px 3px 0 0}.bin{background:#1a1d21}.bout{background:#c9cdd3}
+.mcol span{font-size:12px}.mcol .now{font-weight:700}
+.prow{display:grid;gap:3px;padding:6px 0;border-bottom:1px solid #eceef1}.ptop{display:flex;justify-content:space-between}.pbar{height:6px;background:#eceef1;border-radius:3px}.pbar i{display:block;height:100%;background:#1f7a4d;border-radius:3px}
 </style>
 </head>
 <body>
@@ -796,7 +805,7 @@ async function generate(k, prompt, o) {
     const { data } = await apiFetch(k, b + '/v1/messages', { method: 'POST', headers: authHeaders(k), body: JSON.stringify(body) }, opt);
     text = ((data && data.content) || []).filter(x => x.type === 'text').map(x => x.text).join('\n');
   } else if (k.provider === 'gemini') {
-    const body = { contents: [{ role: 'user', parts: [{ text: prompt }].concat((o.atts || []).map(a => ({ inlineData: { mimeType: a.mime, data: a.data } }))) }] };
+    const body = { contents: [{ role: 'user', parts: [{ text: prompt }].concat((o.atts || []).filter(inlineOK).map(a => ({ inlineData: { mimeType: a.mime, data: a.data } }))) }] };
     if (o.max) body.generationConfig = { maxOutputTokens: o.max };
     const { data } = await apiFetch(k, `${b}/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: authHeaders(k), body: JSON.stringify(body) }, opt);
     const cand = data && data.candidates && data.candidates[0];
@@ -1961,8 +1970,9 @@ function addReply(th, roleId, raw, via, stepLabel) {
 let atts = [];
 const lastSend = {};
 const fmtMe = t => fmt(t).replace(/@(\w+)/g, '<span class="at">@$1</span>');
-const attShow = m => (m.atts || []).map(a => a.kind === 'image' ? `<img class="aimg" src="data:${a.mime};base64,${a.data}" alt="${esc(a.name)}">` : `<div class="small">[file] ${esc(a.name)}</div>`).join('');
-const attHtml = () => atts.map((a, i) => `<span class="chip">${esc(a.name)}<button type="button" class="link" data-act="att-del" data-i="${i}" aria-label="Remove">×</button></span>`).join('');
+const attShow = m => (m.atts || []).map(a => (a.kind === 'image' && a.data) ? `<img class="aimg" src="data:${a.mime};base64,${a.data}" alt="${esc(a.name)}">` : `<div class="small">[${esc(a.kind)}] ${esc(a.name)}${a.size ? ' (' + fmtSize(a.size) + ')' : ''}</div>`).join('');
+const attTag = a => ({ image: 'image', pdf: 'PDF', audio: 'audio', video: 'video', text: a.from ? 'text from file' : 'text', file: 'name only' }[a.kind] || '');
+const attHtml = () => atts.map((a, i) => `<span class="chip">${esc(a.name)} <span class="small muted">${attTag(a)}${a.size ? ', ' + fmtSize(a.size) : ''}</span><button type="button" class="link" data-act="att-del" data-i="${i}" aria-label="Remove">×</button></span>`).join('');
 const readURL = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
 async function resizeImg(file, max, q, sq) {
   const src = await readURL(file);
@@ -1978,21 +1988,89 @@ async function resizeImg(file, max, q, sq) {
     im.onerror = () => rej(new Error('bad image')); im.src = src;
   });
 }
+const ATT_CACHE = {};
+const MAXT = 30000;
+const OFFICE = /\.(docx|xlsx|pptx|odt|ods|odp)$/i;
+const TEXTEXT = /\.(txt|md|markdown|csv|tsv|json|jsonl|xml|html?|css|js|mjs|ts|tsx|jsx|py|rb|php|java|c|h|cpp|cs|go|rs|sh|bat|sql|yaml|yml|toml|ini|cfg|conf|log|srt|vtt|tex|rtf|svg|env)$/i;
+const fmtSize = n => (n > 1e6 ? (n / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1e3)) + ' KB');
+const inlineOK = a => !!a.data && (/^(image|audio|video)\//.test(a.mime || '') || a.mime === 'application/pdf');
+const unxml = x => x.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#(\d+);/g, (m, n) => String.fromCharCode(Number(n))).replace(/&amp;/g, '&');
+const natural = (a, b) => parseInt((a.match(/\d+/) || [0])[0]) - parseInt((b.match(/\d+/) || [0])[0]);
+async function zipEntries(buf) {
+  const v = new DataView(buf), u8 = new Uint8Array(buf); let e = buf.byteLength - 22;
+  while (e >= 0 && v.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) throw new Error('not a zip');
+  const n = v.getUint16(e + 10, true); let p = v.getUint32(e + 16, true); const out = {};
+  for (let i = 0; i < n; i++) {
+    if (v.getUint32(p, true) !== 0x02014b50) break;
+    const nl = v.getUint16(p + 28, true), xl = v.getUint16(p + 30, true), cl = v.getUint16(p + 32, true);
+    out[new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nl))] = { method: v.getUint16(p + 10, true), csize: v.getUint32(p + 20, true), off: v.getUint32(p + 42, true) };
+    p += 46 + nl + xl + cl;
+  }
+  return out;
+}
+async function zipRead(buf, ent) {
+  const v = new DataView(buf), u8 = new Uint8Array(buf), st = ent.off + 30 + v.getUint16(ent.off + 26, true) + v.getUint16(ent.off + 28, true), raw = u8.subarray(st, st + ent.csize);
+  if (ent.method === 0) return new TextDecoder().decode(raw);
+  return new TextDecoder().decode(await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+}
+async function officeText(f) {
+  const buf = await f.arrayBuffer(), ent = await zipEntries(buf), get = n => (ent[n] ? zipRead(buf, ent[n]) : Promise.resolve('')), nm = f.name.toLowerCase();
+  if (nm.endsWith('.docx')) return unxml((await get('word/document.xml')).replace(/<\/w:p>/g, '\n').replace(/<w:tab\/>/g, '\t').replace(/<w:br[^>]*\/>/g, '\n').replace(/<[^>]+>/g, '')).trim();
+  if (nm.endsWith('.pptx')) {
+    const ks = Object.keys(ent).filter(k => /^ppt\/slides\/slide\d+\.xml$/.test(k)).sort(natural); let out = '';
+    for (const [i, k] of ks.entries()) out += `--- Slide ${i + 1} ---\n` + unxml((await get(k)).replace(/<\/a:p>/g, '\n').replace(/<[^>]+>/g, '')).trim() + '\n';
+    return out.trim();
+  }
+  if (nm.endsWith('.xlsx')) {
+    const ss = [...(await get('xl/sharedStrings.xml')).matchAll(/<si>(.*?)<\/si>/gs)].map(m => unxml([...m[1].matchAll(/<t[^>]*>(.*?)<\/t>/gs)].map(x => x[1]).join('')));
+    const sheets = Object.keys(ent).filter(k => /^xl\/worksheets\/sheet\d+\.xml$/.test(k)).sort(natural); let out = '';
+    for (const [i, k] of sheets.entries()) {
+      out += `--- Sheet ${i + 1} ---\n`; let rows = 0;
+      for (const r of (await get(k)).matchAll(/<row[^>]*>(.*?)<\/row>/gs)) {
+        if (++rows > 300) { out += '...\n'; break; }
+        const cells = [];
+        for (const c of r[1].matchAll(/<c r="([A-Z]+)\d+"([^>]*?)(?:\/>|>(.*?)<\/c>)/gs)) {
+          const col = [...c[1]].reduce((a, ch) => a * 26 + ch.charCodeAt(0) - 64, 0) - 1, body = c[3] || '';
+          let v = body.match(/<v>(.*?)<\/v>/s); v = v ? v[1] : (body.match(/<t[^>]*>(.*?)<\/t>/s) || [0, ''])[1];
+          if (/t="s"/.test(c[2])) v = ss[Number(v)] ?? ''; cells[col] = unxml(String(v));
+        }
+        out += Array.from(cells, x => x || '').join('\t') + '\n';
+      }
+    }
+    return out.trim();
+  }
+  return unxml((await get('content.xml')).replace(/<\/text:(p|h)>/g, '\n').replace(/<text:tab\/>/g, '\t').replace(/<\/table:table-cell>/g, '\t').replace(/<\/table:table-row>/g, '\n').replace(/<[^>]+>/g, '')).trim();
+}
+async function looksText(f) { const b = new Uint8Array(await f.slice(0, 2000).arrayBuffer()); for (const x of b) if (x < 9) return false; return true; }
+async function readAtt(f) {
+  const name = f.name || 'pasted-file', mime = f.type || '', base = { key: uid(), name };
+  if (/^image\//.test(mime) && !/svg/.test(mime)) { try { const d = (await resizeImg(f, 1280, .8)).split(',')[1]; return { ...base, kind: 'image', mime: 'image/jpeg', data: d, size: Math.round(d.length * .75) }; } catch (e) { /* fall through */ } }
+  if (mime === 'application/pdf' || /\.pdf$/i.test(name)) return { ...base, kind: 'pdf', mime: 'application/pdf', data: (await readURL(f)).split(',')[1], size: f.size };
+  if (/^(audio|video)\//.test(mime)) return { ...base, kind: mime.split('/')[0], mime, data: (await readURL(f)).split(',')[1], size: f.size };
+  if (OFFICE.test(name)) { const t = await officeText(f); return { ...base, kind: 'text', text: t.slice(0, MAXT), trunc: t.length > MAXT, size: f.size, from: 'file' }; }
+  if (/^text\//.test(mime) || /json|xml|javascript/.test(mime) || TEXTEXT.test(name) || await looksText(f)) { const t = await f.text(); return { ...base, kind: 'text', text: t.slice(0, MAXT), trunc: t.length > MAXT, size: f.size }; }
+  return { ...base, kind: 'file', mime: mime || 'unknown', size: f.size };
+}
+function storeAtts(list) {
+  return list.map(a => { if (a.data && a.data.length > 300000) { ATT_CACHE[a.key] = { data: a.data }; return { ...a, data: '', big: true }; } return a; });
+}
 async function addFiles(fs) {
   for (const f of fs) {
-    if (atts.length >= 4) { toast('Up to 4 files per message.'); break; }
+    if (atts.length >= 8) { toast('Up to 8 files per message.'); break; }
+    if (f.size > 15e6) { toast(f.name + ' is over 15 MB.'); continue; }
+    if (atts.reduce((t, x) => t + (x.size || 0), 0) + f.size > 15e6) { toast('Over 15 MB in total. Send the rest in another message.'); break; }
     try {
-      if (/^image\//.test(f.type)) atts.push({ name: f.name && f.name !== 'image.png' ? f.name : 'pasted-image-' + (atts.length + 1), kind: 'image', mime: 'image/jpeg', data: (await resizeImg(f, 1280, .8)).split(',')[1] });
-      else if (f.type === 'application/pdf') { if (f.size > 4e6) { toast(f.name + ' is over 4 MB.'); continue; } atts.push({ name: f.name, kind: 'pdf', mime: f.type, data: (await readURL(f)).split(',')[1] }); }
-      else if (/\.(txt|md|csv|json|html?|css|js|srt|log)$/i.test(f.name) || /^text\//.test(f.type)) { if (f.size > 2e5) { toast(f.name + ' is too big. Paste the part you need.'); continue; } atts.push({ name: f.name, kind: 'text', text: (await f.text()).slice(0, 20000) }); }
-      else toast(f.name + ': use images, PDF or text files. For Word files, paste the text.');
+      const a = await readAtt(f); atts.push(a);
+      if (a.kind === 'file') toast(/\.(doc|xls|ppt)$/i.test(a.name) ? a.name + ': old Office files cannot be read. Save as .docx, .xlsx, .pptx or PDF.' : a.name + ': the AI only gets the file name. It can read images, PDF, audio, video, Office files and text.');
+      else if (a.trunc) toast(a.name + ': only the first 30,000 characters are sent.');
     } catch (e) { toast('Could not read ' + f.name); }
   }
   const s = $('#cAtt'); if (s) s.innerHTML = attHtml();
 }
-const claudeC = (t, a) => { a = (a || []).filter(x => x.data); return a.length ? [{ type: 'text', text: t }].concat(a.map(x => x.kind === 'pdf' ? { type: 'document', source: { type: 'base64', media_type: x.mime, data: x.data } } : { type: 'image', source: { type: 'base64', media_type: x.mime, data: x.data } })) : t; };
+const claudeC = (t, a) => { a = (a || []).filter(x => x.data && (x.kind === 'pdf' || x.kind === 'image')); return a.length ? [{ type: 'text', text: t }].concat(a.map(x => x.kind === 'pdf' ? { type: 'document', source: { type: 'base64', media_type: x.mime, data: x.data } } : { type: 'image', source: { type: 'base64', media_type: x.mime, data: x.data } })) : t; };
 const oaiC = (t, a) => { a = (a || []).filter(x => x.kind === 'image'); return a.length ? [{ type: 'text', text: t }].concat(a.map(x => ({ type: 'image_url', image_url: { url: `data:${x.mime};base64,${x.data}` } }))) : t; };
-const attsOf = (ctx, p) => { const m = ctx.th.msgs.find(x => x.id === p.msgId); return ((m && m.atts) || []).filter(a => a.data); };
+const attsOf = (ctx, p) => { const m = ctx.th.msgs.find(x => x.id === p.msgId); return ((m && m.atts) || []).map(a => (a.data ? a : { ...a, data: (ATT_CACHE[a.key] || {}).data || '' })).filter(a => a.data); };
 function parseCuts(s, total) {
   return String(s || '').split(/[,;\n]+/).map(x => x.trim()).filter(Boolean).map(x => {
     const m = x.match(/^(.*?)[\s:=-]*(\d[\d.,]*)\s*(%|k|rb|jt)?\s*$/i); if (!m || !m[1].trim()) return null;
@@ -2005,7 +2083,7 @@ function parseCuts(s, total) {
 function cutRow(m) {
   if (m.type !== 'income') return '';
   const cs = m.cuts || [], sum = cs.reduce((a, c) => a + (Number(c.amount) || 0), 0);
-  return `<tr class="cutrow"><td colspan="6">${cs.map(c => `<span class="chip ${c.paid ? 'paid' : ''}"><button class="link" data-act="cut-paid" data-id="${m.id}" data-cid="${c.id}" title="Click: mark paid or not paid">${c.paid ? '&#10003; ' : ''}${esc(c.label)} ${rp(c.amount)}</button><button class="link" data-act="cut-del" data-id="${m.id}" data-cid="${c.id}" aria-label="Remove">&times;</button></span>`).join('')}${cs.length ? `<b class="left">Left for you: ${rp((Number(m.amount) || 0) - sum)}</b>` : ''}<span class="addcut"><input data-cutin="${m.id}" placeholder="+ cuts: license 450000, Dim 25%"><button class="btn sm" data-act="cut-add" data-id="${m.id}">Add</button></span></td></tr>`;
+  return `<tr class="cutrow"><td colspan="6">${cs.map(c => `<span class="chip ${c.paid ? 'paid' : ''}"><button class="link" data-act="cut-paid" data-id="${m.id}" data-cid="${c.id}" title="Click: mark paid or not paid">${c.paid ? '&#10003; ' : ''}${esc(c.label)} ${mny(c.amount)}</button><button class="link" data-act="cut-del" data-id="${m.id}" data-cid="${c.id}" aria-label="Remove">&times;</button></span>`).join('')}${cs.length ? `<b class="left">Left for you: ${mny((Number(m.amount) || 0) - sum)}</b>` : ''}<span class="addcut"><input data-cutin="${m.id}" placeholder="+ cuts: license 450000, Dim 25%"><button class="btn sm" data-act="cut-add" data-id="${m.id}">Add</button></span></td></tr>`;
 }
 
 /* ---- fewer requests: one call per group message, spacing, retry, cooldown ---- */
@@ -2043,7 +2121,7 @@ function histLines(th, msgId, label) {
     });
   }
   L.push(''); L.push(label); L.push(target.text);
-  (target.atts || []).forEach(a => { if (a.kind === 'text') { L.push(''); L.push(`[Attached file ${a.name}]`); L.push(a.text); } else if (!a.data) L.push(`[Attached ${a.name}, not available]`); });
+  (target.atts || []).forEach(a => { if (a.kind === 'text') { L.push(''); L.push(`[Attached file ${a.name}${a.trunc ? ' (first 30,000 characters only)' : ''}]`); L.push(a.text); } else L.push(`[Attached ${a.kind}: ${a.name}${a.size ? ', ' + fmtSize(a.size) : ''}]`); });
   return L;
 }
 function groupPrompt(ps, ctx) {
@@ -2261,7 +2339,7 @@ function joyAnswer(th, msg) {
 function sendMessage(text) {
   text = (text || '').trim(); if (!text && !atts.length) { toast('Write a message first.'); return; } if (!text) text = 'See the attached file.';
   const th = getThread(), to = curTo(), single = to !== 'all' && to !== 'note', key = threadKey();
-  const msg = { id: uid(), from: 'me', to, text, skill: single ? curSkill() : '', t: Date.now(), atts: atts.splice(0), mentions: (state.people || []).filter(x => new RegExp('@' + x.name + '\\b', 'i').test(text)).map(x => x.id) };
+  const msg = { id: uid(), from: 'me', to, text, skill: single ? curSkill() : '', t: Date.now(), atts: storeAtts(atts.splice(0)), mentions: (state.people || []).filter(x => new RegExp('@' + x.name + '\\b', 'i').test(text)).map(x => x.id) };
   th.msgs.push(msg);
   const jr = single ? roleById(to) : null;
   if (to === 'all') chatMembers().filter(m => !m.local).forEach(m => th.pending.push({ id: uid(), role: m.id, msgId: msg.id }));
@@ -2378,8 +2456,8 @@ function threadHtml() {
         <label class="field"><span>To</span><select id="cTo">${dm ? '' : `<option value="all" ${to === 'all' ? 'selected' : ''}>Everyone in this huddle</option>`}${toOpts}</select></label>
         <label class="field"><span>Skill</span><select id="cSkill" ${single ? '' : 'disabled'}>${skillOpts}</select></label>
       </div>
-      <label class="field"><span>Your message</span><textarea id="cText" rows="3" placeholder="Say what you want to discuss. Ctrl+Enter sends. Paste an image with Ctrl+V.">${esc(drafts['c:' + threadKey()] || '')}</textarea></label>
-      <div class="attrow"><button type="button" class="btn sm" data-act="att-pick">Attach file</button><input type="file" id="cFile" hidden multiple accept="image/*,.pdf,.txt,.md,.csv,.json"><span id="cAtt" class="attrow">${attHtml()}</span></div>
+      <label class="field"><span>Your message</span><textarea id="cText" rows="3" placeholder="Say what you want to discuss. Ctrl+Enter sends. Drop files here or paste with Ctrl+V.">${esc(drafts['c:' + threadKey()] || '')}</textarea></label>
+      <div class="attrow"><button type="button" class="btn sm" data-act="att-pick">Attach file</button><input type="file" id="cFile" hidden multiple><span id="cAtt" class="attrow">${attHtml()}</span></div>
       <div class="people small"><span class="muted">Mention:</span>${state.people.map(x => `<button type="button" class="chipbtn" data-act="mention" data-name="${esc(x.name)}">@${esc(x.name)}</button>`).join('')}<button type="button" class="link small" data-act="people-edit">Edit people</button></div>
       <div class="out-foot" style="margin:0">
         <details class="pset"><summary>What goes into each prompt</summary>
@@ -2718,41 +2796,64 @@ function vBoard() {
   }).join('')}</div>`;
 }
 
+const curLabel = () => (state.currency || 'Rp');
+const mny = n => { const l = curLabel(), v = Math.round(Number(n) || 0); return (v < 0 ? '-' : '') + l + ' ' + new Intl.NumberFormat(/^rp\.?$/i.test(l.trim()) ? 'id-ID' : 'en-US', { maximumFractionDigits: 0 }).format(Math.abs(v)); };
+function moneyAgg(rows) {
+  const cutsOf = m => (m.cuts || []).reduce((a, c) => a + (Number(c.amount) || 0), 0), month = {}, proj = {};
+  let waiting = 0, open = 0, unpaid = 0;
+  const mo = k => (month[k] = month[k] || { in: 0, out: 0, cuts: 0 });
+  rows.forEach(m => {
+    const amt = Number(m.amount) || 0, paid = m.status === 'Received', k = String(m.date || '').slice(0, 7), pr = (proj[m.project || ''] = proj[m.project || ''] || { in: 0, out: 0 });
+    if (m.type === 'income') {
+      if (paid) { const c = cutsOf(m); mo(k).in += amt; mo(k).out += c; mo(k).cuts += c; pr.in += amt; pr.out += c; } else { waiting += amt; open++; }
+    } else if (paid) { mo(k).out += amt; pr.out += amt; } else unpaid += amt;
+  });
+  return { month, proj, waiting, open, unpaid };
+}
 function vMoney() {
-  const rows = state.money.filter(inScope).sort((a, b) => b.date.localeCompare(a.date));
-  const defDiv = state.division === 'all' ? 'agency' : state.division;
-  const sums = scopeDivs().map(d => { const m = mstats(d); return `
-    <section class="panel sum"><h2>${divTag(d)} ${esc(DIVS[d].label)}</h2><dl>
-      <dt>Received</dt><dd>${rp(m.received)}</dd>
-      <dt>Expenses paid</dt><dd>${rp(m.paid)}</dd>
-      <dt>Cuts (license, friends...)</dt><dd>${rp(m.cuts)}</dd>
-      <dt>Cuts not handed over yet</dt><dd>${rp(m.cutsOwed)}</dd>
-      <dt class="keep">Kept so far</dt><dd class="keep">${rp(m.kept)}</dd>
-      <dt>Due to you</dt><dd>${rp(m.due)}</dd>
-      <dt>Expected</dt><dd>${rp(m.expected)}</dd>
-      <dt>Expenses still unpaid</dt><dd>${rp(m.unpaid)}</dd>
-    </dl></section>`; }).join('');
+  const rows = state.money.filter(inScope).sort((a, b) => b.date.localeCompare(a.date)), defDiv = state.division === 'all' ? 'agency' : state.division;
+  const g = moneyAgg(rows), now = todayISO().slice(0, 7), cur = g.month[now] || { in: 0, out: 0, cuts: 0 }, net = cur.in - cur.out;
+  const keys = []; { let y = Number(now.slice(0, 4)), mth = Number(now.slice(5, 7)); for (let i = 0; i < 6; i++) { keys.unshift(`${y}-${String(mth).padStart(2, '0')}`); mth--; if (!mth) { mth = 12; y--; } } }
+  const max = Math.max(1, ...keys.map(k => Math.max((g.month[k] || {}).in || 0, (g.month[k] || {}).out || 0)));
+  const projs = Object.entries(g.proj).filter(([p, v]) => (p || Object.keys(g.proj).length > 1) && (v.in || v.out)).sort((a, b) => (b[1].in - b[1].out) - (a[1].in - a[1].out));
+  const maxIn = Math.max(1, ...projs.map(([, v]) => v.in));
+  const names = [...new Set(state.money.map(m => m.project || '').concat(projectNames()))].filter(Boolean);
   return `
-  <header class="vh"><h1>Money</h1><p>Each record moves from Expected to Due to Received. Revenue is not profit: "Kept so far" is what you received minus expenses and the cuts you paid out of it (license, friends).</p></header>
-  <div class="sumgrid">${sums}</div>
-  <form class="panel form-row" data-form="money" autocomplete="off">
-    <label class="field wide"><span>What is it for?</span><input name="desc" required maxlength="120" placeholder="Client A final invoice"></label>
-    <label class="field"><span>Amount (Rp)</span><input type="number" name="amount" required min="0" step="1000" placeholder="1000000"></label>
-    <label class="field wide"><span>Cuts from it (optional)</span><input name="cuts" placeholder="license 450000, Dim 25%, Ken 300000"></label>
-    <label class="field"><span>Type</span><select name="type"><option value="income">Income</option><option value="expense">Expense</option></select></label>
-    <label class="field"><span>Division</span><select name="division">${Object.entries(DIVS).map(([k, v]) => `<option value="${k}" ${k === defDiv ? 'selected' : ''}>${v.label}</option>`).join('')}</select></label>
-    <label class="field"><span>Status</span><select name="status">${PAY.map(p => `<option>${p}</option>`).join('')}</select></label>
-    <label class="field"><span>Date</span><input type="date" name="date" value="${todayISO()}"></label>
-    <button class="btn primary" type="submit">Add record</button>
+  <header class="vh"><h1>Money</h1><p>Your own numbers, kept on this device. Teammates see a short summary when you ask about money, so advice uses real figures.</p></header>
+  <div class="attrow" style="margin-bottom:12px"><label class="field" style="width:130px"><span>Currency label</span><input id="curLabel" maxlength="6" value="${esc(curLabel())}"></label><button class="btn sm" data-act="money-csv" style="align-self:flex-end">Export CSV</button></div>
+  <div class="mcards">
+    <div class="panel mcard"><span class="small muted">In this month</span><b class="mv pos">${mny(cur.in)}</b></div>
+    <div class="panel mcard"><span class="small muted">Out this month</span><b class="mv">${mny(cur.out)}</b>${cur.cuts ? `<span class="small muted">includes ${mny(cur.cuts)} in cuts</span>` : ''}${g.unpaid ? `<span class="small muted">${mny(g.unpaid)} unpaid</span>` : ''}</div>
+    <div class="panel mcard"><span class="small muted">Net</span><b class="mv ${net < 0 ? 'neg' : 'pos'}">${mny(net)}</b></div>
+    <div class="panel mcard"><span class="small muted">Waiting to receive</span><b class="mv">${mny(g.waiting)}</b><span class="small muted">${g.open ? g.open + (g.open === 1 ? ' bill' : ' bills') + ' open' : 'no bills open'}</span></div>
+  </div>
+  <form class="panel mform" data-form="money" autocomplete="off">
+    <div class="mrow">
+      <label class="field"><span>Type</span><select name="type"><option value="income">Income</option><option value="expense">Expense</option></select></label>
+      <label class="field"><span>Amount</span><input type="number" name="amount" required min="0" step="any"></label>
+      <label class="field grow"><span>What for</span><input name="desc" required maxlength="120" placeholder="e.g. Logo project, Blender addon"></label>
+      <label class="field"><span>Project</span><input name="project" list="mProj" maxlength="40"></label>
+      <label class="field"><span>Date</span><input type="date" name="date" value="${todayISO()}"></label>
+      <label class="field"><span>Status</span><select name="status"><option value="Received">Paid</option><option value="Due">Due</option><option value="Expected">Expected</option></select></label>
+      <button class="btn primary" type="submit" style="align-self:flex-end">Add</button>
+    </div>
+    <div class="mrow">
+      <label class="field grow"><span>Cuts from it (optional, income only)</span><input name="cuts" placeholder="license 450000, Dim 25%, Ken 300000"></label>
+      <label class="field"><span>Division</span><select name="division">${Object.entries(DIVS).map(([k, v]) => `<option value="${k}" ${k === defDiv ? 'selected' : ''}>${v.label}</option>`).join('')}</select></label>
+    </div>
+    <datalist id="mProj">${names.map(n => `<option value="${esc(n)}">`).join('')}</datalist>
   </form>
-  <div class="tablewrap"><table>
-    <thead><tr><th>Date</th><th>Division</th><th>Description</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead>
+  <div class="mtwo">
+    <section class="panel"><h2>Last 6 months</h2><div class="mchart">${keys.map(k => { const v = g.month[k] || { in: 0, out: 0 }; return `<div class="mcol"><div class="bars"><i class="bin" style="height:${Math.round(v.in / max * 100)}%" title="In ${esc(mny(v.in))}"></i><i class="bout" style="height:${Math.round(v.out / max * 100)}%" title="Out ${esc(mny(v.out))}"></i></div><span class="${k === now ? 'now' : ''}">${k.slice(5)}</span></div>`; }).join('')}</div><p class="small muted">Dark = income, grey = expense. Paid items only.</p></section>
+    <section class="panel"><h2>By project</h2>${projs.length ? projs.map(([p, v]) => `<div class="prow"><div class="ptop"><b>${esc(p || 'No project')}</b><span class="${v.in - v.out < 0 ? 'neg' : 'pos'}">${mny(v.in - v.out)}</span></div><div class="pbar"><i style="width:${Math.round(v.in / maxIn * 100)}%"></i></div><span class="small muted">in ${mny(v.in)}, out ${mny(v.out)}</span></div>`).join('') : '<p class="small muted">Add entries with a project to see what each one earns.</p>'}</section>
+  </div>
+  <section class="panel"><h2>Entries</h2>${rows.length ? `<div class="tablewrap"><table>
+    <thead><tr><th>Date</th><th>Description</th><th>Division</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead>
     <tbody>${rows.map(m => `<tr>
-      <td>${esc(m.date)}</td><td>${divTag(m.division)}</td><td>${esc(m.desc)}</td>
-      <td class="num ${m.type === 'income' ? 'in' : 'out'}">${m.type === 'income' ? '+' : '-'}${rp(m.amount)}</td>
+      <td>${esc(m.date)}</td><td>${esc(m.desc)}${m.project ? ` <span class="chip">${esc(m.project)}</span>` : ''}</td><td>${divTag(m.division)}</td>
+      <td class="num ${m.type === 'income' ? 'in' : 'out'}">${m.type === 'income' ? '+' : '-'}${mny(m.amount)}</td>
       <td><button class="stat ${m.status}" data-act="money-cycle" data-id="${m.id}" title="Click to move to the next status">${payLabel(m)}</button></td>
-      <td class="num"><button class="btn sm danger" data-act="money-del" data-id="${m.id}">Delete</button></td></tr>${cutRow(m)}`).join('') || '<tr><td colspan="6" class="empty">No records yet.</td></tr>'}</tbody>
-  </table></div>`;
+      <td class="num"><button class="btn sm danger" data-act="money-del" data-id="${m.id}">Delete</button></td></tr>${cutRow(m)}`).join('')}</tbody></table></div>` : '<p class="small muted">No entries yet. Add your first income or expense above.</p>'}</section>`;
 }
 
 function vDecisions() {
@@ -2895,6 +2996,11 @@ const act = {
   },
   'task-del'(el) { state.tasks = state.tasks.filter(x => x.id !== el.dataset.id); save(); render(); },
   'money-cycle'(el) { const m = state.money.find(x => x.id === el.dataset.id); if (m) { m.status = cycle(PAY, m.status); save(); render(); } },
+  'money-csv'() {
+    const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"', rows = state.money.filter(inScope).sort((a, b) => a.date.localeCompare(b.date));
+    const lines = [['date', 'type', 'amount', 'description', 'project', 'division', 'status', 'cuts'].join(',')].concat(rows.map(m => [m.date, m.type, m.amount, m.desc, m.project || '', m.division, m.status, (m.cuts || []).map(c => c.label + ' ' + c.amount + (c.paid ? ' (paid)' : '')).join('; ')].map(q).join(',')));
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv' })); a.download = `money-${todayISO()}.csv`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  },
   'money-del'(el) { state.money = state.money.filter(x => x.id !== el.dataset.id); save(); render(); },
   'dec-del'(el) { state.decisions = state.decisions.filter(x => x.id !== el.dataset.id); save(); render(); },
   'dec-copy'() {
@@ -3004,7 +3110,7 @@ const forms = {
   },
   money(f) {
     const d = new FormData(f), desc = (d.get('desc') || '').trim(); if (!desc) return;
-    state.money.push({ id: uid(), division: d.get('division'), type: d.get('type'), desc, amount: Number(d.get('amount')) || 0, status: d.get('status'), date: d.get('date') || todayISO(), cuts: d.get('type') === 'income' ? parseCuts(d.get('cuts'), Number(d.get('amount')) || 0) : [] });
+    state.money.push({ id: uid(), division: d.get('division'), project: (d.get('project') || '').trim().slice(0, 40), type: d.get('type'), desc, amount: Number(d.get('amount')) || 0, status: d.get('status'), date: d.get('date') || todayISO(), cuts: d.get('type') === 'income' ? parseCuts(d.get('cuts'), Number(d.get('amount')) || 0) : [] });
     save(); render();
   },
   decision(f) {
@@ -3057,6 +3163,7 @@ document.addEventListener('change', e => {
     rd.readAsText(file); return;
   }
   if (t.dataset && t.dataset.huddleMember) { const h = huddleOf(curSel()); if (h) { const id = t.dataset.huddleMember; h.members = t.checked ? [...new Set([...h.members, id])] : h.members.filter(x => x !== id); save(); render(); } return; }
+  if (t.id === 'curLabel') { state.currency = t.value.trim().slice(0, 6) || 'Rp'; save(); render(); return; }
   if (t.id === 'hDiv') { const h = huddleOf(curSel()); if (h && DIVS[t.value]) { h.div = t.value; save(); render(); } return; }
   if (t.id === 'cFile') { addFiles([...t.files]); t.value = ''; return; }
   if (t.id === 'meName') { state.me = Object.assign({}, state.me, { name: t.value.trim().slice(0, 30) }); save(); render(); return; }
@@ -3088,6 +3195,8 @@ document.addEventListener('change', e => {
     save();
   }
 });
+document.addEventListener('dragover', e => { if (e.dataTransfer && [...e.dataTransfer.types].includes('Files') && e.target.closest && e.target.closest('.thread')) e.preventDefault(); });
+document.addEventListener('drop', e => { if (!(e.target.closest && e.target.closest('.thread')) || !e.dataTransfer || !e.dataTransfer.files.length) return; e.preventDefault(); addFiles([...e.dataTransfer.files]); });
 document.addEventListener('paste', e => {
   if (e.target.id !== 'cText') return;
   const fs = [...((e.clipboardData && e.clipboardData.items) || [])].filter(i => i.kind === 'file').map(i => i.getAsFile()).filter(Boolean);
