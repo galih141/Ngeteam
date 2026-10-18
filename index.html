@@ -376,6 +376,15 @@ td.num,th.num{text-align:right}
 .hbtns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .archbox{margin-top:16px;background:#fff;border:1px solid #dde0e5;border-radius:12px;padding:10px 14px}.archbox summary{cursor:pointer;font-weight:600}
 .archbox .arow{display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #eceef1}.archbox .arow>span{flex:1}
+
+.task .ctl{flex-wrap:wrap}
+.bsplit{display:grid;grid-template-columns:220px minmax(0,1fr);gap:16px;align-items:start}.bsplit.one{grid-template-columns:minmax(0,1fr)}.bmain{min-width:0}
+.pside{background:#f3f4f6;border:1px solid #dde0e5;border-radius:14px;padding:10px;display:grid;gap:4px;position:sticky;top:8px}
+.pside h3{margin:2px 6px 6px;font-size:15px}
+.pside-i{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;border:0;background:transparent;border-radius:9px;padding:8px 10px;font:inherit;cursor:pointer}
+.pside-i:hover{background:#e6e8ec}.pside-i.on{background:#1a1d21;color:#fff}.pside-i .pn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pside-i .pc{font-size:12px;background:rgba(0,0,0,.08);border-radius:99px;padding:1px 8px;flex:none}.pside-i.on .pc{background:rgba(255,255,255,.2)}
+@media (max-width:900px){.bsplit{grid-template-columns:minmax(0,1fr)}.pside{position:static}}
 </style>
 </head>
 <body>
@@ -2733,7 +2742,7 @@ function taskEditForm(x) {
 }
 function calendarHtml() {
   const [y, m] = calMonth().split('-').map(Number), first = new Date(y, m - 1, 1), off = (first.getDay() + 6) % 7, dim = new Date(y, m, 0).getDate();
-  const cells = Math.ceil((off + dim) / 7) * 7, today = todayISO(), tasks = tasksF(), edit = tasks.find(t => t.id === editingTask);
+  const cells = Math.ceil((off + dim) / 7) * 7, today = todayISO(), tasks = boardTasks(), edit = tasks.find(t => t.id === editingTask);
   const title = first.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
   const late = tasks.filter(t => t.due && t.due < today && t.status !== 'Completed').length, nodue = tasks.filter(t => !t.due && t.status !== 'Completed').length;
   let h = `${edit ? `<div class="panel">${taskEditForm(edit)}</div>` : ''}
@@ -2759,6 +2768,17 @@ function cardHtml(x) {
     <div class="ptags">${divTag(x.division)}<label class="spill s-${slugS(x.status)}"><i></i><select data-taskstatus="${x.id}" aria-label="Status">${STATUSES.map(v => `<option ${v === x.status ? 'selected' : ''}>${v}</option>`).join('')}</select></label></div>
     <div class="ctl"><button class="btn sm" data-act="task-edit" data-id="${x.id}">Edit</button><button class="btn sm danger" data-act="task-del" data-id="${x.id}">Delete</button></div></div>`;
 }
+function curBoardProject() {
+  const bp = state.boardProject || ''; if (!bp || bp === '__none__') return bp;
+  return tasksF().some(t => (t.project || '') === bp) ? bp : '';
+}
+const boardTasks = () => { const bp = curBoardProject(); return tasksF().filter(t => (bp === '' ? true : bp === '__none__' ? !t.project : (t.project || '') === bp)); };
+function projectSideHtml() {
+  const all = tasksF(), cur = curBoardProject(), names = [...new Set(all.map(t => t.project || ''))].filter(Boolean).sort((a, b) => a.localeCompare(b));
+  const item = (key, label, f) => { const rows = all.filter(f), open = rows.filter(t => t.status !== 'Completed').length; return `<button class="pside-i ${cur === key ? 'on' : ''}" data-act="board-project" data-p="${esc(key)}" title="${open} open of ${rows.length}"><span class="pn">${esc(label)}</span><span class="pc">${open}${open !== rows.length ? '/' + rows.length : ''}</span></button>`; };
+  const none = all.some(t => !t.project);
+  return `<aside class="pside"><h3>Projects</h3>${item('', 'All projects', () => true)}${names.map(n => item(n, n, t => (t.project || '') === n)).join('')}${none ? item('__none__', 'No project', t => !t.project) : ''}<p class="small muted" style="margin:8px 4px 0">Open / total tasks</p><button class="link small" style="padding:4px" data-act="board-mode" data-mode="projects">Manage projects</button></aside>`;
+}
 function archivedHtml() {
   const arch = state.tasks.filter(t => t.archived && inScope(t)); if (!arch.length) return '';
   const groups = {}; arch.forEach(t => { (groups[t.project || ''] = groups[t.project || ''] || []).push(t); });
@@ -2773,7 +2793,7 @@ function projectsHtml() {
   }).join('')}</div>${archivedHtml()}`;
 }
 function vBoard() {
-  const t = tasksF();
+  const t = boardTasks(), sideOn = (state.boardMode || 'projects') !== 'projects', bpSel = curBoardProject(), pre = bpSel && bpSel !== '__none__' ? bpSel : '';
   const defDiv = state.division === 'all' ? 'agency' : state.division;
   return `
   <header class="vh"><h1>Project board</h1><p>A task is Completed when the work is finished. Whether you were paid is tracked separately on the Money tab.</p></header>
@@ -2782,11 +2802,11 @@ function vBoard() {
     <label class="field wide"><span>New task</span><input name="title" required maxlength="140" placeholder="What needs doing?"></label>
     <label class="field"><span>Division</span><select name="division">${Object.entries(DIVS).map(([k, v]) => `<option value="${k}" ${k === defDiv ? 'selected' : ''}>${v.label}</option>`).join('')}</select></label>
     <label class="field"><span>Owner</span><select name="owner">${ROLES.map(r => `<option value="${r.id}">${esc(r.name)}, ${esc(r.title)}</option>`).join('')}</select></label>
-    <label class="field"><span>Project</span><input name="project" list="projList" maxlength="40" placeholder="e.g. iPhone Duo"></label>${projectDatalist()}
+    <label class="field"><span>Project</span><input name="project" list="projList" maxlength="40" value="${esc(pre)}" placeholder="e.g. iPhone Duo"></label>${projectDatalist()}
     <label class="field"><span>Due</span><input type="date" name="due"></label>
     <button class="btn primary" type="submit">Add task</button>
   </form>
-  ${state.boardMode === 'calendar' ? calendarHtml() : ((state.boardMode || 'projects') === 'projects' ? projectsHtml() : '')}
+  <div class="bsplit ${sideOn ? '' : 'one'}">${sideOn ? projectSideHtml() : ''}<div class="bmain">${state.boardMode === 'calendar' ? calendarHtml() : ((state.boardMode || 'projects') === 'projects' ? projectsHtml() : '')}
   <div class="kanban"${state.boardMode === 'status' ? '' : ' style="display:none"'}>${STATUSES.map((s, i) => {
     const items = t.filter(x => x.status === s);
     return `<section class="col" aria-label="${s}"><h3>${s}<span>${items.length}</span></h3>${items.map(x => {
@@ -2802,7 +2822,7 @@ function vBoard() {
           <button class="btn sm danger spacer" data-act="task-del" data-id="${x.id}">Delete</button>
         </div></div>`;
     }).join('') || '<p class="small muted" style="padding:4px">Nothing here.</p>'}</section>`;
-  }).join('')}</div>`;
+  }).join('')}</div></div></div>`;
 }
 
 const curLabel = () => (state.currency || 'Rp');
@@ -3092,6 +3112,7 @@ Object.assign(act, {
     if (!n || !confirm(`Permanently delete ${n} archived task${n === 1 ? '' : 's'} from ${p || 'No project'}?`)) return;
     state.tasks = state.tasks.filter(t => !(t.archived && inScope(t) && (t.project || '') === p)); save(); render();
   },
+  'board-project'(el) { state.boardProject = el.dataset.p || ''; save(); render(); },
   'proj-add'(el) { const f = document.querySelector('[data-form="task"]'); if (!f) return; f.querySelector('[name="project"]').value = el.dataset.p; f.querySelector('[name="title"]').focus(); window.scrollTo(0, 0); },
   'att-del'(el) { atts.splice(Number(el.dataset.i), 1); const s = $('#cAtt'); if (s) s.innerHTML = attHtml(); },
   mention(el) {
